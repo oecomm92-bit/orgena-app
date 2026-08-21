@@ -271,6 +271,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .np-voice-row::-webkit-scrollbar{display:none}
 .v-chip{flex-shrink:0;padding:5px 12px;border-radius:20px;border:1px solid rgba(200,150,62,.2);font-size:10px;color:rgba(247,241,232,.42);cursor:pointer;transition:all .15s}
 .v-chip.on{background:var(--gd);color:var(--br);border-color:var(--gd)}
+#voice-wheel::-webkit-scrollbar{display:none}
 .v-wh-item{flex-shrink:0;padding:7px 16px;font-size:10px;letter-spacing:.07em;color:rgba(247,241,232,.4);cursor:pointer;transition:all .2s;border-right:1px solid rgba(200,150,62,.1)}
 .v-wh-item.on{background:rgba(200,150,62,.15);color:var(--gd);font-weight:500}
 .v-drum-item{height:26px;display:flex;align-items:center;padding:0 12px;font-size:11px;color:rgba(247,241,232,.35);cursor:pointer;transition:all .2s;white-space:nowrap}
@@ -295,7 +296,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .np-ext:hover{border-color:rgba(200,150,62,.35);color:var(--gdl)}
 .np-buy-bar{margin:0 20px 4px;padding:11px;background:rgba(200,150,62,.08);border:1px solid rgba(200,150,62,.22);border-radius:5px;text-align:center;cursor:pointer;font-size:12px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--gd)}
 /* MINI PLAYER */
-.mini-pl{position:absolute;bottom:80px;left:0;right:0;height:50px;background:rgba(20,10,4,.96);backdrop-filter:blur(10px);border-top:1px solid rgba(200,150,62,.14);display:none;align-items:center;padding:0 14px;gap:11px;z-index:55;cursor:pointer}
+.mini-pl{position:absolute;bottom:0;left:0;right:0;height:50px;background:rgba(20,10,4,.96);backdrop-filter:blur(10px);border-top:1px solid rgba(200,150,62,.14);display:none;align-items:center;padding:0 14px;gap:11px;z-index:55;cursor:pointer}
 .mini-pl.show{display:flex}
 .mini-disc{width:34px;height:34px;border-radius:50%;flex-shrink:0;animation:np-breathe 4s ease-in-out infinite}
 .mini-info{flex:1;min-width:0}
@@ -1325,40 +1326,40 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <div class="np-track" id="np-track">Pecan Candy &amp; Huck-A-Bucks</div>
     <div class="np-artist" id="np-artist">Audiobook · Book I</div>
   </div>
-  <div id="np-voice-sec" style="display:flex;align-items:center;gap:10px;padding:0 22px;margin-bottom:12px">
-    <span style="font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:rgba(247,241,232,.32);white-space:nowrap">Voice</span>
-    <div style="flex:1;height:52px;overflow:hidden;position:relative;border:1px solid rgba(200,150,62,.18);border-radius:10px">
-      <div style="position:absolute;top:0;left:0;right:0;height:16px;background:linear-gradient(to bottom,rgba(13,8,4,.8),transparent);z-index:2;pointer-events:none"></div>
-      <div style="position:absolute;bottom:0;left:0;right:0;height:16px;background:linear-gradient(to top,rgba(13,8,4,.8),transparent);z-index:2;pointer-events:none"></div>
-      <div style="position:absolute;top:50%;left:0;right:0;height:1px;background:rgba(200,150,62,.3);transform:translateY(-50%);z-index:1"></div>
-      <div id="voice-drum" style="display:flex;flex-direction:column;transition:transform .25s cubic-bezier(.25,.46,.45,.94)">
-        <div class="v-drum-item">Local (US)</div>
-        <div class="v-drum-item on">Celebrity</div>
-        <div class="v-drum-item">British</div>
-        <div class="v-drum-item">French</div>
-        <div class="v-drum-item">Spanish</div>
-        <div class="v-drum-item">Creole</div>
-        <div class="v-drum-item">Jamaican</div>
-      </div>
+  <div id="np-voice-sec" style="padding:0 20px;margin-bottom:12px">
+    <div onclick="toggleVoiceWheel()" style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:5px 0">
+      <span style="font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:rgba(247,241,232,.32);white-space:nowrap">Voice</span>
+      <span id="voice-current" style="font-size:11px;color:var(--gd);font-weight:500">Celebrity</span>
+      <span id="voice-caret" style="margin-left:auto;color:rgba(200,150,62,.5);font-size:13px;line-height:1;transition:transform .2s">⌄</span>
     </div>
-    <div style="display:flex;flex-direction:column;gap:4px">
-      <button onclick="scrollVoice(-1)" style="background:transparent;border:1px solid rgba(200,150,62,.2);border-radius:4px;width:26px;height:22px;color:var(--gd);cursor:pointer;font-size:11px;line-height:1">▲</button>
-      <button onclick="scrollVoice(1)" style="background:transparent;border:1px solid rgba(200,150,62,.2);border-radius:4px;width:26px;height:22px;color:var(--gd);cursor:pointer;font-size:11px;line-height:1">▼</button>
+    <div id="voice-wheel-wrap" style="display:none;position:relative;height:40px;margin-top:4px">
+      <div style="position:absolute;top:2px;bottom:2px;left:50%;width:78px;transform:translateX(-50%);border:1px solid rgba(200,150,62,.35);border-radius:16px;pointer-events:none;z-index:1"></div>
+      <div style="position:absolute;top:0;bottom:0;left:0;width:34px;background:linear-gradient(to right,#0D0804,transparent);z-index:2;pointer-events:none"></div>
+      <div style="position:absolute;top:0;bottom:0;right:0;width:34px;background:linear-gradient(to left,#0D0804,transparent);z-index:2;pointer-events:none"></div>
+      <div id="voice-wheel" onscroll="onVoiceScroll()" style="display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;height:100%;align-items:center;padding:0 calc(50% - 34px);scrollbar-width:none">
+        <div class="v-chip" onclick="pickVoice(0)" style="scroll-snap-align:center">Local (US)</div>
+        <div class="v-chip on" onclick="pickVoice(1)" style="scroll-snap-align:center">Celebrity</div>
+        <div class="v-chip" onclick="pickVoice(2)" style="scroll-snap-align:center">British</div>
+        <div class="v-chip" onclick="pickVoice(3)" style="scroll-snap-align:center">French</div>
+        <div class="v-chip" onclick="pickVoice(4)" style="scroll-snap-align:center">Spanish</div>
+        <div class="v-chip" onclick="pickVoice(5)" style="scroll-snap-align:center">Creole</div>
+        <div class="v-chip" onclick="pickVoice(6)" style="scroll-snap-align:center">Jamaican</div>
+      </div>
     </div>
   </div>
   <div class="np-prog" onclick="seekPl(event)"><div class="np-prog-fill" id="np-fill"></div></div>
-  <div class="np-times"><span>2:34</span><span>-1:02:18</span></div>
+  <div class="np-times"><span id="np-cur">0:00</span><span id="np-rem">-0:00</span></div>
   <div class="np-spd-row">
     <span class="np-spd-lbl">Speed</span>
-    <input type="range" class="np-spd-sl" min="0.5" max="4" step="0.25" value="1" oninput="document.getElementById('spd-val').textContent=this.value+'×'">
+    <input type="range" class="np-spd-sl" min="0.5" max="4" step="0.25" value="1" oninput="document.getElementById('spd-val').textContent=this.value+'×';setPlRate(this.value)">
     <span class="np-spd-val" id="spd-val">1×</span>
   </div>
   <div class="np-ctrls">
-    <button class="np-ctrl"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>Prev</button>
-    <button class="np-ctrl"><svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6 8.5 6V6l-8.5 6z"/></svg>−15s</button>
+    <button class="np-ctrl" onclick="plPrev()"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>Prev</button>
+    <button class="np-ctrl" onclick="plSeekBy(-15)"><svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6 8.5 6V6l-8.5 6z"/></svg>−15s</button>
     <div class="np-play" onclick="togglePlay()" id="np-play"><svg viewBox="0 0 24 24" id="np-ico"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg></div>
-    <button class="np-ctrl"><svg viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg>+15s</button>
-    <button class="np-ctrl"><svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zm8.5-6 6 6V6l-6 6z"/></svg>Next</button>
+    <button class="np-ctrl" onclick="plSeekBy(15)"><svg viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg>+15s</button>
+    <button class="np-ctrl" onclick="plNext()"><svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zm8.5-6 6 6V6l-6 6z"/></svg>Next</button>
   </div>
   <div class="np-extras">
     <button class="np-ext" style="background:var(--br);color:var(--cr);border-color:var(--brm)" onclick="addBookmarkAndOpen()"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>Bookmark</button>
@@ -1549,16 +1550,10 @@ var podDescs = {
   'Building the Orgena Universe':'Behind the scenes on how the books, films, and community all connect into one multigenerational story world.'
 };
 function openPodDesc(name, sub){
-  var bg=document.getElementById('ev-popup-bg');
-  setText('ev-popup-name', name);
-  setText('ev-popup-city', sub||'Creator Exclusive');
-  setText('ev-popup-date', '');
-  setText('ev-popup-desc', podDescs[name] || 'An exclusive audio episode from Rhodesia Jackson and the Orgena creative team.');
-  var going=document.getElementById('ev-popup-going');
-  if(going) going.innerHTML='<span style="color:var(--gd)">🎧 Free episode</span>';
-  var rsvp=document.getElementById('ev-popup-rsvp');
-  if(rsvp){ rsvp.textContent='▶ Play Episode'; rsvp.onclick=function(){ closeEvPopup(); openPlayer(name, sub||'Creator Exclusive','linear-gradient(135deg,#2C1A0E,#4A2C18)',false); }; }
-  if(bg) bg.style.display='flex';
+  // Podcasts and playlists are all FREE — open the player and start playing immediately.
+  var q = plQueue.find(function(t){return t.t===name;});
+  var bg = q ? q.bg : 'linear-gradient(135deg,#2C1A0E,#4A2C18)';
+  openPlayer(name, sub || 'Creator Exclusive', bg, false);
 }
 
 window._editCartIdx = -1;
@@ -2485,44 +2480,84 @@ function askAI(q){
 function sendSrch(){const inp=document.getElementById('srch-si');if(!inp.value.trim())return;askAI(inp.value.trim());inp.value='';}
 
 let isPlaying=false,progInt;
+// Player position model (seconds)
+let plPos=0, plDur=0, plRate=1, plIdx=-1;
+// Ordered queue used by Prev/Next; audiobooks (purchase) + free podcasts + free playlists
+const plQueue=[
+  {t:'Pecan Candy & Huck-A-Bucks',a:'Audiobook · Book I',bg:'linear-gradient(155deg,#5C3D28,#2C1A0E)',pur:true,dur:3765},
+  {t:'Sweeter Than Candy',a:'Audiobook · Book II',bg:'linear-gradient(155deg,#3B2010,#7A4E35)',pur:true,dur:3540},
+  {t:'Three Times Sweeter',a:'Audiobook · Book III',bg:'linear-gradient(155deg,#2C1A0E,#4A2C18)',pur:true,dur:3900},
+  {t:'Smothered Okra',a:'Audiobook · Standalone',bg:'linear-gradient(155deg,#2A3E18,#5E7A3E)',pur:true,dur:3300},
+  {t:'Writing New Orleans',a:'Author Exclusive · 34 min',bg:'linear-gradient(135deg,#2C1A0E,#4A2C18)',pur:false,dur:2040},
+  {t:'The Making of Pecan Candy',a:'Behind the Story · 28 min',bg:'linear-gradient(135deg,#2C1A0E,#5C3D28)',pur:false,dur:1680},
+  {t:'Love & New Orleans',a:'Community Discussion · 45 min',bg:'linear-gradient(135deg,#3B2010,#4A2C18)',pur:false,dur:2700},
+  {t:'Sweet & Soulful Mix',a:'Curated playlist · 12 tracks',bg:'linear-gradient(135deg,#C8963E,#4A2C18)',pur:false,dur:2400},
+  {t:'New Orleans Nights',a:'Ambient playlist · 8 tracks',bg:'linear-gradient(135deg,#2C1A0E,#7A4E35)',pur:false,dur:1800}
+];
+function durFromArtist(a){var m=/(\d+)\s*min/i.exec(a||'');if(m)return parseInt(m[1],10)*60;if(/track/i.test(a||''))return 2400;return 3600;}
+function fmtTime(s){s=Math.max(0,Math.round(s));var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;var mm=(h>0&&m<10?'0':'')+m;return (h>0?h+':':'')+mm+':'+(ss<10?'0':'')+ss;}
+function updatePlUI(){
+  var pct=plDur>0?Math.min(100,plPos/plDur*100):0;
+  var f=document.getElementById('np-fill');if(f)f.style.width=pct+'%';
+  var mp=document.getElementById('miniProg');if(mp)mp.style.width=pct+'%';
+  setText('np-cur',fmtTime(plPos));
+  setText('np-rem','-'+fmtTime(plDur-plPos));
+}
 function openPlayer(track,artist,bg,isPur){
   setText('np-track',track);setText('np-artist',artist);
-  document.getElementById('np-disc').style.background=bg;document.getElementById('miniDisc').style.background=bg;
+  var disc=document.getElementById('np-disc');if(disc)disc.style.background=bg;
+  var md=document.getElementById('miniDisc');if(md)md.style.background=bg;
   setText('miniTrack',track.split('&')[0].trim());setText('miniArtist',artist);
   setDisp('np-buy-bar',isPur?'block':'none');
-  setDisp('np-voice-sec',isPur?'flex':'none');
+  setDisp('np-voice-sec',isPur?'block':'none');
   const chTitle=document.getElementById('ch-book-title');if(chTitle)chTitle.textContent=track;
+  plIdx=plQueue.findIndex(function(q){return q.t===track;});
+  plDur=plIdx>=0?plQueue[plIdx].dur:durFromArtist(artist);
+  plPos=0;
+  updatePlUI();
   document.getElementById('ov-player').classList.add('show');startPlay();
 }
+function loadFromQueue(i){var q=plQueue[i];if(!q)return;openPlayer(q.t,q.a,q.bg,q.pur);}
 function minimizePlayer(){document.getElementById('ov-player').classList.remove('show');document.getElementById('miniPl').classList.add('show');}
+function setPlayIcons(playing){
+  var pause='<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" fill="{c}"/>';
+  var play='<path d="M8 5v14l11-7z" fill="{c}"/>';
+  var ico=document.getElementById('np-ico');
+  if(ico) ico.innerHTML=(playing?pause:play).replace('{c}','var(--br)');
+  var mini=document.getElementById('mini-play-ico');
+  if(mini) mini.innerHTML=(playing?pause:play).replace('{c}','#2C1A0E');
+}
 function startPlay(){
   isPlaying=true;
-  var ico=document.getElementById('np-ico');
-  if(ico) ico.innerHTML='<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" fill="var(--br)"/>';
-  var mini=document.getElementById('mini-play-ico');
-  if(mini) mini.innerHTML='<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" fill="#2C1A0E"/>';
+  setPlayIcons(true);
   clearInterval(progInt);
-  var p=35;
   progInt=setInterval(function(){
-    p=Math.min(p+.05,99);
-    var f=document.getElementById('np-fill');if(f)f.style.width=p+'%';
-    var mp=document.getElementById('miniProg');if(mp)mp.style.width=p+'%';
+    plPos=Math.min(plPos+0.25*plRate, plDur);
+    updatePlUI();
+    if(plPos>=plDur){ stopPlay(); }
   },250);
 }
-
 function stopPlay(){
   isPlaying=false;
-  var ico=document.getElementById('np-ico');
-  if(ico) ico.innerHTML='<path d="M8 5v14l11-7z" fill="var(--br)"/>';
-  var mini=document.getElementById('mini-play-ico');
-  if(mini) mini.innerHTML='<path d="M8 5v14l11-7z" fill="#2C1A0E"/>';
+  setPlayIcons(false);
   clearInterval(progInt);
 }
-
 function togglePlay(){if(isPlaying){stopPlay();}else{startPlay();}}
 function seekPl(e){
-  if(!e||!e.currentTarget){return;}const b=e.currentTarget;document.getElementById('np-fill').style.width=(e.offsetX/b.offsetWidth*100)+'%';}
-function setVoice(btn){document.querySelectorAll('.v-chip').forEach(c=>c.classList.remove('on'));btn.classList.add('on');}
+  if(!e||!e.currentTarget){return;}
+  var b=e.currentTarget;var ratio=Math.min(1,Math.max(0,e.offsetX/b.offsetWidth));
+  plPos=ratio*plDur;updatePlUI();
+}
+function plSeekBy(delta){plPos=Math.min(plDur,Math.max(0,plPos+delta));updatePlUI();}
+function plPrev(){
+  if(plPos>3||plIdx<0){plPos=0;updatePlUI();}
+  else{loadFromQueue((plIdx-1+plQueue.length)%plQueue.length);}
+}
+function plNext(){
+  if(plIdx<0){plPos=0;updatePlUI();}
+  else{loadFromQueue((plIdx+1)%plQueue.length);}
+}
+function setPlRate(v){plRate=parseFloat(v)||1;}
 
 let crMode='';
 function openCreate(){crGo(1,'');O('ov-create');setTimeout(function(){var s=document.getElementById('cr-sheet');if(s)s.classList.add('up');if(typeof crSetMode==='function')crSetMode('video');},10);}
@@ -2763,31 +2798,40 @@ function adjMerchQty(d){
   setText('merch-total','$'+(currentMerchQty*currentMerchPrice));
 }
 // Voice wheel
-let voiceIdx=0;
+let voiceIdx=1;
 const voices=['Local (US)','Celebrity','British','French','Spanish','Creole','Jamaican'];
-function selVoiceWheel(el){
-  document.querySelectorAll('.v-wh-item').forEach(i=>i.classList.remove('on'));
-  el.classList.add('on');
-  voiceIdx=voices.indexOf(el.textContent);
+// Horizontal, finger-scrollable voice wheel
+function toggleVoiceWheel(){
+  var w=document.getElementById('voice-wheel-wrap');if(!w)return;
+  var open=(w.style.display==='none'||!w.style.display);
+  w.style.display=open?'block':'none';
+  var caret=document.getElementById('voice-caret');if(caret)caret.style.transform=open?'rotate(180deg)':'';
+  if(open){ setTimeout(function(){centerVoice(voiceIdx,false);},20); }
 }
-function scrollVoice(dir){
-  const drum=document.getElementById('voice-drum');
-  if(drum){
-    const items=drum.querySelectorAll('.v-drum-item');
-    items.forEach(i=>i.classList.remove('on'));
-    voiceIdx=((voiceIdx+dir)+voices.length)%voices.length;
-    if(items[voiceIdx]) items[voiceIdx].classList.add('on');
-    drum.style.transform='translateY(-'+(voiceIdx*26-13)+'px)';
+function setVoiceIdx(i){
+  voiceIdx=i;
+  var chips=document.querySelectorAll('#voice-wheel .v-chip');
+  chips.forEach(function(c,idx){c.classList.toggle('on',idx===i);});
+  setText('voice-current',voices[i]||'');
+}
+function centerVoice(i,smooth){
+  var wheel=document.getElementById('voice-wheel');if(!wheel)return;
+  var chips=wheel.querySelectorAll('.v-chip');var c=chips[i];if(!c)return;
+  var target=c.offsetLeft-(wheel.clientWidth/2-c.offsetWidth/2);
+  wheel.scrollTo({left:target,behavior:smooth?'smooth':'auto'});
+}
+function pickVoice(i){ setVoiceIdx(i); centerVoice(i,true); }
+function onVoiceScroll(){
+  var wheel=document.getElementById('voice-wheel');if(!wheel)return;
+  var chips=wheel.querySelectorAll('.v-chip');
+  var center=wheel.scrollLeft+wheel.clientWidth/2;
+  var best=0,bd=1e9;
+  chips.forEach(function(c,i){var cc=c.offsetLeft+c.offsetWidth/2;var d=Math.abs(cc-center);if(d<bd){bd=d;best=i;}});
+  if(best!==voiceIdx){
+    voiceIdx=best;
+    chips.forEach(function(c,i){c.classList.toggle('on',i===best);});
+    setText('voice-current',voices[best]||'');
   }
-  return; // skip old wheel code
-
-  voiceIdx=((voiceIdx+dir)+voices.length)%voices.length;
-  const items=document.querySelectorAll('.v-wh-item');
-  items.forEach((el,i)=>{
-    el.classList.toggle('on',i===voiceIdx);
-  });
-  const wheel=document.getElementById('voice-wheel');
-  if(wheel) wheel.style.transform='translateX(-'+(voiceIdx*80)+'px)';
 }
 // Chapters
 function jumpChapterLegacy(el,time){
