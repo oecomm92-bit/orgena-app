@@ -272,6 +272,8 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .v-chip{flex-shrink:0;padding:5px 12px;border-radius:20px;border:1px solid rgba(200,150,62,.2);font-size:10px;color:rgba(247,241,232,.42);cursor:pointer;transition:all .15s}
 .v-chip.on{background:var(--gd);color:var(--br);border-color:var(--gd)}
 #voice-wheel::-webkit-scrollbar{display:none}
+.v-vitem{height:28px;line-height:28px;font-size:11px;color:rgba(247,241,232,.35);cursor:pointer;scroll-snap-align:center;transition:color .15s,font-size .15s;white-space:nowrap}
+.v-vitem.on{color:var(--gd);font-weight:600;font-size:12px}
 .v-wh-item{flex-shrink:0;padding:7px 16px;font-size:10px;letter-spacing:.07em;color:rgba(247,241,232,.4);cursor:pointer;transition:all .2s;border-right:1px solid rgba(200,150,62,.1)}
 .v-wh-item.on{background:rgba(200,150,62,.15);color:var(--gd);font-weight:500}
 .v-drum-item{height:26px;display:flex;align-items:center;padding:0 12px;font-size:11px;color:rgba(247,241,232,.35);cursor:pointer;transition:all .2s;white-space:nowrap}
@@ -609,10 +611,10 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <button class="fp" onclick="crFilter(this,'experiences')">Experiences</button>
   </div>
   <div data-cr="all books audiobooks">
-    <div class="bk-card"><div class="bk-inn"><div class="bk-cv"><div class="bk-cv-art" style="background:linear-gradient(155deg,#5C3D28,#2C1A0E,#7A4E35)"><div class="cv-n">I</div><div class="cv-t">Pecan Candy &amp; Huck-A-Bucks</div><div class="cv-a">Rhodesia Jackson</div></div></div><div class="bk-info"><div class="bk-series">The Candy Trilogy · Book I</div><div class="bk-name">Pecan Candy &amp; Huck-A-Bucks</div><div class="bk-desc">Two New Orleanians from different sides of the fence find love while making groceries on Orleans Avenue.</div><div class="bk-stars" onclick="O('ov-rev')"><span class="stars">★★★★★</span><span class="star-ct">248 reviews ›</span></div><div class="bk-acts"><button class="btn-tr" onclick="O('ov-trailer');setTrailer('Pecan Candy','Candy Trilogy · Book I')"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Trailer</button><button class="btn-buy" onclick="openPur('Pecan Candy &amp; Huck-A-Bucks','The Candy Trilogy · Book I','book')">Buy Now</button></div></div></div></div>
-    <div class="bk-card"><div class="bk-inn"><div class="bk-cv"><div class="bk-cv-art" style="background:linear-gradient(155deg,#3B2010,#7A4E35,#2C1A0E)"><div class="cv-n">II</div><div class="cv-t">Sweeter Than Candy</div><div class="cv-a">Rhodesia Jackson</div></div></div><div class="bk-info"><div class="bk-series">The Candy Trilogy · Book II</div><div class="bk-name">Sweeter Than Candy</div><div class="bk-desc">Peggy and Clint go deeper — a soulful journey learning the real requirements of Love, Home, and Family.</div><div class="bk-stars" onclick="O('ov-rev')"><span class="stars">★★★★★</span><span class="star-ct">193 reviews ›</span></div><div class="bk-acts"><button class="btn-tr" onclick="O('ov-trailer');setTrailer('Sweeter Than Candy','Candy Trilogy · Book II')"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Trailer</button><button class="btn-buy" onclick="openPur('Sweeter Than Candy','The Candy Trilogy · Book II','book')">Buy Now</button></div></div></div></div>
-    <div class="bk-card"><div class="bk-inn"><div class="bk-cv"><div class="bk-cv-art" style="background:linear-gradient(155deg,#2C1A0E,#4A2C18,#3B2010)"><div class="cv-n">III</div><div class="cv-t">Three Times Sweeter</div><div class="cv-a">Rhodesia Jackson</div></div></div><div class="bk-info"><div class="bk-series">The Candy Trilogy · Book III</div><div class="bk-name">Three Times Sweeter</div><div class="bk-desc">The trilogy's unforgettable conclusion — Love, Home &amp; Family tested and triumphant.</div><div class="bk-stars" onclick="O('ov-rev')"><span class="stars">★★★★★</span><span class="star-ct">167 reviews ›</span></div><div class="bk-acts"><button class="btn-tr" onclick="O('ov-trailer');setTrailer('Three Times Sweeter','Candy Trilogy · Book III')"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Trailer</button><button class="btn-buy" onclick="openPur('Three Times Sweeter','The Candy Trilogy · Book III','book')">Buy Now</button></div></div></div></div>
-    <div class="bk-card" style="background:#1A2410"><div class="bk-inn"><div class="bk-cv"><div class="bk-cv-art" style="background:linear-gradient(155deg,#2A3E18,#5E7A3E)"><div class="cv-n" style="color:rgba(138,175,92,.13)">IV</div><div class="cv-t">Smothered Okra &amp; Long-Grain Rice</div><div class="cv-a">Rhodesia Jackson</div></div></div><div class="bk-info"><div class="bk-series" style="color:#8AAF5C">Standalone</div><div class="bk-name">Smothered Okra &amp; Long-Grain Rice</div><div class="bk-desc">A standalone story rooted in New Orleans tradition, family recipes, and memories that feed the soul.</div><div class="bk-stars" onclick="O('ov-rev')"><span class="stars" style="color:#8AAF5C">★★★★☆</span><span class="star-ct">94 reviews ›</span></div><div class="bk-acts"><button class="btn-tr" style="border-color:rgba(138,175,92,.35);color:#8AAF5C" onclick="O('ov-trailer');setTrailer('Smothered Okra','Standalone')"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Trailer</button><button class="btn-buy" style="background:#5E7A3E" onclick="openPur('Smothered Okra &amp; Long-Grain Rice','Standalone','book')">Buy Now</button></div></div></div></div>
+    <div class="bk-card"><div class="bk-inn"><div class="bk-cv"><div class="bk-cv-art" data-book="Pecan Candy &amp; Huck-A-Bucks" style="background:linear-gradient(155deg,#5C3D28,#2C1A0E,#7A4E35)"><div class="cv-n">I</div><div class="cv-t">Pecan Candy &amp; Huck-A-Bucks</div><div class="cv-a">Rhodesia Jackson</div></div></div><div class="bk-info"><div class="bk-series">The Candy Trilogy · Book I</div><div class="bk-name">Pecan Candy &amp; Huck-A-Bucks</div><div class="bk-desc">Two New Orleanians from different sides of the fence find love while making groceries on Orleans Avenue.</div><div class="bk-stars" onclick="O('ov-rev')"><span class="stars">★★★★★</span><span class="star-ct">248 reviews ›</span></div><div class="bk-acts"><button class="btn-tr" onclick="O('ov-trailer');setTrailer('Pecan Candy','Candy Trilogy · Book I')"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Trailer</button><button class="btn-buy" onclick="openPur('Pecan Candy &amp; Huck-A-Bucks','The Candy Trilogy · Book I','book')">Buy Now</button></div></div></div></div>
+    <div class="bk-card"><div class="bk-inn"><div class="bk-cv"><div class="bk-cv-art" data-book="Sweeter Than Candy" style="background:linear-gradient(155deg,#3B2010,#7A4E35,#2C1A0E)"><div class="cv-n">II</div><div class="cv-t">Sweeter Than Candy</div><div class="cv-a">Rhodesia Jackson</div></div></div><div class="bk-info"><div class="bk-series">The Candy Trilogy · Book II</div><div class="bk-name">Sweeter Than Candy</div><div class="bk-desc">Peggy and Clint go deeper — a soulful journey learning the real requirements of Love, Home, and Family.</div><div class="bk-stars" onclick="O('ov-rev')"><span class="stars">★★★★★</span><span class="star-ct">193 reviews ›</span></div><div class="bk-acts"><button class="btn-tr" onclick="O('ov-trailer');setTrailer('Sweeter Than Candy','Candy Trilogy · Book II')"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Trailer</button><button class="btn-buy" onclick="openPur('Sweeter Than Candy','The Candy Trilogy · Book II','book')">Buy Now</button></div></div></div></div>
+    <div class="bk-card"><div class="bk-inn"><div class="bk-cv"><div class="bk-cv-art" data-book="Three Times Sweeter" style="background:linear-gradient(155deg,#2C1A0E,#4A2C18,#3B2010)"><div class="cv-n">III</div><div class="cv-t">Three Times Sweeter</div><div class="cv-a">Rhodesia Jackson</div></div></div><div class="bk-info"><div class="bk-series">The Candy Trilogy · Book III</div><div class="bk-name">Three Times Sweeter</div><div class="bk-desc">The trilogy's unforgettable conclusion — Love, Home &amp; Family tested and triumphant.</div><div class="bk-stars" onclick="O('ov-rev')"><span class="stars">★★★★★</span><span class="star-ct">167 reviews ›</span></div><div class="bk-acts"><button class="btn-tr" onclick="O('ov-trailer');setTrailer('Three Times Sweeter','Candy Trilogy · Book III')"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Trailer</button><button class="btn-buy" onclick="openPur('Three Times Sweeter','The Candy Trilogy · Book III','book')">Buy Now</button></div></div></div></div>
+    <div class="bk-card" style="background:#1A2410"><div class="bk-inn"><div class="bk-cv"><div class="bk-cv-art" data-book="Smothered Okra &amp; Long-Grain Rice" style="background:linear-gradient(155deg,#2A3E18,#5E7A3E)"><div class="cv-n" style="color:rgba(138,175,92,.13)">IV</div><div class="cv-t">Smothered Okra &amp; Long-Grain Rice</div><div class="cv-a">Rhodesia Jackson</div></div></div><div class="bk-info"><div class="bk-series" style="color:#8AAF5C">Standalone</div><div class="bk-name">Smothered Okra &amp; Long-Grain Rice</div><div class="bk-desc">A standalone story rooted in New Orleans tradition, family recipes, and memories that feed the soul.</div><div class="bk-stars" onclick="O('ov-rev')"><span class="stars" style="color:#8AAF5C">★★★★☆</span><span class="star-ct">94 reviews ›</span></div><div class="bk-acts"><button class="btn-tr" style="border-color:rgba(138,175,92,.35);color:#8AAF5C" onclick="O('ov-trailer');setTrailer('Smothered Okra','Standalone')"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Trailer</button><button class="btn-buy" style="background:#5E7A3E" onclick="openPur('Smothered Okra &amp; Long-Grain Rice','Standalone','book')">Buy Now</button></div></div></div></div>
   </div>
   <!-- Coming Soon Book Row -->
   <div data-cr="all books audiobooks">
@@ -788,10 +790,10 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
   </div>
   <div class="sp-lbl" data-sp="all audiobooks">Audiobooks — Purchase to Unlock</div>
   <div class="sp-grid" data-sp="all audiobooks">
-    <div class="sp-alb" onclick="openPlayer('Pecan Candy &amp; Huck-A-Bucks','Audiobook · Book I','linear-gradient(155deg,#5C3D28,#2C1A0E)',true)"><div class="sp-art" style="background:linear-gradient(155deg,#5C3D28,#2C1A0E)"><div class="sp-buy-tag">Purchase</div><div class="sp-pi"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><div class="sp-at"><div class="sp-atn">Pecan Candy</div><div class="sp-ats">Audiobook</div></div></div></div>
-    <div class="sp-alb" onclick="openPlayer('Sweeter Than Candy','Audiobook · Book II','linear-gradient(155deg,#3B2010,#7A4E35)',true)"><div class="sp-art" style="background:linear-gradient(155deg,#3B2010,#7A4E35)"><div class="sp-buy-tag">Purchase</div><div class="sp-pi"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><div class="sp-at"><div class="sp-atn">Sweeter Than Candy</div><div class="sp-ats">Audiobook</div></div></div></div>
-    <div class="sp-alb" onclick="openPlayer('Three Times Sweeter','Audiobook · Book III','linear-gradient(155deg,#2C1A0E,#4A2C18)',true)"><div class="sp-art" style="background:linear-gradient(155deg,#2C1A0E,#4A2C18)"><div class="sp-buy-tag">Purchase</div><div class="sp-pi"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><div class="sp-at"><div class="sp-atn">Three Times Sweeter</div><div class="sp-ats">Audiobook</div></div></div></div>
-    <div class="sp-alb" onclick="openPlayer('Smothered Okra','Audiobook · Standalone','linear-gradient(155deg,#2A3E18,#5E7A3E)',true)"><div class="sp-art" style="background:linear-gradient(155deg,#2A3E18,#5E7A3E)"><div class="sp-buy-tag">Purchase</div><div class="sp-pi"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><div class="sp-at"><div class="sp-atn">Smothered Okra</div><div class="sp-ats">Audiobook</div></div></div></div>
+    <div class="sp-alb" onclick="openPlayer('Pecan Candy &amp; Huck-A-Bucks','Audiobook · Book I','linear-gradient(155deg,#5C3D28,#2C1A0E)',true)"><div class="sp-art" data-book="Pecan Candy &amp; Huck-A-Bucks" style="background:linear-gradient(155deg,#5C3D28,#2C1A0E)"><div class="sp-buy-tag">Purchase</div><div class="sp-pi"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><div class="sp-at"><div class="sp-atn">Pecan Candy</div><div class="sp-ats">Audiobook</div></div></div></div>
+    <div class="sp-alb" onclick="openPlayer('Sweeter Than Candy','Audiobook · Book II','linear-gradient(155deg,#3B2010,#7A4E35)',true)"><div class="sp-art" data-book="Sweeter Than Candy" style="background:linear-gradient(155deg,#3B2010,#7A4E35)"><div class="sp-buy-tag">Purchase</div><div class="sp-pi"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><div class="sp-at"><div class="sp-atn">Sweeter Than Candy</div><div class="sp-ats">Audiobook</div></div></div></div>
+    <div class="sp-alb" onclick="openPlayer('Three Times Sweeter','Audiobook · Book III','linear-gradient(155deg,#2C1A0E,#4A2C18)',true)"><div class="sp-art" data-book="Three Times Sweeter" style="background:linear-gradient(155deg,#2C1A0E,#4A2C18)"><div class="sp-buy-tag">Purchase</div><div class="sp-pi"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><div class="sp-at"><div class="sp-atn">Three Times Sweeter</div><div class="sp-ats">Audiobook</div></div></div></div>
+    <div class="sp-alb" onclick="openPlayer('Smothered Okra','Audiobook · Standalone','linear-gradient(155deg,#2A3E18,#5E7A3E)',true)"><div class="sp-art" data-book="Smothered Okra" style="background:linear-gradient(155deg,#2A3E18,#5E7A3E)"><div class="sp-buy-tag">Purchase</div><div class="sp-pi"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><div class="sp-at"><div class="sp-atn">Smothered Okra</div><div class="sp-ats">Audiobook</div></div></div></div>
   </div>
   <div class="sp-lbl" data-sp="all films">Film Trailers — Free</div>
   <div class="sp-grid" data-sp="all films">
@@ -1325,6 +1327,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     </div>
     <div class="np-track" id="np-track">Pecan Candy &amp; Huck-A-Bucks</div>
     <div class="np-artist" id="np-artist">Audiobook · Book I</div>
+    <div id="np-chapter" style="display:none;margin-top:4px;font-size:10px;letter-spacing:.06em;color:rgba(200,150,62,.7)"></div>
   </div>
   <div id="np-voice-sec" style="padding:0 20px;margin-bottom:12px">
     <div onclick="toggleVoiceWheel()" style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:5px 0">
@@ -1332,18 +1335,18 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <span id="voice-current" style="font-size:11px;color:var(--gd);font-weight:500">Celebrity</span>
       <span id="voice-caret" style="margin-left:auto;color:rgba(200,150,62,.5);font-size:13px;line-height:1;transition:transform .2s">⌄</span>
     </div>
-    <div id="voice-wheel-wrap" style="display:none;position:relative;height:40px;margin-top:4px">
-      <div style="position:absolute;top:2px;bottom:2px;left:50%;width:78px;transform:translateX(-50%);border:1px solid rgba(200,150,62,.35);border-radius:16px;pointer-events:none;z-index:1"></div>
-      <div style="position:absolute;top:0;bottom:0;left:0;width:34px;background:linear-gradient(to right,#0D0804,transparent);z-index:2;pointer-events:none"></div>
-      <div style="position:absolute;top:0;bottom:0;right:0;width:34px;background:linear-gradient(to left,#0D0804,transparent);z-index:2;pointer-events:none"></div>
-      <div id="voice-wheel" onscroll="onVoiceScroll()" style="display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;height:100%;align-items:center;padding:0 calc(50% - 34px);scrollbar-width:none">
-        <div class="v-chip" onclick="pickVoice(0)" style="scroll-snap-align:center">Local (US)</div>
-        <div class="v-chip on" onclick="pickVoice(1)" style="scroll-snap-align:center">Celebrity</div>
-        <div class="v-chip" onclick="pickVoice(2)" style="scroll-snap-align:center">British</div>
-        <div class="v-chip" onclick="pickVoice(3)" style="scroll-snap-align:center">French</div>
-        <div class="v-chip" onclick="pickVoice(4)" style="scroll-snap-align:center">Spanish</div>
-        <div class="v-chip" onclick="pickVoice(5)" style="scroll-snap-align:center">Creole</div>
-        <div class="v-chip" onclick="pickVoice(6)" style="scroll-snap-align:center">Jamaican</div>
+    <div id="voice-wheel-wrap" style="display:none;position:relative;height:90px;width:172px;margin-top:6px">
+      <div style="position:absolute;left:0;right:0;top:31px;height:28px;border:1px solid rgba(200,150,62,.35);border-radius:8px;background:rgba(200,150,62,.06);pointer-events:none;z-index:1"></div>
+      <div style="position:absolute;left:0;right:0;top:0;height:30px;background:linear-gradient(to bottom,#0D0804,transparent);z-index:2;pointer-events:none"></div>
+      <div style="position:absolute;left:0;right:0;bottom:0;height:30px;background:linear-gradient(to top,#0D0804,transparent);z-index:2;pointer-events:none"></div>
+      <div id="voice-wheel" onscroll="onVoiceScroll()" style="height:100%;overflow-x:hidden;overflow-y:auto;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;padding:31px 0;scrollbar-width:none;text-align:center">
+        <div class="v-vitem" onclick="pickVoice(0)">Local (US)</div>
+        <div class="v-vitem on" onclick="pickVoice(1)">Celebrity</div>
+        <div class="v-vitem" onclick="pickVoice(2)">British</div>
+        <div class="v-vitem" onclick="pickVoice(3)">French</div>
+        <div class="v-vitem" onclick="pickVoice(4)">Spanish</div>
+        <div class="v-vitem" onclick="pickVoice(5)">Creole</div>
+        <div class="v-vitem" onclick="pickVoice(6)">Jamaican</div>
       </div>
     </div>
   </div>
@@ -1367,6 +1370,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <button class="np-ext" style="background:var(--br);color:var(--cr);border-color:var(--brm)" onclick="O('ov-share')">↗ Share</button>
   </div>
   <div class="np-buy-bar" id="np-buy-bar" style="display:none;margin:0 20px 6px;padding:12px;background:rgba(200,150,62,.08);border:1px solid rgba(200,150,62,.22);border-radius:5px;text-align:center;cursor:pointer;font-size:12px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--gd)" onclick="openAudiobookPur()">🛒 Purchase Full Audiobook</div>
+  <div id="np-owned-line" style="display:none;margin:0 20px 8px;text-align:center;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(200,150,62,.55)">✓ Audiobook is yours</div>
 </div>
 <!-- Settings -->
 <div class="ov" id="ov-settings" style="align-items:flex-end">
@@ -1966,14 +1970,23 @@ function switchChTab(tab){
   }
 }
 
+function setChapterIndicator(txt){
+  var el=document.getElementById('np-chapter'); if(!el) return;
+  if(txt){ el.textContent=txt; el.style.display='block'; }
+  else { el.textContent=''; el.style.display='none'; }
+}
 function jumpChapter(el){
   document.querySelectorAll('.ch-item').forEach(function(c){ c.classList.remove('on'); });
   el.classList.add('on');
-  var pct = parseInt(el.dataset.idx || '0') * 10;
-  var fill = document.getElementById('np-fill');
-  if(fill) fill.style.width = pct + '%';
-  var ts = document.querySelector('.np-times span');
-  if(ts) ts.textContent = el.dataset.time || '0:00';
+  // Move the playback position to the chapter start (integrates with the time model)
+  var parts=(el.dataset.time||'0:00').split(':').map(Number);
+  var sec=parts.length===3 ? parts[0]*3600+parts[1]*60+parts[2] : parts[0]*60+parts[1];
+  if(typeof plDur==='number' && plDur>0) sec=Math.min(sec,plDur);
+  plPos=sec;
+  if(typeof updatePlUI==='function') updatePlUI();
+  // Show which chapter is now playing (subtle line under the title)
+  var nm=el.querySelector('.ch-name');
+  setChapterIndicator(nm ? nm.textContent : '');
   C('ov-ch');
 }
 
@@ -2020,6 +2033,8 @@ function openAudiobookPur(){
   // Get current track name
   var track = document.getElementById('np-track');
   var name = track ? track.textContent.trim() : 'Audiobook';
+  // Remember this is an audiobook purchase so completePur can mark it owned (item #3)
+  window._pendingAudiobook = bookKey(name);
 
   // Populate the purchase overlay content
   var titleEl = document.getElementById('pur-title');
@@ -2428,6 +2443,7 @@ const amazonURLs={
 };
 const fmtData={book:[{n:'Paperback',p:'$14.99'},{n:'Hardcover',p:'$20.99'},{n:'Kindle / eBook',p:'$9.99'},{n:'Audiobook',p:'$9.99'}],audiobook:[{n:'Audio Download',p:'$18.99'}],merch:[{n:'Standard',p:''}],experience:[{n:'General Admission',p:'$120'},{n:'VIP Package',p:'$195'}]};
 function openPur(title,series,type){
+  window._pendingAudiobook=null; // generic book/merch purchase, not a Soul Player audiobook
   window.curPur={name:title,type:type||'book',price:0,fmt:'',size:'',color:''};
   setText('pur-title',title);setText('pur-series',series);
   const fmts=fmtData[type]||fmtData.book;
@@ -2451,6 +2467,12 @@ function completePur(m){
     var el=document.getElementById(id);
     if(el && el.classList.contains('show')){ el.classList.remove('show'); el.style.cssText=''; var h=el.querySelector('.hs'); if(h){h.classList.remove('up');h.style.transform='';} }
   });
+  // Mark a purchased audiobook as owned and refresh the player UI (item #3)
+  if(window._pendingAudiobook){
+    ownedAudiobooks[window._pendingAudiobook]=true;
+    window._pendingAudiobook=null;
+    if(typeof applyOwnedUI==='function') applyOwnedUI();
+  }
   var bg=document.getElementById('pur-done');
   if(bg){
     setText('pur-done-method', m);
@@ -2503,13 +2525,62 @@ function updatePlUI(){
   setText('np-cur',fmtTime(plPos));
   setText('np-rem','-'+fmtTime(plDur-plPos));
 }
+/* ── SINGLE SOURCE OF TRUTH for book cover art ──
+   Each book maps to one art entry used everywhere: the Creations covers,
+   the Soul Player audiobook squares, and the round player disc. Placeholders
+   use `grad`; drop a real image URL into `img` and every surface that reads
+   this map (all tagged with data-book, plus the disc) updates automatically. */
+const bookArt = {
+  'Pecan Candy & Huck-A-Bucks':   {grad:'linear-gradient(155deg,#5C3D28,#2C1A0E,#7A4E35)', num:'I',   img:''},
+  'Sweeter Than Candy':           {grad:'linear-gradient(155deg,#3B2010,#7A4E35,#2C1A0E)', num:'II',  img:''},
+  'Three Times Sweeter':          {grad:'linear-gradient(155deg,#2C1A0E,#4A2C18,#3B2010)', num:'III', img:''},
+  'Smothered Okra & Long-Grain Rice':{grad:'linear-gradient(155deg,#2A3E18,#5E7A3E)',      num:'IV',  img:''}
+};
+const bookAlias = {'Smothered Okra':'Smothered Okra & Long-Grain Rice','Pecan Candy':'Pecan Candy & Huck-A-Bucks'};
+function bookKey(name){name=(name||'').replace(/&amp;/g,'&').trim();return bookAlias[name]||name;}
+function getBookArt(name){return bookArt[bookKey(name)]||null;}
+// Paint any element tagged with data-book (Creations covers + Soul squares)
+function paintBookEl(el){
+  var a=getBookArt(el.getAttribute('data-book')); if(!a) return;
+  if(a.img){ el.style.backgroundImage='url("'+a.img+'")'; el.style.backgroundSize='cover'; el.style.backgroundPosition='center'; el.classList.add('has-cover'); }
+  else { el.style.background=a.grad; }
+}
+function paintAllBookArt(){ document.querySelectorAll('[data-book]').forEach(paintBookEl); }
+// OE fallback logo for the disc (non-book audio: podcasts / playlists)
+const OE_DISC_SVG='<svg width="58" height="54" viewBox="0 0 120 110" fill="none"><text x="2" y="76" font-family="serif" font-size="72" font-weight="900" fill="white" opacity=".65">O</text><text x="42" y="76" font-family="serif" font-size="72" font-weight="900" fill="white" opacity=".65">E</text><line x1="88" y1="8" x2="88" y2="88" stroke="white" stroke-width="1.8" opacity=".5"/><ellipse cx="100" cy="38" rx="5" ry="3.5" fill="white" opacity=".65"/><path d="M97 65 Q104 70 111 65" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none" opacity=".65"/></svg>';
+// Fill the round player disc with the book's cover (keeps circle + pulse animation)
+function applyDiscArt(name,fallbackBg){
+  var disc=document.getElementById('np-disc'); if(!disc) return;
+  var a=getBookArt(name);
+  if(a){
+    if(a.img){ disc.style.background='#2C1A0E'; disc.innerHTML='<img src="'+a.img+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">'; }
+    else { disc.style.background=a.grad; disc.innerHTML='<div style="font-family:\'Playfair Display\',serif;font-size:46px;font-weight:900;font-style:italic;color:rgba(255,255,255,.32);text-shadow:0 2px 12px rgba(0,0,0,.45)">'+a.num+'</div>'; }
+  } else {
+    if(fallbackBg) disc.style.background=fallbackBg;
+    disc.innerHTML=OE_DISC_SVG;
+  }
+}
+
+// Purchased audiobooks (item #3)
+const ownedAudiobooks={};
+window._curIsAudiobook=false;
+function applyOwnedUI(){
+  var name=(document.getElementById('np-track')||{}).textContent||'';
+  var owned=window._curIsAudiobook && ownedAudiobooks[bookKey(name)];
+  setDisp('np-buy-bar',(window._curIsAudiobook && !owned)?'block':'none');
+  setDisp('np-owned-line',owned?'block':'none');
+}
+
 function openPlayer(track,artist,bg,isPur){
   setText('np-track',track);setText('np-artist',artist);
-  var disc=document.getElementById('np-disc');if(disc)disc.style.background=bg;
-  var md=document.getElementById('miniDisc');if(md)md.style.background=bg;
+  var a=getBookArt(track);
+  applyDiscArt(track,bg);
+  var md=document.getElementById('miniDisc');if(md)md.style.background=a?a.grad:bg;
   setText('miniTrack',track.split('&')[0].trim());setText('miniArtist',artist);
-  setDisp('np-buy-bar',isPur?'block':'none');
+  window._curIsAudiobook=!!isPur;
+  applyOwnedUI();
   setDisp('np-voice-sec',isPur?'block':'none');
+  setChapterIndicator('');
   const chTitle=document.getElementById('ch-book-title');if(chTitle)chTitle.textContent=track;
   plIdx=plQueue.findIndex(function(q){return q.t===track;});
   plDur=plIdx>=0?plQueue[plIdx].dur:durFromArtist(artist);
@@ -2800,7 +2871,7 @@ function adjMerchQty(d){
 // Voice wheel
 let voiceIdx=1;
 const voices=['Local (US)','Celebrity','British','French','Spanish','Creole','Jamaican'];
-// Horizontal, finger-scrollable voice wheel
+// Vertical, finger-scrollable voice dial (small "Wheel of Fortune" pop-out)
 function toggleVoiceWheel(){
   var w=document.getElementById('voice-wheel-wrap');if(!w)return;
   var open=(w.style.display==='none'||!w.style.display);
@@ -2810,26 +2881,26 @@ function toggleVoiceWheel(){
 }
 function setVoiceIdx(i){
   voiceIdx=i;
-  var chips=document.querySelectorAll('#voice-wheel .v-chip');
-  chips.forEach(function(c,idx){c.classList.toggle('on',idx===i);});
+  var items=document.querySelectorAll('#voice-wheel .v-vitem');
+  items.forEach(function(c,idx){c.classList.toggle('on',idx===i);});
   setText('voice-current',voices[i]||'');
 }
 function centerVoice(i,smooth){
   var wheel=document.getElementById('voice-wheel');if(!wheel)return;
-  var chips=wheel.querySelectorAll('.v-chip');var c=chips[i];if(!c)return;
-  var target=c.offsetLeft-(wheel.clientWidth/2-c.offsetWidth/2);
-  wheel.scrollTo({left:target,behavior:smooth?'smooth':'auto'});
+  var items=wheel.querySelectorAll('.v-vitem');var c=items[i];if(!c)return;
+  var target=c.offsetTop + c.offsetHeight/2 - wheel.clientHeight/2;
+  wheel.scrollTo({top:target,behavior:smooth?'smooth':'auto'});
 }
 function pickVoice(i){ setVoiceIdx(i); centerVoice(i,true); }
 function onVoiceScroll(){
   var wheel=document.getElementById('voice-wheel');if(!wheel)return;
-  var chips=wheel.querySelectorAll('.v-chip');
-  var center=wheel.scrollLeft+wheel.clientWidth/2;
+  var items=wheel.querySelectorAll('.v-vitem');
+  var center=wheel.scrollTop+wheel.clientHeight/2;
   var best=0,bd=1e9;
-  chips.forEach(function(c,i){var cc=c.offsetLeft+c.offsetWidth/2;var d=Math.abs(cc-center);if(d<bd){bd=d;best=i;}});
+  items.forEach(function(c,i){var cc=c.offsetTop+c.offsetHeight/2;var d=Math.abs(cc-center);if(d<bd){bd=d;best=i;}});
   if(best!==voiceIdx){
     voiceIdx=best;
-    chips.forEach(function(c,i){c.classList.toggle('on',i===best);});
+    items.forEach(function(c,i){c.classList.toggle('on',i===best);});
     setText('voice-current',voices[best]||'');
   }
 }
@@ -3144,6 +3215,7 @@ window.addEventListener('load',()=>{
   initMerchScroll();
   initCommGrid();
   initBdayWheels();
+  paintAllBookArt();
 });
 
 // ── PRIVACY TOGGLES ──
