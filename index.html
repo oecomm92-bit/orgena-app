@@ -317,14 +317,14 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .cr-fbar::-webkit-scrollbar{display:none}
 .bk-card{background:#1C0F06;border-bottom:1px solid rgba(200,150,62,.09);padding:14px}
 .bk-inn{display:grid;grid-template-columns:80px 1fr;gap:13px;align-items:start}
-.bk-cv{width:80px;aspect-ratio:3/4;border-radius:4px;overflow:hidden;position:relative}
+.bk-cv{width:80px;aspect-ratio:3/4;border-radius:4px;overflow:hidden;position:relative;cursor:pointer}
 .bk-cv-art{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:7px}
 .cv-n{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:rgba(200,150,62,.13);position:absolute;top:4px;right:7px;line-height:1}
 .cv-t{font-family:'Playfair Display',serif;font-size:9px;font-weight:700;font-style:italic;color:var(--cr);line-height:1.2;position:relative;z-index:2}
 .cv-a{font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--gdl);margin-top:2px;position:relative;z-index:2;opacity:.75}
 .bk-info{display:flex;flex-direction:column}
 .bk-series{font-size:9px;letter-spacing:.11em;text-transform:uppercase;color:var(--gd);opacity:.7;margin-bottom:3px}
-.bk-name{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--cr);line-height:1.15;margin-bottom:4px}
+.bk-name{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--cr);line-height:1.15;margin-bottom:4px;cursor:pointer}
 .bk-desc{font-family:'Cormorant Garamond',serif;font-size:12px;font-style:italic;color:rgba(247,241,232,.5);line-height:1.45;margin-bottom:8px}
 .bk-stars{display:flex;align-items:center;gap:4px;margin-bottom:8px;cursor:pointer}
 .stars{color:var(--gd);font-size:11px}
@@ -525,14 +525,14 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <div class="ph">
       <div class="pav" style="background:linear-gradient(135deg,#C8963E,#4A2C18);font-size:9px" onclick="openStory('RJ','rhodesia_official','#1A0805','#4A2C18')"><svg width="18" height="16" viewBox="0 0 120 110" fill="none"><text x="2" y="76" font-family="serif" font-size="72" font-weight="900" fill="white" opacity=".9">O</text><text x="42" y="76" font-family="serif" font-size="72" font-weight="900" fill="white" opacity=".9">E</text><line x1="88" y1="8" x2="88" y2="88" stroke="white" stroke-width="1.8" opacity=".6"/><path d="M97 65 Q104 70 111 65" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none" opacity=".82"/></svg></div>
       <div class="pui" onclick="goPublicProfile('rhodesia_official')"><div class="pun" style="color:var(--gdl)">rhodesia_official ✦</div><div class="ptag">The Tradition Film · Coming Soon</div></div>
-      <span class="pdots" onclick="O('ov-share')">⋯</span>
+      <span class="pdots" onclick="openShare(this)">⋯</span>
     </div>
     <div class="pstill"><canvas id="cv-cs"></canvas><div class="pgrain"></div><div class="pscan"></div><div class="ptap" onclick="O('ov-trailer');setTrailer('The Tradition','Film · In Production')"><div class="pring"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div><span class="vlbl">Exclusive Preview</span></div>
     <div class="pcap"><span class="pcap-u" onclick="goPublicProfile('rhodesia_official')" style="cursor:pointer">Rhodesia</span>The Tradition is moving into a new phase. New Orleans has always been a character in every story I've written. 🎬</div>
     <div class="pa">
       <button class="pab" onclick="tLike(this)"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 9.8k</button>
       <button class="pab" onclick="O('ov-cmts')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="2"/></svg> 1.2k</button>
-      <button class="pab" onclick="O('ov-share')"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"/></svg></button>
+      <button class="pab" onclick="openShare(this)"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"/></svg></button>
       <button class="pab" onclick="openRepost()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>
       <button class="pab" onclick="tSave(this)"><svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg></button>
     </div>
@@ -543,7 +543,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <div class="pav char" style="background:linear-gradient(135deg,#5C3D28,#C8963E)" onclick="openStory('PJ','peggy_lavizzo_nola','#3B1A06','#7A4E35')">PJ</div>
       <div class="pui" onclick="goPublicProfile('peggy_lavizzo_nola')"><div class="pun char">peggy_lavizzo_nola</div><div class="ptag">Pecan Candy — Character Account</div><div class="cbadge">✦ Character Account</div></div>
       <button class="pfbtn" onclick="tFollow(this)">+ Follow</button>
-      <span class="pdots" onclick="O('ov-share')">⋯</span>
+      <span class="pdots" onclick="openShare(this)">⋯</span>
     </div>
     <div class="pstill"><canvas id="cv1"></canvas><div class="pgrain"></div><div class="pscan"></div></div>
     <div class="pcap"><span class="pcap-u" onclick="goPublicProfile('peggy_lavizzo_nola')" style="cursor:pointer">Peggy</span>Some days I wonder if love was ever supposed to be easy. Then I remember the first time he looked at me like I was the whole world. 🌿</div>
@@ -551,7 +551,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <div class="pa">
       <button class="pab" onclick="tLike(this)"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 5.1k</button>
       <button class="pab" onclick="O('ov-cmts')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="2"/></svg> 847</button>
-      <button class="pab" onclick="O('ov-share')"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"/></svg></button>
+      <button class="pab" onclick="openShare(this)"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"/></svg></button>
       <button class="pab" onclick="openRepost()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>
       <button class="pab" onclick="tSave(this)"><svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg></button>
     </div>
@@ -562,7 +562,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <div class="pav" style="background:linear-gradient(135deg,#C8963E,#7A4E35)" onclick="openStory('MK','marlena_k','#3B1205','#7A3010')">MK</div>
       <div class="pui" onclick="goPublicProfile('marlena_k')"><div class="pun" onclick="goPublicProfile('marlena_k')" style="cursor:pointer">marlena_k</div><div class="ptag">Pecan Candy — Fan Reflection</div></div>
       <button class="pfbtn" onclick="tFollow(this)">+ Follow</button>
-      <span class="pdots" onclick="O('ov-share')">⋯</span>
+      <span class="pdots" onclick="openShare(this)">⋯</span>
     </div>
     <div class="asmr" onclick="startASMR(this)" id="asmr1">
       <canvas id="asmr-cv1"></canvas><div class="pgrain"></div>
@@ -581,7 +581,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <div class="pa">
       <button class="pab" onclick="tLike(this)"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 2.4k</button>
       <button class="pab" onclick="O('ov-cmts')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="2"/></svg> 312</button>
-      <button class="pab" onclick="O('ov-share')"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"/></svg></button>
+      <button class="pab" onclick="openShare(this)"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"/></svg></button>
       <button class="pab" onclick="openRepost()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>
       <button class="pab" onclick="tSave(this)"><svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg></button>
     </div>
@@ -591,14 +591,14 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <div class="ph">
       <div class="pav" style="background:linear-gradient(135deg,#C8963E,#4A2C18);font-size:9px" onclick="openStory('RJ','rhodesia_official','#1A0805','#4A2C18')"><svg width="18" height="16" viewBox="0 0 120 110" fill="none"><text x="2" y="76" font-family="serif" font-size="72" font-weight="900" fill="white" opacity=".9">O</text><text x="42" y="76" font-family="serif" font-size="72" font-weight="900" fill="white" opacity=".9">E</text><line x1="88" y1="8" x2="88" y2="88" stroke="white" stroke-width="1.8" opacity=".6"/><path d="M97 65 Q104 70 111 65" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none" opacity=".82"/></svg></div>
       <div class="pui" onclick="goPublicProfile('rhodesia_official')"><div class="pun" style="color:var(--gdl)">rhodesia_official ✦</div><div class="ptag">Author · All Creations</div></div>
-      <span class="pdots" onclick="O('ov-share')">⋯</span>
+      <span class="pdots" onclick="openShare(this)">⋯</span>
     </div>
     <div class="pstill"><canvas id="cv3"></canvas><div class="pgrain"></div><div class="pscan"></div><div class="ptap" onclick="alert('Video plays full screen')"><div class="pring"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div><span class="vlbl">Author Exclusive</span><span class="vdur">2:14</span></div>
     <div class="pcap"><span class="pcap-u" onclick="goPublicProfile(this.textContent.trim())">Rhodesia</span>New Orleans has always been a character in every story I've written. Here's a look behind the pages. 📖</div>
     <div class="pa">
       <button class="pab" onclick="tLike(this)"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 9.8k</button>
       <button class="pab" onclick="O('ov-cmts')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="2"/></svg> 1.2k</button>
-      <button class="pab" onclick="O('ov-share')"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"/></svg></button>
+      <button class="pab" onclick="openShare(this)"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"/></svg></button>
       <button class="pab" onclick="openRepost()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>
       <button class="pab" onclick="tSave(this)"><svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg></button>
     </div>
@@ -614,16 +614,16 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <button class="fp" onclick="crFilter(this,'experiences')">Experiences</button>
   </div>
   <div data-cr="all books audiobooks">
-    <div class="bk-card"><div class="bk-inn"><div class="bk-cv"><div class="bk-cv-art" data-book="Pecan Candy &amp; Huck-A-Bucks" style="background:linear-gradient(155deg,#5C3D28,#2C1A0E,#7A4E35)"><div class="cv-n">I</div><div class="cv-t">Pecan Candy &amp; Huck-A-Bucks</div><div class="cv-a">Rhodesia Jackson</div></div></div><div class="bk-info"><div class="bk-series">The Candy Trilogy · Book I</div><div class="bk-name">Pecan Candy &amp; Huck-A-Bucks</div><div class="bk-desc">Two New Orleanians from different sides of the fence find love while making groceries on Orleans Avenue.</div><div class="bk-stars" onclick="O('ov-rev')"><span class="stars">★★★★★</span><span class="star-ct">248 reviews ›</span></div><div class="bk-acts"><button class="btn-tr" onclick="O('ov-trailer');setTrailer('Pecan Candy','Candy Trilogy · Book I')"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Trailer</button><button class="btn-buy" onclick="openPur('Pecan Candy &amp; Huck-A-Bucks','The Candy Trilogy · Book I','book')">Buy Now</button></div></div></div></div>
-    <div class="bk-card"><div class="bk-inn"><div class="bk-cv"><div class="bk-cv-art" data-book="Sweeter Than Candy" style="background:linear-gradient(155deg,#3B2010,#7A4E35,#2C1A0E)"><div class="cv-n">II</div><div class="cv-t">Sweeter Than Candy</div><div class="cv-a">Rhodesia Jackson</div></div></div><div class="bk-info"><div class="bk-series">The Candy Trilogy · Book II</div><div class="bk-name">Sweeter Than Candy</div><div class="bk-desc">Peggy and Clint go deeper — a soulful journey learning the real requirements of Love, Home, and Family.</div><div class="bk-stars" onclick="O('ov-rev')"><span class="stars">★★★★★</span><span class="star-ct">193 reviews ›</span></div><div class="bk-acts"><button class="btn-tr" onclick="O('ov-trailer');setTrailer('Sweeter Than Candy','Candy Trilogy · Book II')"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Trailer</button><button class="btn-buy" onclick="openPur('Sweeter Than Candy','The Candy Trilogy · Book II','book')">Buy Now</button></div></div></div></div>
-    <div class="bk-card"><div class="bk-inn"><div class="bk-cv"><div class="bk-cv-art" data-book="Three Times Sweeter" style="background:linear-gradient(155deg,#2C1A0E,#4A2C18,#3B2010)"><div class="cv-n">III</div><div class="cv-t">Three Times Sweeter</div><div class="cv-a">Rhodesia Jackson</div></div></div><div class="bk-info"><div class="bk-series">The Candy Trilogy · Book III</div><div class="bk-name">Three Times Sweeter</div><div class="bk-desc">The trilogy's unforgettable conclusion — Love, Home &amp; Family tested and triumphant.</div><div class="bk-stars" onclick="O('ov-rev')"><span class="stars">★★★★★</span><span class="star-ct">167 reviews ›</span></div><div class="bk-acts"><button class="btn-tr" onclick="O('ov-trailer');setTrailer('Three Times Sweeter','Candy Trilogy · Book III')"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Trailer</button><button class="btn-buy" onclick="openPur('Three Times Sweeter','The Candy Trilogy · Book III','book')">Buy Now</button></div></div></div></div>
-    <div class="bk-card" style="background:#1A2410"><div class="bk-inn"><div class="bk-cv"><div class="bk-cv-art" data-book="Smothered Okra &amp; Long-Grain Rice" style="background:linear-gradient(155deg,#2A3E18,#5E7A3E)"><div class="cv-n" style="color:rgba(138,175,92,.13)">IV</div><div class="cv-t">Smothered Okra &amp; Long-Grain Rice</div><div class="cv-a">Rhodesia Jackson</div></div></div><div class="bk-info"><div class="bk-series" style="color:#8AAF5C">Standalone</div><div class="bk-name">Smothered Okra &amp; Long-Grain Rice</div><div class="bk-desc">A standalone story rooted in New Orleans tradition, family recipes, and memories that feed the soul.</div><div class="bk-stars" onclick="O('ov-rev')"><span class="stars" style="color:#8AAF5C">★★★★☆</span><span class="star-ct">94 reviews ›</span></div><div class="bk-acts"><button class="btn-tr" style="border-color:rgba(138,175,92,.35);color:#8AAF5C" onclick="O('ov-trailer');setTrailer('Smothered Okra','Standalone')"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Trailer</button><button class="btn-buy" style="background:#5E7A3E" onclick="openPur('Smothered Okra &amp; Long-Grain Rice','Standalone','book')">Buy Now</button></div></div></div></div>
+    <div class="bk-card"><div class="bk-inn"><div class="bk-cv" onclick="showBookDescFromEl(this)"><div class="bk-cv-art" data-book="Pecan Candy &amp; Huck-A-Bucks" style="background:linear-gradient(155deg,#5C3D28,#2C1A0E,#7A4E35)"><div class="cv-n">I</div><div class="cv-t">Pecan Candy &amp; Huck-A-Bucks</div><div class="cv-a">Rhodesia Jackson</div></div></div><div class="bk-info"><div class="bk-series">The Candy Trilogy · Book I</div><div class="bk-name" onclick="showBookDescFromEl(this)">Pecan Candy &amp; Huck-A-Bucks</div><div class="bk-desc">Two New Orleanians from different sides of the fence find love while making groceries on Orleans Avenue.</div><div class="bk-stars" onclick="O('ov-rev')"><span class="stars">★★★★★</span><span class="star-ct">248 reviews ›</span></div><div class="bk-acts"><button class="btn-tr" onclick="O('ov-trailer');setTrailer('Pecan Candy','Candy Trilogy · Book I')"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Trailer</button><button class="btn-buy" onclick="openPur('Pecan Candy &amp; Huck-A-Bucks','The Candy Trilogy · Book I','book')">Buy Now</button></div></div></div></div>
+    <div class="bk-card"><div class="bk-inn"><div class="bk-cv" onclick="showBookDescFromEl(this)"><div class="bk-cv-art" data-book="Sweeter Than Candy" style="background:linear-gradient(155deg,#3B2010,#7A4E35,#2C1A0E)"><div class="cv-n">II</div><div class="cv-t">Sweeter Than Candy</div><div class="cv-a">Rhodesia Jackson</div></div></div><div class="bk-info"><div class="bk-series">The Candy Trilogy · Book II</div><div class="bk-name" onclick="showBookDescFromEl(this)">Sweeter Than Candy</div><div class="bk-desc">Peggy and Clint go deeper — a soulful journey learning the real requirements of Love, Home, and Family.</div><div class="bk-stars" onclick="O('ov-rev')"><span class="stars">★★★★★</span><span class="star-ct">193 reviews ›</span></div><div class="bk-acts"><button class="btn-tr" onclick="O('ov-trailer');setTrailer('Sweeter Than Candy','Candy Trilogy · Book II')"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Trailer</button><button class="btn-buy" onclick="openPur('Sweeter Than Candy','The Candy Trilogy · Book II','book')">Buy Now</button></div></div></div></div>
+    <div class="bk-card"><div class="bk-inn"><div class="bk-cv" onclick="showBookDescFromEl(this)"><div class="bk-cv-art" data-book="Three Times Sweeter" style="background:linear-gradient(155deg,#2C1A0E,#4A2C18,#3B2010)"><div class="cv-n">III</div><div class="cv-t">Three Times Sweeter</div><div class="cv-a">Rhodesia Jackson</div></div></div><div class="bk-info"><div class="bk-series">The Candy Trilogy · Book III</div><div class="bk-name" onclick="showBookDescFromEl(this)">Three Times Sweeter</div><div class="bk-desc">The trilogy's unforgettable conclusion — Love, Home &amp; Family tested and triumphant.</div><div class="bk-stars" onclick="O('ov-rev')"><span class="stars">★★★★★</span><span class="star-ct">167 reviews ›</span></div><div class="bk-acts"><button class="btn-tr" onclick="O('ov-trailer');setTrailer('Three Times Sweeter','Candy Trilogy · Book III')"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Trailer</button><button class="btn-buy" onclick="openPur('Three Times Sweeter','The Candy Trilogy · Book III','book')">Buy Now</button></div></div></div></div>
+    <div class="bk-card" style="background:#1A2410"><div class="bk-inn"><div class="bk-cv" onclick="showBookDescFromEl(this)"><div class="bk-cv-art" data-book="Smothered Okra &amp; Long-Grain Rice" style="background:linear-gradient(155deg,#2A3E18,#5E7A3E)"><div class="cv-n" style="color:rgba(138,175,92,.13)">IV</div><div class="cv-t">Smothered Okra &amp; Long-Grain Rice</div><div class="cv-a">Rhodesia Jackson</div></div></div><div class="bk-info"><div class="bk-series" style="color:#8AAF5C">Standalone</div><div class="bk-name" onclick="showBookDescFromEl(this)">Smothered Okra &amp; Long-Grain Rice</div><div class="bk-desc">A standalone story rooted in New Orleans tradition, family recipes, and memories that feed the soul.</div><div class="bk-stars" onclick="O('ov-rev')"><span class="stars" style="color:#8AAF5C">★★★★☆</span><span class="star-ct">94 reviews ›</span></div><div class="bk-acts"><button class="btn-tr" style="border-color:rgba(138,175,92,.35);color:#8AAF5C" onclick="O('ov-trailer');setTrailer('Smothered Okra','Standalone')"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Trailer</button><button class="btn-buy" style="background:#5E7A3E" onclick="openPur('Smothered Okra &amp; Long-Grain Rice','Standalone','book')">Buy Now</button></div></div></div></div>
   </div>
   <!-- Coming Soon Book Row -->
   <div data-cr="all books audiobooks">
     <div class="bk-card" style="background:linear-gradient(155deg,#0D1A1A,#0A1210);border-left:3px solid rgba(94,122,62,.5)">
       <div class="bk-inn">
-        <div class="bk-cv">
+        <div class="bk-cv" onclick="showBookDescFromEl(this)">
           <div class="bk-cv-art" style="background:linear-gradient(155deg,#0D1A1A,#1A2E1A)">
             <div class="cv-n" style="color:rgba(94,200,100,.1)">V</div>
             <div class="cv-t" style="color:rgba(247,241,232,.5)">Coming Soon</div>
@@ -632,7 +632,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
         </div>
         <div class="bk-info">
           <div class="bk-series" style="color:rgba(94,200,100,.7)">Coming Soon · New Title</div>
-          <div class="bk-name" style="color:rgba(247,241,232,.55)">Untitled · New Release</div>
+          <div class="bk-name" onclick="showBookDescFromEl(this)" style="color:rgba(247,241,232,.55)">Untitled · New Release</div>
           <div class="bk-desc">The next chapter in the Orgena universe. Details coming soon — be the first to know.</div>
           <div style="display:flex;align-items:center;gap:4px;margin-bottom:8px">
             <span style="font-size:11px;color:rgba(94,200,100,.6)">★★★★★</span>
@@ -732,7 +732,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <div class="exp-info">
         <div style="display:flex;align-items:baseline;justify-content:space-between">
           <div class="exp-name">An Evening with Rhodesia</div>
-          <div style="font-size:11px;color:var(--cr);white-space:nowrap;margin-left:8px">May 18, 2025</div>
+          <div style="font-size:11px;color:var(--cr);white-space:nowrap;margin-left:8px">May 18, 2027</div>
         </div>
         <div class="exp-cat">Live Reading &amp; Q&amp;A · Intimate</div>
         <div id="exp-countdown-1" style="font-size:10px;color:var(--gd);margin-bottom:5px;letter-spacing:.06em"></div>
@@ -750,7 +750,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <div class="exp-info">
         <div style="display:flex;align-items:baseline;justify-content:space-between">
           <div class="exp-name">OE Experience Pass</div>
-          <div style="font-size:11px;color:var(--cr);white-space:nowrap;margin-left:8px">Jun 7, 2025</div>
+          <div style="font-size:11px;color:var(--cr);white-space:nowrap;margin-left:8px">Jun 7, 2027</div>
         </div>
         <div class="exp-cat">VIP Access · Full Day</div>
         <div id="exp-countdown-2" style="font-size:10px;color:var(--gd);margin-bottom:5px;letter-spacing:.06em"></div>
@@ -1156,12 +1156,12 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
   <div class="hs" id="share-hs">
     <div class="sh"></div><div class="sh-t">Share</div>
     <div class="share-grid">
-      <div class="sh-opt" onclick="alert('Link copied!')"><div class="sh-ico">🔗</div><div class="sh-lbl">Copy Link</div></div>
-      <div class="sh-opt" onclick="alert('Opening Messages...')"><div class="sh-ico">💬</div><div class="sh-lbl">Text</div></div>
-      <div class="sh-opt" onclick="window.open('https://www.instagram.com/rhodesiajackson/','_blank')"><div class="sh-ico" style="background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);border:none;font-size:0;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></div><div class="sh-lbl">Instagram</div></div>
-      <div class="sh-opt" onclick="window.open('https://www.tiktok.com','_blank')"><div class="sh-ico" style="background:#000;border-color:#333;font-size:0;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.36 6.36 0 00-.79-.05A6.34 6.34 0 003.15 15.3a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.22 8.22 0 004.8 1.54V6.78a4.85 4.85 0 01-1.03-.09z"/></svg></div><div class="sh-lbl">TikTok</div></div>
-      <div class="sh-opt" onclick="window.open('https://www.facebook.com','_blank')"><div class="sh-ico" style="background:#1877F2;border:none;font-size:0;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></div><div class="sh-lbl">Facebook</div></div>
-      <div class="sh-opt" onclick="window.open('https://www.reddit.com','_blank')"><div class="sh-ico" style="background:#FF4500;border:none;font-size:0;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg></div><div class="sh-lbl">Reddit</div></div>
+      <div class="sh-opt" onclick="shareTo('copy')"><div class="sh-ico">🔗</div><div class="sh-lbl">Copy Link</div></div>
+      <div class="sh-opt" onclick="shareTo('text')"><div class="sh-ico">💬</div><div class="sh-lbl">Text</div></div>
+      <div class="sh-opt" onclick="shareTo('instagram')"><div class="sh-ico" style="background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);border:none;font-size:0;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></div><div class="sh-lbl">Instagram</div></div>
+      <div class="sh-opt" onclick="shareTo('tiktok')"><div class="sh-ico" style="background:#000;border-color:#333;font-size:0;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.36 6.36 0 00-.79-.05A6.34 6.34 0 003.15 15.3a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.22 8.22 0 004.8 1.54V6.78a4.85 4.85 0 01-1.03-.09z"/></svg></div><div class="sh-lbl">TikTok</div></div>
+      <div class="sh-opt" onclick="shareTo('facebook')"><div class="sh-ico" style="background:#1877F2;border:none;font-size:0;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></div><div class="sh-lbl">Facebook</div></div>
+      <div class="sh-opt" onclick="shareTo('reddit')"><div class="sh-ico" style="background:#FF4500;border:none;font-size:0;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg></div><div class="sh-lbl">Reddit</div></div>
     </div>
   </div>
 </div>
@@ -1242,11 +1242,19 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
   <div class="ov-bg" onclick="C('ov-rev')"></div>
   <div class="hs" id="rev-hs">
     <div class="sh"></div><div class="sh-t">Reader Reviews ★★★★★</div>
+    <div style="display:flex;gap:6px;padding:8px 16px 6px;overflow-x:auto;scrollbar-width:none">
+      <button class="rev-filter on" onclick="filterReviews(this,'all')" style="flex-shrink:0;padding:5px 13px;border-radius:20px;border:1px solid var(--gd);background:var(--gd);color:var(--br);font-size:10px;letter-spacing:.05em;cursor:pointer">All</button>
+      <button class="rev-filter" onclick="filterReviews(this,'5')" style="flex-shrink:0;padding:5px 13px;border-radius:20px;border:1px solid rgba(200,150,62,.25);background:transparent;color:rgba(247,241,232,.5);font-size:10px;letter-spacing:.05em;cursor:pointer">5 ★</button>
+      <button class="rev-filter" onclick="filterReviews(this,'4')" style="flex-shrink:0;padding:5px 13px;border-radius:20px;border:1px solid rgba(200,150,62,.25);background:transparent;color:rgba(247,241,232,.5);font-size:10px;letter-spacing:.05em;cursor:pointer">4 ★</button>
+      <button class="rev-filter" onclick="filterReviews(this,'3')" style="flex-shrink:0;padding:5px 13px;border-radius:20px;border:1px solid rgba(200,150,62,.25);background:transparent;color:rgba(247,241,232,.5);font-size:10px;letter-spacing:.05em;cursor:pointer">3 ★</button>
+    </div>
     <div class="rev-list">
-      <div class="rev-item"><div class="rev-top"><span class="rev-un">marlena_k</span><span class="rev-stars">★★★★★</span></div><div class="rev-txt">"The grocery store scene changed how I see Black love in literature. A masterpiece."</div><div class="rev-date">New Orleans, LA · 2 weeks ago</div></div>
-      <div class="rev-item"><div class="rev-top"><span class="rev-un">n_boudreaux</span><span class="rev-stars">★★★★★</span></div><div class="rev-txt">"I gave this to my entire family. Rhodesia captured something real about our city and our love."</div><div class="rev-date">Baton Rouge, LA · 1 month ago</div></div>
-      <div class="rev-item"><div class="rev-top"><span class="rev-un">soulful_mia</span><span class="rev-stars">★★★★★</span></div><div class="rev-txt">"I've read it four times. Each time I find something new. The dialogue is like music."</div><div class="rev-date">Atlanta, GA · 3 weeks ago</div></div>
-      <div class="rev-item"><div class="rev-top"><span class="rev-un">jazz_nola_88</span><span class="rev-stars">★★★★★</span></div><div class="rev-txt">"This is the New Orleans novel. Full stop. Every sentence tastes like the city."</div><div class="rev-date">New Orleans, LA · 2 months ago</div></div>
+      <div class="rev-item" data-stars="5"><div class="rev-top"><span class="rev-un">marlena_k</span><span class="rev-stars">★★★★★</span></div><div class="rev-txt">"The grocery store scene changed how I see Black love in literature. A masterpiece."</div><div class="rev-date">New Orleans, LA · 2 weeks ago</div></div>
+      <div class="rev-item" data-stars="5"><div class="rev-top"><span class="rev-un">n_boudreaux</span><span class="rev-stars">★★★★★</span></div><div class="rev-txt">"I gave this to my entire family. Rhodesia captured something real about our city and our love."</div><div class="rev-date">Baton Rouge, LA · 1 month ago</div></div>
+      <div class="rev-item" data-stars="5"><div class="rev-top"><span class="rev-un">soulful_mia</span><span class="rev-stars">★★★★★</span></div><div class="rev-txt">"I've read it four times. Each time I find something new. The dialogue is like music."</div><div class="rev-date">Atlanta, GA · 3 weeks ago</div></div>
+      <div class="rev-item" data-stars="4"><div class="rev-top"><span class="rev-un">creole_reads</span><span class="rev-stars">★★★★☆</span></div><div class="rev-txt">"Beautiful writing. A couple of chapters dragged, but the ending completely won me over."</div><div class="rev-date">Lafayette, LA · 1 week ago</div></div>
+      <div class="rev-item" data-stars="3"><div class="rev-top"><span class="rev-un">bayou_booklover</span><span class="rev-stars">★★★☆☆</span></div><div class="rev-txt">"A good story — I just wanted a little more from the side characters."</div><div class="rev-date">Houston, TX · 4 days ago</div></div>
+      <div class="rev-item" data-stars="5"><div class="rev-top"><span class="rev-un">jazz_nola_88</span><span class="rev-stars">★★★★★</span></div><div class="rev-txt">"This is the New Orleans novel. Full stop. Every sentence tastes like the city."</div><div class="rev-date">New Orleans, LA · 2 months ago</div></div>
     </div>
   </div>
 </div>
@@ -1377,7 +1385,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
   <div class="np-extras">
     <button class="np-ext" style="background:var(--br);color:var(--cr);border-color:var(--brm)" onclick="addBookmarkAndOpen()"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>Bookmark</button>
     <button class="np-ext" style="background:var(--br);color:var(--cr);border-color:var(--brm)" onclick="openChaptersPanel()">≡ Chapters</button>
-    <button class="np-ext" style="background:var(--br);color:var(--cr);border-color:var(--brm)" onclick="O('ov-share')">↗ Share</button>
+    <button class="np-ext" style="background:var(--br);color:var(--cr);border-color:var(--brm)" onclick="openShare(this)">↗ Share</button>
   </div>
   <div class="np-buy-bar" id="np-buy-bar" style="display:none;margin:0 20px 6px;padding:12px;background:rgba(200,150,62,.08);border:1px solid rgba(200,150,62,.22);border-radius:5px;text-align:center;cursor:pointer;font-size:12px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--gd)" onclick="openAudiobookPur()">🛒 Purchase Full Audiobook</div>
   <div id="np-owned-line" style="display:none;margin:0 20px 8px;text-align:center;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(200,150,62,.55)">✓ Audiobook is yours</div>
@@ -1898,22 +1906,47 @@ function initEventsMap(){
     ctx.fillStyle = '#0A0602';
     ctx.fillRect(0,0,W,H);
 
-    // Simple USA outline using bezier approximation
-    ctx.strokeStyle = 'rgba(200,150,62,.15)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    // Rough USA shape
-    var pts = [
-      [.08,.30],[.12,.20],[.22,.18],[.35,.20],[.42,.18],[.55,.18],[.65,.20],[.72,.22],[.80,.20],
-      [.88,.22],[.92,.28],[.94,.35],[.92,.42],[.88,.50],[.85,.55],[.82,.60],[.78,.65],[.72,.70],
-      [.65,.72],[.58,.75],[.50,.76],[.44,.75],[.38,.72],[.32,.70],[.25,.68],[.20,.65],[.15,.60],
-      [.10,.55],[.07,.48],[.06,.40],[.08,.30]
+    // Continental US silhouette (normalized points) aligned to the city pins
+    var usa = [
+      [.09,.18],[.10,.30],[.12,.38],[.15,.47],[.165,.53],[.16,.56],
+      [.22,.575],[.28,.585],[.34,.60],[.37,.66],[.41,.71],[.45,.70],
+      [.485,.71],[.52,.70],[.555,.68],[.585,.665],[.61,.665],
+      [.63,.69],[.655,.77],[.645,.70],[.634,.64],[.66,.595],[.70,.545],
+      [.735,.475],[.762,.42],[.786,.37],[.80,.33],[.815,.285],[.83,.235],
+      [.812,.215],[.78,.24],[.745,.25],[.715,.225],[.685,.26],[.655,.225],
+      [.628,.255],[.60,.22],[.55,.20],[.48,.19],[.40,.185],[.32,.18],[.20,.18],[.09,.18]
     ];
-    ctx.moveTo(pts[0][0]*W, pts[0][1]*H);
-    for(var p=1;p<pts.length;p++) ctx.lineTo(pts[p][0]*W, pts[p][1]*H);
-    ctx.closePath();
-    ctx.fillStyle = 'rgba(200,150,62,.04)';
-    ctx.fill();
+    function usPath(){
+      ctx.beginPath();
+      ctx.moveTo(usa[0][0]*W, usa[0][1]*H);
+      for(var i=1;i<usa.length;i++){ ctx.lineTo(usa[i][0]*W, usa[i][1]*H); }
+      ctx.closePath();
+    }
+    // Land fill
+    usPath();
+    var lg = ctx.createLinearGradient(0,0,0,H);
+    lg.addColorStop(0,'rgba(200,150,62,.08)');
+    lg.addColorStop(1,'rgba(200,150,62,.03)');
+    ctx.fillStyle = lg; ctx.fill();
+    // Interior state outlines, clipped to the country shape
+    ctx.save();
+    usPath(); ctx.clip();
+    ctx.strokeStyle = 'rgba(200,150,62,.16)';
+    ctx.lineWidth = 1;
+    [.19,.25,.31,.37,.43,.49,.55,.61,.67,.73].forEach(function(x){
+      ctx.beginPath(); ctx.moveTo(x*W,.10*H); ctx.lineTo((x+(x>.5?-.02:.02))*W,.80*H); ctx.stroke();
+    });
+    [.30,.40,.50,.60].forEach(function(y){
+      ctx.beginPath(); ctx.moveTo(.05*W,y*H); ctx.lineTo(.95*W,(y+.01)*H); ctx.stroke();
+    });
+    // Two gentle diagonals so it reads as borders, not graph paper
+    ctx.beginPath(); ctx.moveTo(.52*W,.20*H); ctx.lineTo(.47*W,.72*H); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(.60*W,.62*H); ctx.lineTo(.72*W,.30*H); ctx.stroke();
+    ctx.restore();
+    // Crisp country border on top
+    usPath();
+    ctx.strokeStyle = 'rgba(200,150,62,.42)';
+    ctx.lineWidth = 1.4;
     ctx.stroke();
 
     // Draw glowing dots
@@ -3133,6 +3166,73 @@ function selTicketType(btn,type,price){
   currentTicketType=type; currentExpPrice=price;
   setText('ticket-total','$'+(ticketCount*price));
 }
+// Ticket tier description popup (opens above the tickets sheet)
+function showTicketDesc(name){
+  setText('ticket-desc-name', name);
+  setText('ticket-desc-body','[placeholder/add ticket description]');
+  O('ov-ticket-desc');
+}
+// Book description popup — cover pulled from the shared bookArt source (Batch 1B)
+function showBookDesc(name){
+  var art = (typeof getBookArt==='function') ? getBookArt(name) : null;
+  var cover=document.getElementById('book-desc-cover');
+  var inner=document.getElementById('book-desc-cover-inner');
+  if(cover){
+    if(art && art.img){ cover.style.backgroundImage='url("'+art.img+'")'; cover.style.background='#2C1A0E url("'+art.img+'") center/cover'; if(inner) inner.innerHTML=''; }
+    else if(art){ cover.style.backgroundImage='none'; cover.style.background=art.grad; if(inner) inner.innerHTML='<div style="font-family:\'Playfair Display\',serif;font-size:44px;font-weight:900;font-style:italic;color:rgba(255,255,255,.28)">'+art.num+'</div>'; }
+    else { cover.style.backgroundImage='none'; cover.style.background='linear-gradient(155deg,#5C3D28,#2C1A0E)'; if(inner) inner.innerHTML=''; }
+  }
+  setText('book-desc-name', name);
+  setText('book-desc-body','[placeholder/add book description]');
+  O('ov-book-desc');
+}
+// Resolve the book from a tapped cover/title element, then open its description.
+function showBookDescFromEl(el){
+  var card = el.closest('.bk-card'); if(!card) return;
+  var da = card.querySelector('[data-book]');
+  var nameEl = card.querySelector('.bk-name');
+  var name = (da && da.getAttribute('data-book')) || (nameEl ? nameEl.textContent : '');
+  showBookDesc((name||'').replace(/&amp;/g,'&').trim());
+}
+// Filter reviews by star rating
+function filterReviews(btn,stars){
+  document.querySelectorAll('.rev-filter').forEach(function(b){ b.classList.remove('on'); b.style.background='transparent'; b.style.color='rgba(247,241,232,.5)'; b.style.borderColor='rgba(200,150,62,.25)'; });
+  btn.classList.add('on'); btn.style.background='var(--gd)'; btn.style.color='var(--br)'; btn.style.borderColor='var(--gd)';
+  document.querySelectorAll('#ov-rev .rev-item').forEach(function(it){
+    it.style.display=(stars==='all'||it.dataset.stars===stars)?'block':'none';
+  });
+}
+// ── SHARE: capture the tapped post's preview, then open the target pre-filled ──
+function openShare(el){
+  var txt='';
+  if(el){
+    var post=el.closest('.post,.cs-post');
+    var cap=post?post.querySelector('.pcap,.asmr-q'):null;
+    if(cap) txt=cap.textContent.trim();
+  }
+  window._shareText=txt;
+  O('ov-share');
+}
+function copyShareText(t){ try{ if(navigator.clipboard) navigator.clipboard.writeText(t); }catch(e){} }
+function shareTo(platform){
+  var text=(window._shareText && window._shareText.length) ? window._shareText : 'Where our stories become real. ✦ Orgena';
+  var full=text+' — via Orgena';
+  var link='https://oecomm92-bit.github.io/orgena-app/';
+  var url='';
+  if(platform==='reddit'){ url='https://www.reddit.com/submit?title='+encodeURIComponent(text.substring(0,100))+'&text='+encodeURIComponent(full+'\n\n'+link); }
+  else if(platform==='facebook'){ url='https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(link)+'&quote='+encodeURIComponent(full); }
+  else if(platform==='twitter'){ url='https://twitter.com/intent/tweet?text='+encodeURIComponent(full)+'&url='+encodeURIComponent(link); }
+  else if(platform==='text'){ url='sms:?&body='+encodeURIComponent(full+' '+link); }
+  else if(platform==='copy'){ copyShareText(link); if(typeof showToast==='function') showToast('✓ Link copied'); C('ov-share'); return; }
+  else if(platform==='instagram' || platform==='tiktok'){
+    // These have no web compose with pre-fill — copy the caption so it's one paste away.
+    copyShareText(full);
+    if(typeof showToast==='function') showToast('✓ Caption copied — paste into your '+(platform==='instagram'?'Instagram':'TikTok')+' post');
+    url=(platform==='instagram')?'https://www.instagram.com/rhodesiajackson/':'https://www.tiktok.com';
+  }
+  if(url) window.open(url,'_blank');
+  C('ov-share');
+}
 function addBookmark(){
   const track=document.getElementById('np-track').textContent;
   const time=document.getElementById('np-times')?document.querySelector('.np-times span').textContent:'--:--';
@@ -3204,7 +3304,7 @@ function markRead(item){
   if(time&&!time.textContent.includes('read'))time.textContent+=' · read';
 }
 function initCountdowns(){
-  const dates=[{id:'exp-countdown-1',date:'2025-05-18'},{id:'exp-countdown-2',date:'2025-06-07'}];
+  const dates=[{id:'exp-countdown-1',date:'2027-05-18'},{id:'exp-countdown-2',date:'2027-06-07'}];
   dates.forEach(d=>{
     const el=document.getElementById(d.id);if(!el)return;
     const diff=Math.ceil((new Date(d.date)-new Date())/(1000*60*60*24));
@@ -3297,6 +3397,9 @@ function goPublicProfile(name){
     var hd=document.querySelector('#s-profile .pr-handle');
     if(nm) nm.textContent=name.replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
     if(hd) hd.textContent='@'+name;
+    // Show the viewed user's own avatar, not the logged-in user's "Y".
+    var av=document.querySelector('#s-profile .pr-av');
+    if(av){ av.textContent=userInitials(name); var c=userStoryColors(name); av.style.background='linear-gradient(135deg,'+c[0]+','+c[1]+')'; }
   },120);
 }
 // Reset the profile screen back to the logged-in user's own profile.
@@ -3308,6 +3411,8 @@ function showMyProfile(){
   var hd=document.querySelector('#s-profile .pr-handle');
   if(nm) nm.textContent='Your Name';
   if(hd) hd.textContent='@your_handle';
+  var av=document.querySelector('#s-profile .pr-av');
+  if(av){ av.textContent='Y'; av.style.background=''; }
 }
 // Message button on another user's profile: jump straight into a draft to THEM.
 function messageCurrentProfile(){
@@ -3511,7 +3616,7 @@ const postTemplates = [
       <div class="pav char" style="background:linear-gradient(135deg,#4A2C18,#C8963E)" onclick="openStory('CJ','clint_johnston_nola','#2C1A0E','#5C3D28')">CJ</div>
       <div class="pui"><div class="pun char">clint_johnston_nola</div><div class="ptag">Pecan Candy — Character Account</div><div class="cbadge">✦ Character Account</div></div>
       <button class="pfbtn" onclick="tFollow(this)">+ Follow</button>
-      <span class="pdots" onclick="O('ov-share')">⋯</span>
+      <span class="pdots" onclick="openShare(this)">⋯</span>
     </div>
     <div class="asmr" onclick="startASMR(this)">
       <canvas class="inf-asmr" style="position:absolute;inset:0;width:100%;height:100%"></canvas><div class="pgrain"></div>
@@ -3524,7 +3629,7 @@ const postTemplates = [
     <div class="pa">
       <button class="pab" onclick="tLike(this)"><svg viewBox="0 0 24 24" width="17" height="17"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg> 4.3k</button>
       <button class="pab" onclick="O('ov-cmts')"><svg viewBox="0 0 24 24" width="17" height="17"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="2"/></svg> 621</button>
-      <button class="pab" onclick="O('ov-share')"><svg viewBox="0 0 24 24" width="17" height="17"><circle cx="18" cy="5" r="3" fill="currentColor"/><circle cx="6" cy="12" r="3" fill="currentColor"/><circle cx="18" cy="19" r="3" fill="currentColor"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"/></svg></button>
+      <button class="pab" onclick="openShare(this)"><svg viewBox="0 0 24 24" width="17" height="17"><circle cx="18" cy="5" r="3" fill="currentColor"/><circle cx="6" cy="12" r="3" fill="currentColor"/><circle cx="18" cy="19" r="3" fill="currentColor"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"/></svg></button>
       <button class="pab" onclick="openRepost()"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>
       <button class="pab" onclick="tSave(this)"><svg viewBox="0 0 24 24" width="17" height="17"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z" fill="currentColor"/></svg></button>
     </div></div>`,
@@ -3535,7 +3640,7 @@ const postTemplates = [
       <div class="pav" style="background:linear-gradient(135deg,#5C3D28,#7A4E35)" onclick="openStory('SB','sweet_boudreaux','#3B2010','#5C3D28')">SB</div>
       <div class="pui"><div class="pun" onclick="goPublicProfile('sweet_boudreaux')" style="cursor:pointer">sweet_boudreaux</div><div class="ptag">Three Times Sweeter — Fan Reflection</div></div>
       <button class="pfbtn" onclick="tFollow(this)">+ Follow</button>
-      <span class="pdots" onclick="O('ov-share')">⋯</span>
+      <span class="pdots" onclick="openShare(this)">⋯</span>
     </div>
     <div class="asmr" onclick="startASMR(this)">
       <canvas class="inf-asmr" style="position:absolute;inset:0;width:100%;height:100%"></canvas><div class="pgrain"></div>
@@ -3548,7 +3653,7 @@ const postTemplates = [
     <div class="pa">
       <button class="pab" onclick="tLike(this)"><svg viewBox="0 0 24 24" width="17" height="17"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg> 1.8k</button>
       <button class="pab" onclick="O('ov-cmts')"><svg viewBox="0 0 24 24" width="17" height="17"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="2"/></svg> 203</button>
-      <button class="pab" onclick="O('ov-share')"><svg viewBox="0 0 24 24" width="17" height="17"><circle cx="18" cy="5" r="3" fill="currentColor"/><circle cx="6" cy="12" r="3" fill="currentColor"/><circle cx="18" cy="19" r="3" fill="currentColor"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"/></svg></button>
+      <button class="pab" onclick="openShare(this)"><svg viewBox="0 0 24 24" width="17" height="17"><circle cx="18" cy="5" r="3" fill="currentColor"/><circle cx="6" cy="12" r="3" fill="currentColor"/><circle cx="18" cy="19" r="3" fill="currentColor"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"/></svg></button>
       <button class="pab" onclick="tSave(this)"><svg viewBox="0 0 24 24" width="17" height="17"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z" fill="currentColor"/></svg></button>
     </div></div>`,
 
@@ -3569,7 +3674,7 @@ const postTemplates = [
     </div>
     <div class="pa">
       <button class="pab" onclick="tLike(this)"><svg viewBox="0 0 24 24" width="17" height="17"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg> 3.2k</button>
-      <button class="pab" onclick="O('ov-share')"><svg viewBox="0 0 24 24" width="17" height="17"><circle cx="18" cy="5" r="3" fill="currentColor"/><circle cx="6" cy="12" r="3" fill="currentColor"/><circle cx="18" cy="19" r="3" fill="currentColor"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"/></svg></button>
+      <button class="pab" onclick="openShare(this)"><svg viewBox="0 0 24 24" width="17" height="17"><circle cx="18" cy="5" r="3" fill="currentColor"/><circle cx="6" cy="12" r="3" fill="currentColor"/><circle cx="18" cy="19" r="3" fill="currentColor"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"/></svg></button>
     </div></div>`,
 
   ()=>`<div class="post" data-cat="all creators" style="animation:fadeIn .4s ease">
@@ -3587,7 +3692,7 @@ const postTemplates = [
     </div>
     <div class="pa">
       <button class="pab" onclick="tLike(this)"><svg viewBox="0 0 24 24" width="17" height="17"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg> 890</button>
-      <button class="pab" onclick="O('ov-share')"><svg viewBox="0 0 24 24" width="17" height="17"><circle cx="18" cy="5" r="3" fill="currentColor"/><circle cx="6" cy="12" r="3" fill="currentColor"/><circle cx="18" cy="19" r="3" fill="currentColor"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"/></svg></button>
+      <button class="pab" onclick="openShare(this)"><svg viewBox="0 0 24 24" width="17" height="17"><circle cx="18" cy="5" r="3" fill="currentColor"/><circle cx="6" cy="12" r="3" fill="currentColor"/><circle cx="18" cy="19" r="3" fill="currentColor"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"/></svg></button>
       <button class="pab" onclick="T('creations');setTimeout(()=>crFilter(document.querySelector('.cr-fbar .fp:nth-child(3)'),'merch'),200)" style="margin-left:auto;color:var(--gd);border-color:rgba(200,150,62,.3)">Shop →</button>
     </div></div>`,
 
@@ -3607,7 +3712,7 @@ const postTemplates = [
     <div class="pa">
       <button class="pab" onclick="tLike(this)"><svg viewBox="0 0 24 24" width="17" height="17"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg> 7.1k</button>
       <button class="pab" onclick="O('ov-cmts')"><svg viewBox="0 0 24 24" width="17" height="17"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="2"/></svg> 944</button>
-      <button class="pab" onclick="O('ov-share')"><svg viewBox="0 0 24 24" width="17" height="17"><circle cx="18" cy="5" r="3" fill="currentColor"/><circle cx="6" cy="12" r="3" fill="currentColor"/><circle cx="18" cy="19" r="3" fill="currentColor"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"/></svg></button>
+      <button class="pab" onclick="openShare(this)"><svg viewBox="0 0 24 24" width="17" height="17"><circle cx="18" cy="5" r="3" fill="currentColor"/><circle cx="6" cy="12" r="3" fill="currentColor"/><circle cx="18" cy="19" r="3" fill="currentColor"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"/></svg></button>
       <button class="pab" onclick="openRepost()"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>
       <button class="pab" onclick="tSave(this)"><svg viewBox="0 0 24 24" width="17" height="17"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z" fill="currentColor"/></svg></button>
     </div></div>`,
@@ -3627,7 +3732,7 @@ const communityTemplates = [
     <div class="pa">
       <button class="pab" onclick="tLike(this)"><svg viewBox="0 0 24 24" width="17" height="17"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg> 2.1k</button>
       <button class="pab" onclick="O('ov-cmts')"><svg viewBox="0 0 24 24" width="17" height="17"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="2"/></svg> 287</button>
-      <button class="pab" onclick="O('ov-share')"><svg viewBox="0 0 24 24" width="17" height="17"><circle cx="18" cy="5" r="3" fill="currentColor"/><circle cx="6" cy="12" r="3" fill="currentColor"/><circle cx="18" cy="19" r="3" fill="currentColor"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"/></svg></button>
+      <button class="pab" onclick="openShare(this)"><svg viewBox="0 0 24 24" width="17" height="17"><circle cx="18" cy="5" r="3" fill="currentColor"/><circle cx="6" cy="12" r="3" fill="currentColor"/><circle cx="18" cy="19" r="3" fill="currentColor"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"/></svg></button>
       <button class="pab" onclick="tSave(this)"><svg viewBox="0 0 24 24" width="17" height="17"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z" fill="currentColor"/></svg></button>
     </div></div>`,
 ];
@@ -3808,9 +3913,9 @@ function setupCreationsScroll(){
       <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gd);opacity:.7;margin-bottom:16px">Reserve Your Seat</div>
       <div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(247,241,232,.35);margin-bottom:8px">Ticket Type</div>
       <div id="ticket-types" style="display:flex;flex-direction:column;gap:7px;margin-bottom:14px">
-        <button onclick="selTicketType(this,'General',85)" style="text-align:left;padding:11px 13px;border-radius:6px;border:1px solid var(--gd);background:rgba(200,150,62,.08);color:var(--gd);cursor:pointer"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;font-weight:600">General Admission</span><span style="font-size:13px;font-weight:600">$85</span></div><div style="font-size:10px;color:rgba(247,241,232,.5);margin-top:3px">Reserved seating · welcome drink</div></button>
-        <button onclick="selTicketType(this,'VIP',150)" style="text-align:left;padding:11px 13px;border-radius:6px;border:1px solid rgba(200,150,62,.3);background:transparent;color:rgba(247,241,232,.5);cursor:pointer"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;font-weight:600">VIP ✦</span><span style="font-size:13px;font-weight:600">$150</span></div><div style="font-size:10px;color:rgba(247,241,232,.45);margin-top:3px">Front row · signed book · meet &amp; greet</div></button>
-        <button onclick="selTicketType(this,'Table',400)" style="text-align:left;padding:11px 13px;border-radius:6px;border:1px solid rgba(200,150,62,.3);background:transparent;color:rgba(247,241,232,.5);cursor:pointer"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;font-weight:600">Private Table</span><span style="font-size:13px;font-weight:600">$400</span></div><div style="font-size:10px;color:rgba(247,241,232,.45);margin-top:3px">Table for 4 · bottle service · priority</div></button>
+        <button onclick="selTicketType(this,'General',85)" style="text-align:left;padding:11px 13px;border-radius:6px;border:1px solid var(--gd);background:rgba(200,150,62,.08);color:var(--gd);cursor:pointer"><div style="display:flex;justify-content:space-between;align-items:center"><span onclick="event.stopPropagation();showTicketDesc('General Admission')" style="font-size:12px;font-weight:600;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(200,150,62,.35)">General Admission</span><span style="font-size:13px;font-weight:600">$85</span></div><div style="font-size:10px;color:rgba(247,241,232,.5);margin-top:3px">Reserved seating · welcome drink</div></button>
+        <button onclick="selTicketType(this,'VIP',150)" style="text-align:left;padding:11px 13px;border-radius:6px;border:1px solid rgba(200,150,62,.3);background:transparent;color:rgba(247,241,232,.5);cursor:pointer"><div style="display:flex;justify-content:space-between;align-items:center"><span onclick="event.stopPropagation();showTicketDesc('VIP ✦')" style="font-size:12px;font-weight:600;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(200,150,62,.35)">VIP ✦</span><span style="font-size:13px;font-weight:600">$150</span></div><div style="font-size:10px;color:rgba(247,241,232,.45);margin-top:3px">Front row · signed book · meet &amp; greet</div></button>
+        <button onclick="selTicketType(this,'Table',400)" style="text-align:left;padding:11px 13px;border-radius:6px;border:1px solid rgba(200,150,62,.3);background:transparent;color:rgba(247,241,232,.5);cursor:pointer"><div style="display:flex;justify-content:space-between;align-items:center"><span onclick="event.stopPropagation();showTicketDesc('Private Table')" style="font-size:12px;font-weight:600;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(200,150,62,.35)">Private Table</span><span style="font-size:13px;font-weight:600">$400</span></div><div style="font-size:10px;color:rgba(247,241,232,.45);margin-top:3px">Table for 4 · bottle service · priority</div></button>
       </div>
       <div style="font-size:10px;color:var(--gd);opacity:.6;margin-bottom:14px" id="ticket-avail">🎟 32 of 120 seats remaining</div>
       <div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(247,241,232,.35);margin-bottom:10px">Number of Tickets</div>
@@ -3823,6 +3928,34 @@ function setupCreationsScroll(){
       <div style="display:flex;gap:8px">
         <button class="pay-btn pay-card" style="flex:1;padding:12px" onclick="addExpToCart();C('ov-exp-tickets')">🛒 Add to Cart</button>
         <button class="pay-btn pay-apple" style="flex:1;padding:12px" onclick="completePur('Apple Pay');C('ov-exp-tickets')">Reserve Now</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Ticket tier description popup -->
+<div class="ov ov-center" id="ov-ticket-desc" style="align-items:center;justify-content:center">
+  <div class="ov-bg" onclick="C('ov-ticket-desc')"></div>
+  <div style="width:300px;background:#1A0E06;border-radius:14px;overflow:hidden;border:1px solid rgba(200,150,62,.3);z-index:2">
+    <div style="height:5px;background:linear-gradient(to right,#2C1A0E,#C8963E,#2C1A0E)"></div>
+    <div style="padding:18px">
+      <div style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gd);opacity:.85;margin-bottom:5px">Ticket Tier</div>
+      <div id="ticket-desc-name" style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;font-style:italic;color:#F7F1E8;margin-bottom:10px"></div>
+      <div id="ticket-desc-body" style="font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:rgba(247,241,232,.65);line-height:1.6;margin-bottom:16px">[placeholder/add ticket description]</div>
+      <button onclick="C('ov-ticket-desc')" style="width:100%;padding:11px;background:var(--gd);color:var(--br);border:none;border-radius:4px;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">← Back to tickets</button>
+    </div>
+  </div>
+</div>
+<!-- Book description popup -->
+<div class="ov ov-center" id="ov-book-desc" style="align-items:center;justify-content:center">
+  <div class="ov-bg" onclick="C('ov-book-desc')"></div>
+  <div style="width:300px;background:#1A0E06;border-radius:14px;overflow:hidden;border:1px solid rgba(200,150,62,.3);z-index:2">
+    <div id="book-desc-cover" style="height:190px;position:relative;display:flex;align-items:center;justify-content:center;background:linear-gradient(155deg,#5C3D28,#2C1A0E);background-size:cover;background-position:center"><div id="book-desc-cover-inner"></div></div>
+    <div style="padding:16px 18px 18px">
+      <div id="book-desc-name" style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;font-style:italic;color:#F7F1E8;margin-bottom:8px"></div>
+      <div id="book-desc-body" style="font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:rgba(247,241,232,.65);line-height:1.6;margin-bottom:16px">[placeholder/add book description]</div>
+      <div style="display:flex;gap:8px">
+        <button onclick="C('ov-book-desc')" style="flex:1;padding:10px;background:transparent;border:1px solid rgba(200,150,62,.25);color:rgba(247,241,232,.55);font-size:11px;letter-spacing:.07em;text-transform:uppercase;border-radius:4px;cursor:pointer">Close</button>
+        <button onclick="C('ov-book-desc');O('ov-rev')" style="flex:1;padding:10px;background:var(--gd);color:var(--br);border:none;font-size:11px;letter-spacing:.07em;text-transform:uppercase;border-radius:4px;cursor:pointer">Reviews</button>
       </div>
     </div>
   </div>
