@@ -241,6 +241,9 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .cr-cam{width:calc(100% - 32px);height:190px;margin:0 16px;background:rgba(0,0,0,.5);border:1.5px dashed rgba(200,150,62,.25);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;cursor:pointer}
 .cr-cam-ico{font-size:38px}
 .cr-cam-lbl{font-size:11px;color:rgba(247,241,232,.35);letter-spacing:.06em}
+@keyframes crwave{0%,100%{transform:scaleY(.2)}50%{transform:scaleY(1)}}
+.cr-wave{display:flex;align-items:center;justify-content:center;gap:4px;height:64px}
+.cr-wave span{display:block;width:4px;height:100%;background:var(--gd);border-radius:2px;transform-origin:center;animation:crwave 1s ease-in-out infinite}
 .cr-filters{display:flex;gap:8px;padding:9px 16px;overflow-x:auto;scrollbar-width:none}
 .cr-filters::-webkit-scrollbar{display:none}
 .cr-f{flex-shrink:0;width:56px;height:56px;border-radius:6px;border:2px solid transparent;cursor:pointer;transition:border-color .15s}
@@ -916,7 +919,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <div id="notif-center-list" style="overflow-y:auto;max-height:calc(844px - 200px)">
       <!-- Today -->
       <div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(247,241,232,.28);padding:10px 16px 6px">Today</div>
-      <div class="nc-item unread" onclick="navFromNotif('home')" data-nav="home">
+      <div class="nc-item unread" onclick="notifNav('reflection',null,this)" data-nav="comment">
         <div class="nc-dot"></div>
         <div class="nc-av" style="background:linear-gradient(135deg,#5C3D28,#C8963E)">PJ</div>
         <div class="nc-body">
@@ -925,7 +928,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
         </div>
         <div class="nc-arrow">›</div>
       </div>
-      <div class="nc-item unread" onclick="navFromNotif('player')" data-nav="player">
+      <div class="nc-item unread" onclick="notifNav('exclusive','Writing New Orleans',this)" data-nav="exclusive">
         <div class="nc-dot"></div>
         <div class="nc-av" style="background:linear-gradient(135deg,#C8963E,#4A2C18);font-size:9px">OE</div>
         <div class="nc-body">
@@ -934,7 +937,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
         </div>
         <div class="nc-arrow">›</div>
       </div>
-      <div class="nc-item unread" onclick="navFromNotif('player')" data-nav="player">
+      <div class="nc-item unread" onclick="notifNav('comment',null,this)" data-nav="comment">
         <div class="nc-dot"></div>
         <div class="nc-av" style="background:linear-gradient(135deg,#3B2010,#C8963E)">NB</div>
         <div class="nc-body">
@@ -945,7 +948,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       </div>
       <!-- Earlier -->
       <div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(247,241,232,.28);padding:10px 16px 6px">Earlier</div>
-      <div class="nc-item read" onclick="navFromNotif('creations')" data-nav="creations">
+      <div class="nc-item read" onclick="notifNav('reward',null,this)" data-nav="reward">
         <div class="nc-dot" style="background:transparent"></div>
         <div class="nc-av" style="background:var(--gd)">🏆</div>
         <div class="nc-body">
@@ -954,7 +957,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
         </div>
         <div class="nc-arrow" style="opacity:.3">›</div>
       </div>
-      <div class="nc-item read" onclick="navFromNotif('player')" data-nav="player">
+      <div class="nc-item read" onclick="notifNav('podcast','Writing New Orleans',this)" data-nav="podcast">
         <div class="nc-dot" style="background:transparent"></div>
         <div class="nc-av" style="background:linear-gradient(135deg,#2C1A0E,#5C3D28)">🎙</div>
         <div class="nc-body">
@@ -1050,17 +1053,17 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <span style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(247,241,232,.35)">Recent</span>
       <span onclick="goNotifCenter()" style="font-size:10px;color:var(--gd);cursor:pointer;letter-spacing:.08em;text-transform:uppercase;text-decoration:underline">Notification Center →</span>
     </div>
-    <div class="notif-item" style="background:rgba(200,150,62,.04)" onclick="markRead(this)">
+    <div class="notif-item" style="background:rgba(200,150,62,.04)" onclick="notifNav('reflection',null,this)">
       <div style="width:8px;height:8px;border-radius:50%;background:var(--gd);flex-shrink:0;margin-top:4px"></div>
       <div class="notif-av" style="background:linear-gradient(135deg,#5C3D28,#C8963E)">PJ</div>
       <div style="flex:1"><div class="notif-txt"><b>peggy_lavizzo_nola</b> posted a new reflection</div><div class="notif-time">2h ago</div></div>
     </div>
-    <div class="notif-item" style="background:rgba(200,150,62,.04)" onclick="markRead(this)">
+    <div class="notif-item" style="background:rgba(200,150,62,.04)" onclick="notifNav('exclusive','Writing New Orleans',this)">
       <div style="width:8px;height:8px;border-radius:50%;background:var(--gd);flex-shrink:0;margin-top:4px"></div>
       <div class="notif-av" style="background:linear-gradient(135deg,#C8963E,#4A2C18)">OE</div>
       <div style="flex:1"><div class="notif-txt"><b>rhodesia_official</b> dropped an Author Exclusive in Soul Player</div><div class="notif-time">5h ago</div></div>
     </div>
-    <div class="notif-item" onclick="markRead(this)">
+    <div class="notif-item" onclick="notifNav('reward',null,this)">
       <div style="width:8px;height:8px;border-radius:50%;background:transparent;flex-shrink:0;margin-top:4px"></div>
       <div class="notif-av" style="background:var(--gd)">🏆</div>
       <div style="flex:1"><div class="notif-txt"><b>Rewards:</b> You earned 50 pts! 380 pts to Pecan Sweet tier</div><div class="notif-time" style="color:rgba(247,241,232,.18)">1d ago · read</div></div>
@@ -1106,9 +1109,10 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     </div>
     <div id="new-msg-box" style="display:none;padding:0 16px 10px">
       <div style="display:flex;gap:7px">
-        <input id="new-msg-user" placeholder="Enter a username..." style="flex:1;background:rgba(200,150,62,.06);border:1px solid rgba(200,150,62,.2);border-radius:6px;padding:9px 11px;color:var(--cr);font-size:12px;outline:none">
+        <input id="new-msg-user" placeholder="Search people you follow..." oninput="searchNewMsg()" onkeydown="if(event.key==='Enter')startNewConvo()" style="flex:1;background:rgba(200,150,62,.06);border:1px solid rgba(200,150,62,.2);border-radius:6px;padding:9px 11px;color:var(--cr);font-size:12px;outline:none">
         <button onclick="startNewConvo()" style="background:var(--gd);color:var(--br);border:none;border-radius:6px;padding:0 14px;font-size:12px;font-weight:500;cursor:pointer">Start</button>
       </div>
+      <div id="new-msg-results" style="margin-top:8px;display:flex;flex-direction:column;gap:2px;max-height:180px;overflow-y:auto"></div>
     </div>
     <div class="msg-item" onclick="openConvo('peggy_lavizzo_nola','Did you read chapter 18 yet? 🌿')"><div class="msg-av" style="background:linear-gradient(135deg,#5C3D28,#C8963E)">PJ</div><div class="msg-info"><div class="msg-un">peggy_lavizzo_nola</div><div class="msg-pre">Did you read chapter 18 yet? 🌿</div></div><div class="msg-time">2h</div></div>
     <div class="msg-item" onclick="openConvo('marlena_k','That grocery scene gets me every time')"><div class="msg-av" style="background:linear-gradient(135deg,#C8963E,#4A2C18)">MK</div><div class="msg-info"><div class="msg-un">marlena_k</div><div class="msg-pre">That grocery scene gets me every time</div></div><div class="msg-time">5h</div></div>
@@ -1263,6 +1267,12 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <div class="cr-step on" id="cr-s1">
       <div style="position:relative;border-radius:14px;overflow:hidden;background:linear-gradient(160deg,#1A0E06,#0D0804);height:330px;display:flex;flex-direction:column;justify-content:space-between">
         <canvas id="cr-cam-cv" style="position:absolute;inset:0;width:100%;height:100%;opacity:.5"></canvas>
+        <div id="cr-voice-panel" style="display:none;position:absolute;left:0;right:0;top:0;bottom:118px;z-index:6;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:linear-gradient(160deg,#1A0E06,#0D0804)">
+          <div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--br);background:var(--gd);padding:5px 13px;border-radius:20px;font-weight:600">● Voice Memo</div>
+          <div class="cr-wave" id="cr-wave"><span style="animation-delay:0s"></span><span style="animation-delay:.08s"></span><span style="animation-delay:.16s"></span><span style="animation-delay:.24s"></span><span style="animation-delay:.32s"></span><span style="animation-delay:.4s"></span><span style="animation-delay:.48s"></span><span style="animation-delay:.56s"></span><span style="animation-delay:.64s"></span><span style="animation-delay:.72s"></span><span style="animation-delay:.6s"></span><span style="animation-delay:.5s"></span><span style="animation-delay:.4s"></span><span style="animation-delay:.3s"></span><span style="animation-delay:.2s"></span><span style="animation-delay:.1s"></span><span style="animation-delay:.18s"></span><span style="animation-delay:.28s"></span><span style="animation-delay:.38s"></span><span style="animation-delay:.14s"></span></div>
+          <div id="cr-voice-timer" style="font-family:'DM Sans',sans-serif;font-size:15px;color:var(--gd);letter-spacing:.1em">0:00</div>
+          <div style="font-size:10px;color:rgba(247,241,232,.4);letter-spacing:.04em">Recording your voice reflection…</div>
+        </div>
         <div style="position:relative;text-align:center;padding-top:16px">
           <div id="cr-mode-hint" style="display:inline-block;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--br);background:var(--gd);padding:5px 13px;border-radius:20px;font-weight:600">● Video</div>
           <div style="font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:rgba(247,241,232,.55);margin-top:12px;padding:0 30px;line-height:1.4">Share your reflection with the Orgena community</div>
@@ -1669,10 +1679,30 @@ function crSetMode(mode){
     m.style.fontSize=on?'13px':'11px';
   });
   var hint=document.getElementById('cr-mode-hint'),inner=document.getElementById('cr-capture-inner'),tip=document.getElementById('cr-tip');
+  var vpanel=document.getElementById('cr-voice-panel'), canvas=document.getElementById('cr-cam-cv');
   if(mode==='photo'){ if(hint)hint.innerHTML='● Photo'; if(inner){inner.style.background='#F7F1E8';inner.style.borderRadius='50%';inner.style.width='54px';inner.style.height='54px';} if(tip)tip.innerHTML='📸 Capture a moment to share'; }
-  else if(mode==='voice'){ if(hint)hint.innerHTML='● Voice'; if(inner){inner.style.background='#C8963E';inner.style.borderRadius='14px';inner.style.width='40px';inner.style.height='40px';} if(tip)tip.innerHTML='🎙 Record a voice reflection'; }
+  else if(mode==='voice'){ if(hint)hint.innerHTML='● Voice'; if(inner){inner.style.background='#C8963E';inner.style.borderRadius='14px';inner.style.width='40px';inner.style.height='40px';} if(tip)tip.innerHTML='🎙 Tap the button to record your voice memo'; }
   else { if(hint)hint.innerHTML='● Video'; if(inner){inner.style.background='#E0584F';inner.style.borderRadius='50%';inner.style.width='54px';inner.style.height='54px';} if(tip)tip.innerHTML='🎬 Videos get 3× more love — try one!'; }
+  // Voice mode swaps the camera preview for an animated waveform recorder.
+  if(mode==='voice'){
+    if(vpanel) vpanel.style.display='flex';
+    if(canvas) canvas.style.display='none';
+    startVoiceTimer();
+  } else {
+    if(vpanel) vpanel.style.display='none';
+    if(canvas) canvas.style.display='';
+    stopVoiceTimer();
+  }
 }
+function startVoiceTimer(){
+  stopVoiceTimer();
+  var t=0; var el=document.getElementById('cr-voice-timer'); if(el) el.textContent='0:00';
+  window._crVoiceTimer=setInterval(function(){
+    t++; var el=document.getElementById('cr-voice-timer');
+    if(el) el.textContent=Math.floor(t/60)+':'+(t%60<10?'0':'')+(t%60);
+  },1000);
+}
+function stopVoiceTimer(){ if(window._crVoiceTimer){ clearInterval(window._crVoiceTimer); window._crVoiceTimer=null; } }
 function crCapture(){
   var btn=document.getElementById('cr-capture-btn');
   if(btn){ btn.style.transform='scale(.9)'; setTimeout(function(){ btn.style.transform='scale(1)'; },150); }
@@ -1691,17 +1721,44 @@ function crFilePicked(input, source){
   }, 100);
 }
 
+// People the user follows — searchable when starting a new message.
+var followingUsers=['rhodesia_official','peggy_lavizzo_nola','marlena_k','n_boudreaux','soulful_mia','nola_book_club','creole_reads','bayou_booklover','orleans_ave_fan','candy_trilogy_stan'];
 function toggleNewMsg(){
   var b=document.getElementById('new-msg-box');
-  if(b){ b.style.display = b.style.display==='none'?'block':'none'; var inp=document.getElementById('new-msg-user'); if(inp && b.style.display==='block') inp.focus(); }
+  if(b){
+    b.style.display = b.style.display==='none'?'block':'none';
+    var inp=document.getElementById('new-msg-user');
+    if(b.style.display==='block'){ if(inp){inp.value='';inp.focus();} searchNewMsg(); }
+  }
+}
+function searchNewMsg(){
+  var inp=document.getElementById('new-msg-user');
+  var box=document.getElementById('new-msg-results');
+  if(!box) return;
+  var q=(inp?inp.value.trim().replace(/^@/,'').toLowerCase():'');
+  var matches=followingUsers.filter(function(u){ return !q || u.toLowerCase().indexOf(q)>-1; });
+  if(!matches.length){
+    box.innerHTML='<div style="padding:9px 4px;font-size:11px;color:rgba(247,241,232,.35);font-style:italic">No one found. Tap Start to message “'+cEsc(q)+'”.</div>';
+    return;
+  }
+  box.innerHTML=matches.map(function(u){
+    var initials=u.replace(/[^a-z]/gi,'').substring(0,2).toUpperCase();
+    return '<div onclick="startConvoWith(\''+u+'\')" style="display:flex;align-items:center;gap:10px;padding:8px 4px;cursor:pointer;border-radius:6px">'
+      +'<div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#5C3D28,#C8963E);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--br);flex-shrink:0">'+initials+'</div>'
+      +'<div style="font-size:12px;color:var(--cr)">'+u+'</div></div>';
+  }).join('');
+}
+function startConvoWith(name){
+  var b=document.getElementById('new-msg-box'); if(b) b.style.display='none';
+  var inp=document.getElementById('new-msg-user'); if(inp) inp.value='';
+  var box=document.getElementById('new-msg-results'); if(box) box.innerHTML='';
+  openConvo(name,'');
 }
 function startNewConvo(){
   var inp=document.getElementById('new-msg-user');
   var u=(inp && inp.value.trim()) ? inp.value.trim().replace(/^@/,'') : '';
   if(!u) return;
-  if(inp) inp.value='';
-  toggleNewMsg();
-  openConvo(u,'');
+  startConvoWith(u);
 }
 
 var connData = {
@@ -2264,6 +2321,7 @@ function T(id){
 function O(id){
   var el=document.getElementById(id);
   if(!el)return;
+  if(typeof closeAllCmtMenus==='function') closeAllCmtMenus();
   el.style.cssText='';
   el.classList.add('show');
   var hs=el.querySelector('.hs');
@@ -2272,6 +2330,7 @@ function O(id){
 function C(id){
   var el=document.getElementById(id);
   if(!el)return;
+  if(typeof closeAllCmtMenus==='function') closeAllCmtMenus();
   var hs=el.querySelector('.hs');
   if(hs)hs.classList.remove('up');
   el.classList.remove('show');
@@ -2983,6 +3042,30 @@ function markAllRead(){
     if(dot) dot.style.background='transparent';
   });
 }
+// Navigate a notification to the EXACT content it references.
+// kind: 'comment'/'reflection' -> the post's comment thread; 'exclusive'/'podcast' -> that
+// audio in Soul Player; 'reward' -> profile rewards. arg = specific title where relevant.
+function notifNav(kind, arg, el){
+  if(el){
+    el.classList.remove('unread');
+    var d=el.querySelector('.nc-dot'); if(d) d.style.background='transparent';
+    var nd=el.querySelector('div[style*="background:var(--gd)"]'); if(nd) nd.style.background='transparent';
+  }
+  C('ov-notif');
+  hideNotifCenter();
+  if(kind==='comment' || kind==='reflection' || kind==='post'){
+    T('home');
+    setTimeout(function(){ O('ov-cmts'); }, 260);
+  } else if(kind==='exclusive' || kind==='podcast'){
+    T('player');
+    setTimeout(function(){ if(typeof openPodDesc==='function') openPodDesc(arg||'Writing New Orleans','Author Exclusive'); }, 300);
+  } else if(kind==='reward'){
+    T('profile');
+    hideNotifCenter();
+  } else {
+    T('home');
+  }
+}
 function toggleNotifyMe(btn){
   const isOn = btn.dataset.notified==='1';
   if(isOn){
@@ -3044,21 +3127,45 @@ function adjTickets(d){
   setText('ticket-count',ticketCount);
   setText('ticket-total','$'+(ticketCount*currentExpPrice));
 }
+// Each conversation keeps its OWN message thread, so a reply lands only in the
+// conversation it was typed in (never broadcast to every chat).
+var convoStore={};
+var currentConvo=null;
+function cEsc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function openConvo(name,msg){
+  currentConvo=name;
   setText('convo-name',name);
   setText('convo-av',name.substring(0,2).toUpperCase());
-  setText('convo-first-msg',msg);
+  if(!convoStore[name]){
+    convoStore[name] = msg ? [{me:false,text:msg}] : [];
+  }
+  renderConvo();
   C('ov-msgs');
   setTimeout(()=>O('ov-convo'),350);
 }
+function renderConvo(){
+  const msgs=document.getElementById('convo-msgs');
+  if(!msgs||currentConvo===null) return;
+  const thread=convoStore[currentConvo]||[];
+  if(!thread.length){
+    msgs.innerHTML='<div style="text-align:center;padding:24px 0;font-family:\'Cormorant Garamond\',serif;font-size:14px;font-style:italic;color:rgba(247,241,232,.3)">Say hello to start the conversation.</div>';
+    return;
+  }
+  msgs.innerHTML=thread.map(function(m){
+    if(m.me){
+      return '<div style="align-self:flex-end;max-width:75%"><div style="background:rgba(74,44,24,.7);border:1px solid rgba(200,150,62,.2);border-radius:12px 12px 4px 12px;padding:9px 13px;font-size:13px;color:var(--cr)">'+cEsc(m.text)+'</div></div>';
+    }
+    return '<div style="align-self:flex-start;max-width:75%"><div style="background:rgba(200,150,62,.1);border:1px solid rgba(200,150,62,.15);border-radius:12px 12px 12px 4px;padding:9px 13px;font-family:\'Cormorant Garamond\',serif;font-size:14px;font-style:italic;color:rgba(247,241,232,.8)">'+cEsc(m.text)+'</div></div>';
+  }).join('');
+  msgs.scrollTop=msgs.scrollHeight;
+}
 function sendConvoMsg(){
   const inp=document.getElementById('convo-inp');
-  if(!inp.value.trim())return;
-  const msgs=document.getElementById('convo-msgs');
-  const el=document.createElement('div');
-  el.style.cssText='align-self:flex-end;max-width:75%;animation:fadeIn .3s ease';
-  el.innerHTML=`<div style="background:rgba(74,44,24,.7);border:1px solid rgba(200,150,62,.2);border-radius:12px 12px 4px 12px;padding:9px 13px;font-size:13px;color:var(--cr)">${inp.value}</div>`;
-  msgs.appendChild(el);inp.value='';msgs.scrollTop=msgs.scrollHeight;
+  if(!inp||!inp.value.trim()||currentConvo===null) return;
+  if(!convoStore[currentConvo]) convoStore[currentConvo]=[];
+  convoStore[currentConvo].push({me:true,text:inp.value.trim()});
+  inp.value='';
+  renderConvo();
 }
 function markRead(item){
   const dot=item.querySelector('div[style*="background:var(--gd)"]');
@@ -3085,6 +3192,7 @@ function openRepost(captionEl){
 }
 function doRepost(type){
   C('ov-repost');
+  var caption = window._lastPostCaption || 'Orgena content shared from the feed';
   setTimeout(()=>{
     const titleEl=document.getElementById('repost-confirm-title');
     const bodyEl=document.getElementById('repost-confirm-body');
@@ -3092,24 +3200,42 @@ function doRepost(type){
     const prevEl=document.getElementById('repost-preview-txt');
     if(type==='story'){
       if(titleEl) titleEl.textContent='Added to Your Story';
-      if(bodyEl) bodyEl.textContent='Your story is live for 24 hours. Tap your avatar circle on the Home page to view it.';
+      if(bodyEl) bodyEl.textContent='Your story is live for 24 hours. Tap your avatar on your Profile to view it.';
       if(iconEl) iconEl.textContent='◎';
-      // Push to savedStories so avatar shows it
-      savedStories.push({user:'you', quote:'Reposted from your feed', c1:'#C8963E', c2:'#2C1A0E'});
+      // Make this the content of the user's story (viewMyStory reads myStoryText)
+      window.myStoryText = caption;
+      savedStories.push({user:'you', quote:caption, c1:'#C8963E', c2:'#2C1A0E'});
     } else {
       if(titleEl) titleEl.textContent='Reposted to Feed';
-      if(bodyEl) bodyEl.textContent='This post now appears on your profile. Your followers can see it.';
+      if(bodyEl) bodyEl.textContent='This post now appears at the top of your Home feed. Your followers can see it.';
       if(iconEl) iconEl.textContent='⊞';
-      // Add to profile saved posts
+      // Actually place the post on the Home feed
+      addRepostToFeed(caption);
       savedPosts.push({title:'Reposted post', meta:'Reposted to feed · just now', icon:'↺'});
       refreshSavedTab();
     }
-    if(prevEl){
-      // Grab caption from last tapped post if available
-      prevEl.textContent=window._lastPostCaption||'Orgena content shared from the feed';
-    }
+    if(prevEl){ prevEl.textContent=caption; }
     O('ov-repost-confirm');
   },350);
+}
+// Insert a reposted post at the top of the Home feed (right under the filter bar)
+function addRepostToFeed(caption){
+  var home=document.getElementById('s-home'); if(!home) return;
+  var fb=home.querySelector('.fb');
+  var post=document.createElement('div');
+  post.className='post'; post.dataset.cat='all community'; post.style.animation='fadeIn .3s ease';
+  var head=document.createElement('div'); head.className='ph';
+  head.innerHTML='<div class="pav" style="background:linear-gradient(135deg,#C8963E,#4A2C18);color:var(--br);font-size:11px">Y</div>'
+    +'<div class="pui"><div class="pun">you</div><div class="ptag">↺ Reposted · just now</div></div>'
+    +'<span class="pdots" onclick="O(\'ov-share\')">⋯</span>';
+  var cap=document.createElement('div'); cap.className='pcap'; cap.textContent=caption;
+  var acts=document.createElement('div'); acts.className='pa';
+  acts.innerHTML='<button class="pab" onclick="this.classList.toggle(\'liked\')"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> Like</button>'
+    +'<button class="pab" onclick="O(\'ov-cmts\')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="2"/></svg> Comment</button>'
+    +'<button class="pab" onclick="openRepost(this)"><svg viewBox="0 0 24 24"><path d="M17 1l4 4-4 4V6H7a2 2 0 0 0-2 2v3H3V8a4 4 0 0 1 4-4h10V1zM7 23l-4-4 4-4v3h10a2 2 0 0 0 2-2v-3h2v3a4 4 0 0 1-4 4H7v3z"/></svg> Repost</button>';
+  post.appendChild(head); post.appendChild(cap); post.appendChild(acts);
+  if(fb && fb.nextSibling){ home.insertBefore(post, fb.nextSibling); } else if(fb){ home.appendChild(post); } else { home.insertBefore(post, home.firstChild); }
+  home.scrollTop=0;
 }
 const savedStories = [];
 const savedPosts = [];
@@ -3193,12 +3319,19 @@ function postComment(btn){
   list.appendChild(el);
   inp.value = ''; list.scrollTop = list.scrollHeight;
 }
+function closeAllCmtMenus(){ document.querySelectorAll('.cmt-menu').forEach(function(m){ m.style.display='none'; }); }
 function toggleCmtMenu(span){
   const menu = span.querySelector('.cmt-menu');
   if(!menu) return;
-  document.querySelectorAll('.cmt-menu').forEach(function(m){ if(m!==menu) m.style.display='none'; });
-  menu.style.display = menu.style.display==='none' ? 'block' : 'none';
+  const wasOpen = menu.style.display!=='none';
+  closeAllCmtMenus();
+  menu.style.display = wasOpen ? 'none' : 'block';
 }
+// Dismiss any open comment menu when tapping anywhere that isn't the ⋯ control / menu itself.
+document.addEventListener('click', function(e){
+  if(e.target.closest('.cmt-act')) return; // taps on ⋯ or its menu items handle themselves
+  closeAllCmtMenus();
+});
 function editComment(id){
   const el = document.getElementById(id);
   if(!el) return;
