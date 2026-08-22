@@ -1491,8 +1491,8 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <span id="merch-total" style="margin-left:auto;font-size:15px;font-weight:500;color:var(--gd)">$34</span>
     </div>
     <div class="ti-acts">
-      <button class="ti-close" onclick="addMerchToCart(currentMerchName,currentMerchPrice*currentMerchQty,'🧥');C('ov-merch')">🛒 Add to Cart</button>
-      <button class="ti-buy" onclick="C('ov-merch');setTimeout(()=>{addMerchToCart(currentMerchName,currentMerchPrice*currentMerchQty,'🧥');completePur('Apple Pay');},200)">Buy Now</button>
+      <button class="ti-close" onclick="addMerchToCart(currentMerchName,currentMerchPrice,'🛍');C('ov-merch')">🛒 Add to Cart</button>
+      <button class="ti-buy" onclick="C('ov-merch');setTimeout(()=>{addMerchToCart(currentMerchName,currentMerchPrice,'🛍');completePur('Apple Pay');},200)">Buy Now</button>
     </div>
     </div><!-- end ch-panel-chapters -->
   </div>
@@ -1561,6 +1561,15 @@ function openPodDesc(name, sub){
 }
 
 window._editCartIdx = -1;
+// Resolve a cart item's real type ('book' | 'audio' | 'merch' | 'experience'),
+// falling back to sub/icon sniffing for any legacy item without an explicit type.
+function cartItemType(it){
+  if(it.type) return it.type;
+  if(/experience|🎟/i.test(it.sub||'') || it.icon==='🎟') return 'experience';
+  if(/merch|🛍|🧥/i.test(it.sub||'') || it.icon==='🛍' || it.icon==='🧥') return 'merch';
+  if(/audio|🎧/i.test(it.sub||'') || it.icon==='🎧') return 'audio';
+  return 'book';
+}
 function openCartItem(i){
   if(typeof cartItems==='undefined' || !cartItems[i]) return;
   window._editCartIdx = i;
@@ -1569,11 +1578,10 @@ function openCartItem(i){
   var opts = document.getElementById('cart-edit-opts');
   if(!opts) return;
   opts.innerHTML = '';
-  var isBook = /book|audio|paperback|hardcover|📖|🎧/i.test(it.sub) || /📖|🎧/.test(it.icon);
-  var isMerch = /merch|🛍/i.test(it.sub) || it.icon==='🛍';
-  var isExp = /experience|🎟/i.test(it.sub) || it.icon==='🎟';
+  var type = cartItemType(it);
+  var current = it.detail || it.sub || '';
 
-  function addChoiceGroup(label, choices, current, key){
+  function addChoiceGroup(label, choices, cur, key){
     var h=document.createElement('div');
     h.innerHTML='<div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(247,241,232,.35);margin:6px 0 8px">'+label+'</div>';
     opts.appendChild(h);
@@ -1581,27 +1589,33 @@ function openCartItem(i){
     wrap.style.cssText='display:flex;gap:7px;flex-wrap:wrap;margin-bottom:6px';
     choices.forEach(function(c){
       var b=document.createElement('button');
-      var on=(current&&current.toLowerCase().indexOf(c.toLowerCase())>-1);
+      var on=(cur&&cur.toLowerCase().indexOf(c.toLowerCase())>-1);
       b.className='cart-edit-choice';
-      b.dataset.key=key; b.dataset.val=c;
+      b.dataset.key=key; b.dataset.val=c; b.dataset.on=on?'1':'';
       b.textContent=c;
       b.style.cssText='padding:8px 13px;border-radius:5px;border:1px solid '+(on?'var(--gd)':'rgba(200,150,62,.3)')+';background:'+(on?'rgba(200,150,62,.08)':'transparent')+';color:'+(on?'var(--gd)':'rgba(247,241,232,.5)')+';font-size:11px;cursor:pointer';
-      b.onclick=function(){ wrap.querySelectorAll('button').forEach(function(x){x.style.border='1px solid rgba(200,150,62,.3)';x.style.background='transparent';x.style.color='rgba(247,241,232,.5)';}); b.style.border='1px solid var(--gd)';b.style.background='rgba(200,150,62,.08)';b.style.color='var(--gd)'; };
+      b.onclick=function(){ wrap.querySelectorAll('button').forEach(function(x){x.style.border='1px solid rgba(200,150,62,.3)';x.style.background='transparent';x.style.color='rgba(247,241,232,.5)';x.dataset.on='';}); b.style.border='1px solid var(--gd)';b.style.background='rgba(200,150,62,.08)';b.style.color='var(--gd)';b.dataset.on='1'; };
       wrap.appendChild(b);
     });
     opts.appendChild(wrap);
   }
 
-  setText('cart-edit-sub', isBook?'Choose Format':(isMerch?'Customize':'Ticket Options'));
-  if(isBook){
-    addChoiceGroup('Format', ['Audiobook','Paperback','Hardcover','E-Book'], it.sub, 'fmt');
-  } else if(isMerch){
-    addChoiceGroup('Size', ['XS','S','M','L','XL'], it.sub, 'size');
-    addChoiceGroup('Color', ['Cream','Burnt Gold','Deep Brown','Black'], it.sub, 'color');
-  } else if(isExp){
-    addChoiceGroup('Ticket Type', ['General','VIP','Table'], it.sub, 'type');
+  if(type==='book'){
+    setText('cart-edit-sub','Choose Format');
+    addChoiceGroup('Format', ['Paperback','Hardcover','E-Book','Audiobook'], current, 'fmt');
+  } else if(type==='audio'){
+    setText('cart-edit-sub','Choose Format');
+    addChoiceGroup('Format', ['Audio Download'], current||'Audio Download', 'fmt');
+  } else if(type==='merch'){
+    setText('cart-edit-sub','Customize');
+    addChoiceGroup('Size', ['XS','S','M','L','XL','2XL'], current, 'size');
+    addChoiceGroup('Color', ['Cream','Burnt Gold','Deep Brown','Black'], current, 'color');
+  } else if(type==='experience'){
+    setText('cart-edit-sub','Ticket Options');
+    addChoiceGroup('Ticket Type', ['General','VIP','Table'], current, 'type');
   } else {
-    addChoiceGroup('Format', ['Standard'], it.sub, 'fmt');
+    setText('cart-edit-sub','Options');
+    addChoiceGroup('Format', ['Standard'], current, 'fmt');
   }
   O('ov-cart-edit');
 }
@@ -1611,21 +1625,16 @@ function saveCartEdit(){
   var opts=document.getElementById('cart-edit-opts');
   var picks={};
   opts.querySelectorAll('.cart-edit-choice').forEach(function(b){
-    if(b.style.color.indexOf('200')>-1 || b.style.borderColor==='var(--gd)' || b.style.color==='var(--gd)' || b.style.background.indexOf('200')>-1){
-      picks[b.dataset.key]=b.dataset.val;
-    }
+    if(b.dataset.on==='1'){ picks[b.dataset.key]=b.dataset.val; }
   });
-  // Build new sub
+  // Store selections as the item's detail; the type label stays driven by it.type.
   var it=cartItems[i];
   var parts=[];
   if(picks.fmt) parts.push(picks.fmt);
   if(picks.size) parts.push(picks.size);
   if(picks.color) parts.push(picks.color);
   if(picks.type) parts.push(picks.type);
-  if(parts.length){
-    var base = (it.icon==='🛍'||/merch/i.test(it.sub))?'Merch':(it.icon==='🎟'?'Experience':'');
-    it.sub = (base?base+' · ':'')+parts.join(' · ');
-  }
+  if(parts.length){ it.detail = parts.join(' · '); }
   renderCart();
   C('ov-cart-edit');
   if(typeof showToast==='function') showToast('✓ Updated');
@@ -2698,11 +2707,11 @@ function toggleASMRSound(btn){
 }
 function addToCartFlow(){
   var p=window.curPur||{name:'Item',type:'book',price:0};
-  var sub='', icon='📦';
-  if(p.type==='merch'){ icon='🛍'; sub='Merch'+(p.size?' · '+p.size:'')+(p.color?' · '+p.color:''); }
-  else if(p.type==='book'||p.type==='audiobook'){ icon='📖'; sub=p.fmt||'Book'; }
-  else { icon='🎧'; sub=p.fmt||'Audio'; }
-  if(typeof cartItems!=='undefined'){ cartItems.push({name:p.name, price:p.price||0, icon:icon, qty:1, sub:sub}); }
+  var type, icon, detail='';
+  if(p.type==='merch'){ type='merch'; icon='🛍'; detail=[p.size,p.color].filter(Boolean).join(' · '); }
+  else if(p.type==='audiobook'){ type='audio'; icon='🎧'; detail=(p.fmt&&!/^audio$/i.test(p.fmt))?p.fmt:''; }
+  else { type='book'; icon='📖'; detail=(p.fmt&&!/^book$/i.test(p.fmt))?p.fmt:''; }
+  if(typeof cartItems!=='undefined'){ cartItems.push({name:p.name, price:p.price||0, icon:icon, qty:1, type:type, detail:detail}); }
   updateCartDot();
   C('ov-pur');
   if(typeof showToast==='function') showToast('✓ Added to cart');
@@ -2710,7 +2719,7 @@ function addToCartFlow(){
 function addExpToCart(){
   var nm=(currentExpName||'Experience');
   var pr=(currentExpPrice||85)*(ticketCount||1);
-  if(typeof cartItems!=='undefined'){ cartItems.push({name:nm, price:(currentExpPrice||85), icon:'🎟', qty:(ticketCount||1), sub:'Experience · '+(currentTicketType||'General')}); }
+  if(typeof cartItems!=='undefined'){ cartItems.push({name:nm, price:(currentExpPrice||85), icon:'🎟', qty:(ticketCount||1), type:'experience', detail:(currentTicketType||'General')}); }
   updateCartDot();
   if(typeof showToast==='function') showToast('✓ Added to cart');
 }
@@ -2779,18 +2788,11 @@ function openMerchPur(name){
 // Merch detail
 // ── CART STATE ──
 const cartItems = [];
-function addToCartFlow(){
-  const title = document.getElementById('pur-title').textContent;
-  const price = document.getElementById('apple-price').textContent.replace('$','');
-  const bno = document.getElementById('buy-now-opts');
-  if(bno) bno.style.display='none';
-  C('ov-pur');
-  cartItems.push({name:title, price:parseFloat(price)||14.99, icon:'📖', qty:1, sub:'Book'});
-  updateCartDot();
-  setTimeout(()=>alert('Added to cart! Tap the basket icon to view.'),300);
-}
-function addMerchToCart(name, price, icon){
-  cartItems.push({name, price:parseFloat((price||'34').toString().replace('$','')), icon: icon||'🧥', qty:1, sub:'Merch'});
+// (Removed a duplicate addToCartFlow that ignored item type and always added
+//  items as "Book"; the type-aware addToCartFlow above is the single source.)
+function addMerchToCart(name, unitPrice, icon){
+  var detail=[currentMerchSize,currentMerchColor].filter(Boolean).join(' · ');
+  cartItems.push({name, price:parseFloat((unitPrice||'34').toString().replace('$','')), icon: icon||'🛍', qty:(currentMerchQty||1), type:'merch', detail:detail});
   updateCartDot();
 }
 function updateCartDot(){
@@ -2811,7 +2813,7 @@ function renderCart(){
       <div class="cart-item-ico" style="background:linear-gradient(135deg,var(--br),#4A2C18)">${it.icon}</div>
       <div class="cart-item-info">
         <div class="cart-item-name" onclick="openCartItem(${i})" style="cursor:pointer;text-decoration:underline;text-decoration-color:rgba(200,150,62,.3)">${it.name}</div>
-        <div class="cart-item-sub">${it.sub} · 
+        <div class="cart-item-sub">${cartLabel(it)} ·
           <button onclick="adjCartQty(${i},-1)" style="background:none;border:none;color:var(--gd);cursor:pointer;font-size:14px;padding:0 3px">−</button>
           <span style="color:var(--cr);font-size:12px">${it.qty}</span>
           <button onclick="adjCartQty(${i},1)" style="background:none;border:none;color:var(--gd);cursor:pointer;font-size:14px;padding:0 3px">+</button>
@@ -2823,8 +2825,14 @@ function renderCart(){
   const total = cartItems.reduce((s,it)=>s+it.price*it.qty,0);
   if(tot) tot.textContent='$'+total.toFixed(2);
 }
+// Type label shown next to the quantity ("Merch" / "Book" / "Audio" / "Experience")
+function cartLabel(it){
+  var t=cartItemType(it);
+  var base={book:'Book',audio:'Audio',merch:'Merch',experience:'Experience'}[t]||'Item';
+  return it.detail ? base+' · '+it.detail : base;
+}
 function adjCartQty(i,d){
-  if(!cart||cart[i]===undefined){return;}
+  if(!cartItems[i]) return;
   cartItems[i].qty = Math.max(1, cartItems[i].qty+d);
   renderCart();
 }
@@ -2836,11 +2844,12 @@ function clearCart(){
   cartItems.length=0;
   updateCartDot();
 }
-let currentMerchName='',currentMerchPrice=34,currentMerchQty=1;
+let currentMerchName='',currentMerchPrice=34,currentMerchQty=1,currentMerchSize='S',currentMerchColor='Black';
 function openMerchDetail(name,cat,price,icon,bg){
   currentMerchName=name;
   currentMerchPrice=parseInt(price.replace('$',''));
   currentMerchQty=1;
+  currentMerchSize='S';currentMerchColor='Black';
   setText('merch-name',name);
   setText('merch-cat',cat);
   setText('merch-price',price);
@@ -2856,12 +2865,14 @@ function selColor(el,name){
   if(img&&colorBgs[name]){img.style.background=colorBgs[name];}
   document.querySelectorAll('#merch-colors div').forEach(d=>d.style.border='2px solid transparent');
   el.style.border='2px solid var(--gd)';
+  currentMerchColor=name;
 }
 function selSize(el){
   document.querySelectorAll('#merch-sizes button').forEach(b=>{
     b.style.borderColor='rgba(200,150,62,.3)';b.style.background='transparent';b.style.color='rgba(247,241,232,.6)';
   });
   el.style.borderColor='var(--gd)';el.style.background='rgba(200,150,62,.08)';el.style.color='var(--gd)';
+  currentMerchSize=el.textContent.trim();
 }
 function adjMerchQty(d){
   currentMerchQty=Math.max(1,Math.min(20,currentMerchQty+d));
