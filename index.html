@@ -524,7 +524,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <div class="cs-tag"><div class="cs-dot"></div><span class="cs-lbl">Coming Soon</span></div>
     <div class="ph">
       <div class="pav" style="background:linear-gradient(135deg,#C8963E,#4A2C18);font-size:9px" onclick="openStory('RJ','rhodesia_official','#1A0805','#4A2C18')"><svg width="18" height="16" viewBox="0 0 120 110" fill="none"><text x="2" y="76" font-family="serif" font-size="72" font-weight="900" fill="white" opacity=".9">O</text><text x="42" y="76" font-family="serif" font-size="72" font-weight="900" fill="white" opacity=".9">E</text><line x1="88" y1="8" x2="88" y2="88" stroke="white" stroke-width="1.8" opacity=".6"/><path d="M97 65 Q104 70 111 65" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none" opacity=".82"/></svg></div>
-      <div class="pui" onclick="openStory('RJ','rhodesia_official','#1A0805','#4A2C18')"><div class="pun" style="color:var(--gdl)">rhodesia_official ✦</div><div class="ptag">The Tradition Film · Coming Soon</div></div>
+      <div class="pui" onclick="goPublicProfile('rhodesia_official')"><div class="pun" style="color:var(--gdl)">rhodesia_official ✦</div><div class="ptag">The Tradition Film · Coming Soon</div></div>
       <span class="pdots" onclick="O('ov-share')">⋯</span>
     </div>
     <div class="pstill"><canvas id="cv-cs"></canvas><div class="pgrain"></div><div class="pscan"></div><div class="ptap" onclick="O('ov-trailer');setTrailer('The Tradition','Film · In Production')"><div class="pring"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div><span class="vlbl">Exclusive Preview</span></div>
@@ -541,7 +541,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
   <div class="post" data-cat="all characters">
     <div class="ph">
       <div class="pav char" style="background:linear-gradient(135deg,#5C3D28,#C8963E)" onclick="openStory('PJ','peggy_lavizzo_nola','#3B1A06','#7A4E35')">PJ</div>
-      <div class="pui" onclick="openStory('PJ','peggy_lavizzo_nola','#3B1A06','#7A4E35')"><div class="pun char">peggy_lavizzo_nola</div><div class="ptag">Pecan Candy — Character Account</div><div class="cbadge">✦ Character Account</div></div>
+      <div class="pui" onclick="goPublicProfile('peggy_lavizzo_nola')"><div class="pun char">peggy_lavizzo_nola</div><div class="ptag">Pecan Candy — Character Account</div><div class="cbadge">✦ Character Account</div></div>
       <button class="pfbtn" onclick="tFollow(this)">+ Follow</button>
       <span class="pdots" onclick="O('ov-share')">⋯</span>
     </div>
@@ -560,7 +560,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
   <div class="post" data-cat="all community">
     <div class="ph">
       <div class="pav" style="background:linear-gradient(135deg,#C8963E,#7A4E35)" onclick="openStory('MK','marlena_k','#3B1205','#7A3010')">MK</div>
-      <div class="pui" onclick="openStory('MK','marlena_k','#3B1205','#7A3010')"><div class="pun" onclick="goPublicProfile('marlena_k')" style="cursor:pointer">marlena_k</div><div class="ptag">Pecan Candy — Fan Reflection</div></div>
+      <div class="pui" onclick="goPublicProfile('marlena_k')"><div class="pun" onclick="goPublicProfile('marlena_k')" style="cursor:pointer">marlena_k</div><div class="ptag">Pecan Candy — Fan Reflection</div></div>
       <button class="pfbtn" onclick="tFollow(this)">+ Follow</button>
       <span class="pdots" onclick="O('ov-share')">⋯</span>
     </div>
@@ -590,7 +590,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
   <div class="post" data-cat="all creators">
     <div class="ph">
       <div class="pav" style="background:linear-gradient(135deg,#C8963E,#4A2C18);font-size:9px" onclick="openStory('RJ','rhodesia_official','#1A0805','#4A2C18')"><svg width="18" height="16" viewBox="0 0 120 110" fill="none"><text x="2" y="76" font-family="serif" font-size="72" font-weight="900" fill="white" opacity=".9">O</text><text x="42" y="76" font-family="serif" font-size="72" font-weight="900" fill="white" opacity=".9">E</text><line x1="88" y1="8" x2="88" y2="88" stroke="white" stroke-width="1.8" opacity=".6"/><path d="M97 65 Q104 70 111 65" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none" opacity=".82"/></svg></div>
-      <div class="pui" onclick="openStory('RJ','rhodesia_official','#1A0805','#4A2C18')"><div class="pun" style="color:var(--gdl)">rhodesia_official ✦</div><div class="ptag">Author · All Creations</div></div>
+      <div class="pui" onclick="goPublicProfile('rhodesia_official')"><div class="pun" style="color:var(--gdl)">rhodesia_official ✦</div><div class="ptag">Author · All Creations</div></div>
       <span class="pdots" onclick="O('ov-share')">⋯</span>
     </div>
     <div class="pstill"><canvas id="cv3"></canvas><div class="pgrain"></div><div class="pscan"></div><div class="ptap" onclick="alert('Video plays full screen')"><div class="pring"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div><span class="vlbl">Author Exclusive</span><span class="vdur">2:14</span></div>
@@ -972,9 +972,9 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
   <!-- MAIN PROFILE (shown by default) -->
   <div id="profile-main">
   <div class="pr-hdr">
-    <div class="pr-top"><div class="pr-av" onclick="viewMyStory()" style="cursor:pointer;box-shadow:0 0 0 2px var(--gd),0 0 0 4px var(--br)">Y</div><div class="pr-info"><div class="pr-name">Your Name</div><div class="pr-handle">@your_handle</div><div class="pr-badge">✦ Candy Lover · Tier 2</div></div></div>
+    <div class="pr-top"><div class="pr-av" onclick="viewProfileStory()" style="cursor:pointer;box-shadow:0 0 0 2px var(--gd),0 0 0 4px var(--br)">Y</div><div class="pr-info"><div class="pr-name">Your Name</div><div class="pr-handle">@your_handle</div><div class="pr-badge">✦ Candy Lover · Tier 2</div></div></div>
     <div class="pr-acts" id="pr-acts-private"><button class="pr-edit" onclick="O('ov-settings')">Edit Profile &amp; Settings</button><button class="pr-qr" onclick="O('ov-qr')">◻ QR</button></div>
-    <div class="pr-acts" id="pr-acts-public" style="display:none"><button class="pr-edit" style="flex:1;padding:8px;background:var(--gd);color:var(--br);font-size:11px;letter-spacing:.07em;text-transform:uppercase;border-radius:3px;border:none;cursor:pointer" onclick="tFollow(this)">+ Follow</button><button class="pr-qr" onclick="O('ov-msgs')">✉ Message</button></div>
+    <div class="pr-acts" id="pr-acts-public" style="display:none"><button class="pr-edit" style="flex:1;padding:8px;background:var(--gd);color:var(--br);font-size:11px;letter-spacing:.07em;text-transform:uppercase;border-radius:3px;border:none;cursor:pointer" onclick="tFollow(this)">+ Follow</button><button class="pr-qr" onclick="messageCurrentProfile()">✉ Message</button></div>
     <div class="pr-stats"><div class="pstat"><div class="pstat-n">12</div><div class="pstat-l">Posts</div></div><div class="pstat" onclick="openConnections('followers')" style="cursor:pointer"><div class="pstat-n">248</div><div class="pstat-l">Followers</div></div><div class="pstat" onclick="openConnections('following')" style="cursor:pointer"><div class="pstat-n">186</div><div class="pstat-l">Following</div></div><div class="pstat"><div class="pstat-n">3</div><div class="pstat-l">Books</div></div><div class="pstat"><div class="pstat-n">4</div><div class="pstat-l">Badges</div></div></div>
   </div>
   <!-- VIEW TOGGLE -->
@@ -1203,9 +1203,9 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <canvas class="story-canvas" id="story-cv"></canvas>
     <div class="story-pb"><div class="story-bar"><div class="story-fill" id="story-fill"></div></div></div>
     <div class="story-x" onclick="C('ov-story')">✕</div>
-    <!-- Left tap: pause/play, Right tap: next -->
+    <!-- Press & hold anywhere to pause; right tap advances -->
     <div style="position:absolute;inset:0;z-index:8;display:flex">
-      <div style="flex:1;cursor:pointer" onclick="toggleStoryPause()" title="Tap to pause"></div>
+      <div style="flex:1;cursor:pointer" title="Press and hold to pause"></div>
       <div style="flex:1;cursor:pointer" onclick="nextStory()" title="Tap to advance"></div>
     </div>
     <div id="story-pause-icon" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9;display:none;width:60px;height:60px;border-radius:50%;background:rgba(200,150,62,.92);backdrop-filter:blur(4px);align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,.4)"><svg id="story-pause-svg" viewBox="0 0 24 24" width="26" height="26" fill="#2C1A0E"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></div>
@@ -1512,7 +1512,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
   <div class="nb" id="nb-creations" onclick="T('creations')"><div class="nb-i">📖</div><span class="nb-l">Creations</span></div>
   <div class="nb nb-soul" id="nb-player" onclick="T('player')"><div class="nb-soul-circle"><svg viewBox="0 0 24 24" width="22" height="22" fill="var(--br)"><path d="M8 5v14l11-7z"/></svg></div><span class="nb-l" style="color:var(--gd)">Soul</span></div>
   <div class="nb" id="nb-community" onclick="T('community')"><div class="nb-i">👥</div><span class="nb-l">Community</span></div>
-  <div class="nb" id="nb-profile" onclick="T('profile')"><div class="nb-i">👤</div><span class="nb-l">Profile</span></div>
+  <div class="nb" id="nb-profile" onclick="T('profile');showMyProfile()"><div class="nb-i">👤</div><span class="nb-l">Profile</span></div>
 </div>
 </div><!-- end phone -->
 
@@ -2738,6 +2738,34 @@ function nextStory(){
   const fill=document.getElementById('story-fill');
   if(fill){fill.style.animation='none';setTimeout(function(){fill.style.animation='sfill 4s linear forwards';},30);}
 }
+// Press-and-hold to pause a story; release to resume.
+var _storyHoldTimer=null, _storyHolding=false, _storyJustHeld=false;
+function storyHoldPauseNow(){
+  var f=document.getElementById('story-fill'); if(f) f.style.animationPlayState='paused';
+  var i=document.getElementById('story-pause-icon');
+  if(i){ var svg=document.getElementById('story-pause-svg'); if(svg) svg.innerHTML='<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>'; i.style.display='flex'; }
+}
+function storyHoldResumeNow(){
+  var f=document.getElementById('story-fill'); if(f) f.style.animationPlayState='running';
+  var i=document.getElementById('story-pause-icon'); if(i) i.style.display='none';
+}
+function initStoryHold(){
+  var box=document.getElementById('story-box'); if(!box) return;
+  var down=function(){
+    if(_storyHoldTimer) clearTimeout(_storyHoldTimer);
+    _storyHoldTimer=setTimeout(function(){ _storyHoldTimer=null; _storyHolding=true; storyHoldPauseNow(); },160);
+  };
+  var up=function(){
+    if(_storyHoldTimer){ clearTimeout(_storyHoldTimer); _storyHoldTimer=null; }
+    if(_storyHolding){ _storyHolding=false; _storyJustHeld=true; storyHoldResumeNow(); }
+  };
+  box.addEventListener('pointerdown',down);
+  box.addEventListener('pointerup',up);
+  box.addEventListener('pointerleave',up);
+  box.addEventListener('pointercancel',up);
+  // Swallow the click that follows a genuine hold so it doesn't also advance the story.
+  box.addEventListener('click',function(e){ if(_storyJustHeld){ _storyJustHeld=false; e.stopPropagation(); e.preventDefault(); } },true);
+}
 
 function toggleASMRSound(btn){
   var isOn = btn.dataset.on==='1';
@@ -3062,6 +3090,7 @@ function notifNav(kind, arg, el){
   } else if(kind==='reward'){
     T('profile');
     hideNotifCenter();
+    if(typeof showMyProfile==='function') showMyProfile();
   } else {
     T('home');
   }
@@ -3240,10 +3269,25 @@ function addRepostToFeed(caption){
 const savedStories = [];
 const savedPosts = [];
 
+// Deterministic on-brand story colours per user, so each person's story looks distinct.
+function userStoryColors(name){
+  var pals=[['#1A0805','#4A2C18'],['#3B1A06','#7A4E35'],['#3B1205','#7A3010'],['#2C1A0E','#5C3D28'],['#2A2410','#5E7A3E']];
+  var h=0; for(var i=0;i<name.length;i++){ h=(h*31+name.charCodeAt(i))>>>0; }
+  return pals[h%pals.length];
+}
+function userInitials(name){
+  var letters=name.replace(/[^a-z]/gi,'');
+  return (letters.substring(0,2)||'OE').toUpperCase();
+}
 function goPublicProfile(name){
+  // Remember whose profile we're viewing so the avatar opens THEIR story and
+  // the Message button drafts to THEM.
+  window._viewingProfile = name;
   T('profile');
   setTimeout(function(){
     if(typeof setPrView==='function') setPrView('public');
+    // The public/private viewing toggle belongs only on your OWN profile.
+    setDisp('pr-view-toggle','none');
     var banner=document.getElementById('pr-public-banner');
     if(banner){
       banner.style.display='block';
@@ -3254,6 +3298,33 @@ function goPublicProfile(name){
     if(nm) nm.textContent=name.replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
     if(hd) hd.textContent='@'+name;
   },120);
+}
+// Reset the profile screen back to the logged-in user's own profile.
+function showMyProfile(){
+  window._viewingProfile = null;
+  setDisp('pr-view-toggle','flex');
+  if(typeof setPrView==='function') setPrView('private');
+  var nm=document.querySelector('#s-profile .pr-name');
+  var hd=document.querySelector('#s-profile .pr-handle');
+  if(nm) nm.textContent='Your Name';
+  if(hd) hd.textContent='@your_handle';
+}
+// Message button on another user's profile: jump straight into a draft to THEM.
+function messageCurrentProfile(){
+  var who = window._viewingProfile;
+  if(!who){ O('ov-msgs'); return; }
+  if(typeof openConvo==='function') openConvo(who,'');
+  else O('ov-msgs');
+}
+// Profile avatar: on another user's profile show THEIR story; on your own, yours.
+function viewProfileStory(){
+  var who = window._viewingProfile;
+  if(who){
+    var c=userStoryColors(who);
+    openStory(userInitials(who), who, c[0], c[1]);
+  } else {
+    viewMyStory();
+  }
 }
 
 let replyTarget = null;
@@ -3360,6 +3431,7 @@ window.addEventListener('load',()=>{
   initCommGrid();
   initBdayWheels();
   paintAllBookArt();
+  initStoryHold();
 });
 
 // ── PRIVACY TOGGLES ──
