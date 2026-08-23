@@ -2446,7 +2446,87 @@ function dAsmr(id,playing){
   }
   loop();
 }
-function startASMR(wrap){const c=wrap.querySelector('canvas');dAsmr(c.id,true);}
+function startASMR(wrap){var c=wrap.querySelector('canvas');if(!c)return;if(!c.id)c.id='asmr-'+(++_asmrSeq);dAsmr(c.id,true);}
+
+// ── Tag each feed post with its author (read from the username in its header) ──
+function tagPostAuthors(root){
+  (root||document).querySelectorAll('.post').forEach(function(p){
+    if(p.dataset.author) return;
+    var pun=p.querySelector('.pun');
+    if(pun){ p.dataset.author = pun.textContent.replace(/[✦\s]+$/,'').trim(); }
+  });
+}
+
+// ── Home-feed autoplay: video-type (.asmr) posts play in view, pause out of view ──
+// Structured so a real <video> file dropped into a post autoplays the same way.
+var _asmrSeq=0, feedAutoplayObserver=null;
+function playFeedMedia(wrap){
+  var v=wrap.querySelector('video');
+  if(v){ if(v.play) try{ v.play(); }catch(e){} wrap.dataset.playing='1'; return; }
+  var c=wrap.querySelector('canvas'); if(!c) return;
+  if(!c.id) c.id='asmr-'+(++_asmrSeq);
+  dAsmr(c.id, true);
+  wrap.dataset.playing='1';
+}
+function pauseFeedMedia(wrap){
+  var v=wrap.querySelector('video');
+  if(v){ if(v.pause) v.pause(); wrap.dataset.playing=''; return; }
+  var c=wrap.querySelector('canvas'); if(!c||!c.id) return;
+  if(aS[c.id]){ cancelAnimationFrame(aS[c.id]); aS[c.id]=null; }
+  wrap.dataset.playing='';
+}
+function observeFeedMedia(){
+  if(!feedAutoplayObserver) return;
+  document.querySelectorAll('#s-home .asmr').forEach(function(w){
+    if(!w.dataset.obs){ w.dataset.obs='1'; feedAutoplayObserver.observe(w); }
+  });
+}
+function initFeedAutoplay(){
+  if(!('IntersectionObserver' in window)) return;
+  var root=document.getElementById('s-home');
+  feedAutoplayObserver=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting) playFeedMedia(e.target); else pauseFeedMedia(e.target);
+    });
+  }, {root:root, threshold:0.55});
+  observeFeedMedia();
+}
+
+// ── Member profile posts grid: show the member's REAL feed post(s), else empty ──
+function buildProfileGrid(name){
+  var grid=document.getElementById('pr-grid'); if(!grid) return;
+  var posts=[].slice.call(document.querySelectorAll('#s-home .post[data-author="'+name+'"]'));
+  grid.innerHTML='';
+  if(!posts.length){ grid.dataset.empty='1'; return; } // empty — just the dark background, no squares
+  grid.dataset.empty='';
+  var col=(typeof userStoryColors==='function')?userStoryColors(name):['#3B2010','#7A4E35'];
+  posts.forEach(function(post){
+    var capEl=post.querySelector('.asmr-q,.pcap,.bref');
+    var cap='';
+    if(capEl){
+      if(capEl.classList.contains('pcap')){ var clone=capEl.cloneNode(true); var u=clone.querySelector('.pcap-u'); if(u) u.remove(); cap=clone.textContent.trim(); }
+      else cap=capEl.textContent.trim();
+    } else if(post.querySelector('.ptag')){ cap=post.querySelector('.ptag').textContent.trim(); }
+    var cell=document.createElement('div');
+    cell.className='pr-th';
+    cell.style.cssText='background:linear-gradient(135deg,'+col[0]+','+col[1]+');position:relative';
+    var ov=document.createElement('div');
+    ov.style.cssText='position:absolute;inset:0;padding:7px;display:flex;align-items:flex-end;font-family:\'Cormorant Garamond\',serif;font-size:8.5px;font-style:italic;line-height:1.25;color:rgba(247,241,232,.9);background:linear-gradient(to top,rgba(13,8,4,.82),transparent 68%)';
+    ov.textContent = cap.length>62 ? cap.slice(0,60)+'…' : cap;
+    cell.appendChild(ov);
+    cell.onclick=function(){ jumpToFeedPost(post); };
+    grid.appendChild(cell);
+  });
+}
+function jumpToFeedPost(post){
+  T('home');
+  setTimeout(function(){
+    try{ post.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
+    post.style.transition='box-shadow .3s';
+    post.style.boxShadow='0 0 0 2px var(--gd)';
+    setTimeout(function(){ post.style.boxShadow=''; }, 1500);
+  }, 140);
+}
 function setSpdBtn(e,s){e.stopPropagation();e.target.closest('.asmr-spd').querySelectorAll('.spd').forEach(b=>b.classList.remove('on'));e.target.classList.add('on');}
 
 setTimeout(()=>{
@@ -2454,7 +2534,7 @@ setTimeout(()=>{
   dCanvas('cv1','#3B1A06','#7A3010','#2C1A0E');
   dCanvas('cv3','#1A0E04','#4A2C18','#2C1A0E');
   dCanvas('tv-cv','#3B1205','#7A3010','#2C1A0E');
-  dAsmr('asmr-cv1',false);dAsmr('asmr-cv2',false);
+  // #asmr1 is a video-type feed post — the autoplay observer starts/stops it by visibility.
   const cc=document.getElementById('comm-cv');if(cc){const ctx=cc.getContext('2d');cc.width=390;cc.height=160;const g=ctx.createLinearGradient(0,0,390,160);g.addColorStop(0,'#1A0805');g.addColorStop(1,'#2C1A0E');ctx.fillStyle=g;ctx.fillRect(0,0,390,160);}
 },150);
 
@@ -3424,6 +3504,8 @@ function goPublicProfile(name){
     // Show the viewed user's own avatar, not the logged-in user's "Y".
     var av=document.querySelector('#s-profile .pr-av');
     if(av){ av.textContent=userInitials(name); var c=userStoryColors(name); av.style.background='linear-gradient(135deg,'+c[0]+','+c[1]+')'; }
+    // Posts grid shows the member's REAL feed posts (or an empty state), never placeholders.
+    if(typeof buildProfileGrid==='function') buildProfileGrid(name);
   },120);
 }
 // Reset the profile screen back to the logged-in user's own profile.
@@ -3437,6 +3519,9 @@ function showMyProfile(){
   if(hd) hd.textContent='@your_handle';
   var av=document.querySelector('#s-profile .pr-av');
   if(av){ av.textContent='Y'; av.style.background=''; }
+  // Restore your own posts grid.
+  var grid=document.getElementById('pr-grid');
+  if(grid && window._ownGridHTML!=null){ grid.innerHTML=window._ownGridHTML; grid.dataset.empty=''; }
 }
 // Message button on another user's profile: jump straight into a draft to THEM.
 function messageCurrentProfile(){
@@ -3561,6 +3646,10 @@ window.addEventListener('load',()=>{
   initBdayWheels();
   paintAllBookArt();
   initStoryHold();
+  // Remember the logged-in user's own posts grid, then wire feed author tags + autoplay.
+  var _pg=document.getElementById('pr-grid'); if(_pg) window._ownGridHTML=_pg.innerHTML;
+  tagPostAuthors(document);
+  initFeedAutoplay();
 });
 
 // ── PRIVACY TOGGLES ──
@@ -3804,10 +3893,16 @@ function loadMorePosts(screenId, templates){
     screen.insertBefore(div.firstChild, sentinel);
   }
   scrollState[screenId] = (idx+3);
-  // Init any new asmr canvases
-  screen.querySelectorAll('.inf-asmr').forEach(c=>{
-    if(!c.dataset.init){c.dataset.init='1';dAsmr2(c);}
-  });
+  if(screenId==='s-home'){
+    // Home feed: tag authors for profile grids, and let the autoplay observer drive .asmr media.
+    if(typeof tagPostAuthors==='function') tagPostAuthors(screen);
+    if(typeof observeFeedMedia==='function') observeFeedMedia();
+  } else {
+    // Other feeds: keep the continuous ambient animation.
+    screen.querySelectorAll('.inf-asmr').forEach(c=>{
+      if(!c.dataset.init){c.dataset.init='1';dAsmr2(c);}
+    });
+  }
 }
 
 function dAsmr2(canvas){
@@ -3844,10 +3939,16 @@ function loadMorePosts(screenId, templates){
     screen.insertBefore(div.firstChild, sentinel);
   }
   scrollState[screenId] = (idx+3);
-  // Init any new asmr canvases
-  screen.querySelectorAll('.inf-asmr').forEach(c=>{
-    if(!c.dataset.init){c.dataset.init='1';dAsmr2(c);}
-  });
+  if(screenId==='s-home'){
+    // Home feed: tag authors for profile grids, and let the autoplay observer drive .asmr media.
+    if(typeof tagPostAuthors==='function') tagPostAuthors(screen);
+    if(typeof observeFeedMedia==='function') observeFeedMedia();
+  } else {
+    // Other feeds: keep the continuous ambient animation.
+    screen.querySelectorAll('.inf-asmr').forEach(c=>{
+      if(!c.dataset.init){c.dataset.init='1';dAsmr2(c);}
+    });
+  }
 }
 
 function dAsmr2(canvas){
