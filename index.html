@@ -9,6 +9,14 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--br:#2C1A0E;--brm:#4A2C18;--brl:#7A4E35;--cr:#F7F1E8;--crw:#EDE3D2;--gd:#C8963E;--gdl:#E8B96A;--gdp:#F5DFA8;--ok:#5E7A3E;--blk:#0D0804;--mu:rgba(247,241,232,0.35)}
 html,body{width:100%;height:100%;overflow:hidden;background:#0D0804;font-family:'DM Sans',sans-serif}
+/* On-brand scrollbars app-wide: thin, translucent dark-brown/gold — never bright white.
+   (Screen containers that opt out via scrollbar-width:none keep their hidden scrollbars.) */
+*{scrollbar-width:thin;scrollbar-color:rgba(200,150,62,.32) transparent}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(200,150,62,.28);border-radius:6px;border:1px solid rgba(44,26,14,.4)}
+::-webkit-scrollbar-thumb:hover{background:rgba(200,150,62,.45)}
+::-webkit-scrollbar-corner{background:transparent}
 body{display:flex;align-items:center;justify-content:center;min-height:100vh;background:radial-gradient(ellipse at 40% 30%,#3B1A06,#0D0804)}
 .phone{width:390px;height:844px;background:var(--blk);border-radius:52px;overflow:hidden;position:relative;display:flex;flex-direction:column;box-shadow:0 50px 140px rgba(0,0,0,.9),inset 0 0 0 1.5px rgba(200,150,62,.15)}
 
@@ -848,12 +856,53 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
         </div>
         <div id="ev-popup-date" style="font-size:11px;color:#C8963E;opacity:.7;margin-bottom:6px"></div>
         <div id="ev-popup-going" style="font-size:11px;margin-bottom:8px"></div>
-        <div id="ev-popup-attendees" style="display:none;margin-bottom:12px;max-height:132px;overflow-y:auto"></div>
+        <div id="ev-popup-attendees" style="display:none;margin-bottom:12px;max-height:190px;overflow-y:auto;padding-right:4px"></div>
         <div id="ev-popup-desc" style="font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:rgba(247,241,232,.65);line-height:1.6;margin-bottom:14px"></div>
         <button onclick="addToCalendar()" style="width:100%;padding:10px;margin-bottom:8px;background:rgba(200,150,62,.1);border:1px solid rgba(200,150,62,.3);color:var(--gd);font-size:11px;letter-spacing:.06em;text-transform:uppercase;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">📅 Add to Calendar</button>
         <div style="display:flex;gap:8px">
           <button onclick="closeEvPopup()" style="flex:1;padding:10px;background:transparent;border:1px solid rgba(200,150,62,.25);color:rgba(247,241,232,.5);font-size:11px;letter-spacing:.07em;text-transform:uppercase;border-radius:4px;cursor:pointer">Close</button>
           <button id="ev-popup-rsvp" onclick="evPopupRsvp()" style="flex:1;padding:10px;background:#C8963E;color:#2C1A0E;border:none;font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;border-radius:4px;cursor:pointer">RSVP</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MY EVENTS panel (overlay sheet — not a nav tab) -->
+  <div id="myev-bg" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.72);z-index:850;align-items:flex-end;justify-content:center" onclick="closeMyEvents()">
+    <div style="width:100%;max-height:82%;background:#140A04;border-radius:18px 18px 0 0;overflow:hidden;border-top:1px solid rgba(200,150,62,.3);display:flex;flex-direction:column" onclick="event.stopPropagation()">
+      <div style="height:4px;background:linear-gradient(to right,#2C1A0E,#C8963E,#2C1A0E)"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px;flex-shrink:0">
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;font-style:italic;color:var(--cr)">My Events</div>
+        <span onclick="closeMyEvents()" style="color:rgba(247,241,232,.35);cursor:pointer;font-size:20px;line-height:1">&times;</span>
+      </div>
+      <div id="myev-body" style="overflow-y:auto;padding:0 16px 22px"></div>
+    </div>
+  </div>
+
+  <!-- RATE event overlay (History) — stars + optional typed/voice comment -->
+  <div id="rate-bg" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.78);z-index:950;align-items:center;justify-content:center" onclick="closeRate()">
+    <div style="width:300px;background:#1A0E06;border-radius:14px;overflow:hidden;border:1px solid rgba(200,150,62,.3)" onclick="event.stopPropagation()">
+      <div style="height:5px;background:linear-gradient(to right,#2C1A0E,#C8963E,#2C1A0E)"></div>
+      <div style="padding:18px">
+        <div style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#C8963E;opacity:.85;margin-bottom:3px" id="rate-city"></div>
+        <div id="rate-name" style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;font-style:italic;color:#F7F1E8;line-height:1.2;margin-bottom:14px"></div>
+        <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(247,241,232,.4);margin-bottom:6px">Your rating</div>
+        <div id="rate-stars" style="display:flex;gap:6px;margin-bottom:16px"></div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:rgba(247,241,232,.6);line-height:1.4;margin-bottom:10px">What did you like about the event? What would have made it better?</div>
+        <div style="display:flex;gap:6px;margin-bottom:10px">
+          <button id="rate-tab-type" onclick="rateSetMode('text')" style="flex:1;padding:7px;background:var(--gd);color:var(--br);border:none;border-radius:6px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;cursor:pointer">⌨ Type</button>
+          <button id="rate-tab-voice" onclick="rateSetMode('voice')" style="flex:1;padding:7px;background:transparent;color:var(--gd);border:1px solid rgba(200,150,62,.3);border-radius:6px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">🎙 Voice</button>
+        </div>
+        <textarea id="rate-text" placeholder="Share a few words (optional)…" style="width:100%;height:78px;background:rgba(0,0,0,.3);border:1px solid rgba(200,150,62,.2);border-radius:8px;color:var(--cr);font-family:'DM Sans',sans-serif;font-size:12px;padding:10px;resize:none;outline:none;margin-bottom:14px"></textarea>
+        <div id="rate-voice" style="display:none;flex-direction:column;align-items:center;gap:10px;background:linear-gradient(160deg,#1A0E06,#0D0804);border:1px solid rgba(200,150,62,.15);border-radius:8px;padding:14px;margin-bottom:14px">
+          <div class="cr-wave" id="rate-wave" style="height:44px"><span style="animation-delay:0s"></span><span style="animation-delay:.08s"></span><span style="animation-delay:.16s"></span><span style="animation-delay:.24s"></span><span style="animation-delay:.32s"></span><span style="animation-delay:.4s"></span><span style="animation-delay:.48s"></span><span style="animation-delay:.56s"></span><span style="animation-delay:.64s"></span><span style="animation-delay:.72s"></span><span style="animation-delay:.6s"></span><span style="animation-delay:.5s"></span><span style="animation-delay:.4s"></span><span style="animation-delay:.3s"></span><span style="animation-delay:.2s"></span><span style="animation-delay:.1s"></span></div>
+          <div id="rate-voice-timer" style="font-family:'DM Sans',sans-serif;font-size:14px;color:var(--gd);letter-spacing:.1em">0:00</div>
+          <button id="rate-rec-btn" onclick="rateToggleRec()" style="padding:8px 18px;background:var(--gd);color:var(--br);border:none;border-radius:20px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;cursor:pointer">● Record</button>
+          <div id="rate-voice-note" style="font-size:10px;color:rgba(247,241,232,.4)">Tap record to capture your voice reflection</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button onclick="closeRate()" style="flex:1;padding:10px;background:transparent;border:1px solid rgba(200,150,62,.25);color:rgba(247,241,232,.5);font-size:11px;letter-spacing:.07em;text-transform:uppercase;border-radius:4px;cursor:pointer">Cancel</button>
+          <button onclick="saveRating()" style="flex:1;padding:10px;background:#C8963E;color:#2C1A0E;border:none;font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;border-radius:4px;cursor:pointer">Save</button>
         </div>
       </div>
     </div>
@@ -896,7 +945,10 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       </div>
     </div>
     <!-- All upcoming events list -->
-    <div style="padding:14px 13px 6px;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(247,241,232,.3)">All Upcoming Events</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 13px 6px">
+      <div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(247,241,232,.3)">All Upcoming Events</div>
+      <button onclick="openMyEvents()" style="display:flex;align-items:center;gap:5px;padding:5px 11px;background:rgba(200,150,62,.08);border:1px solid rgba(200,150,62,.28);border-radius:16px;color:var(--gd);font-size:10px;letter-spacing:.05em;cursor:pointer;white-space:nowrap"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#C8963E" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>My Events</button>
+    </div>
     <div style="display:flex;flex-direction:column;padding:0 13px">
       <div class="ev-row" data-city="New Orleans, LA" data-date="May 10" data-time="6:00 PM"><div class="ev-ico" onclick="flashOrbFromEl(this)" style="cursor:pointer"><svg viewBox="0 0 24 24" width="18" height="18" fill="#C8963E"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div><div class="ev-info"><div class="ev-name" onclick="openEvPopup('Pecan Candy Book Club','New Orleans, LA','May 10 · 6:00 PM','Join fellow readers in New Orleans for an intimate book club evening celebrating Pecan Candy & Huck-A-Bucks. Light refreshments, guided discussion, and a special surprise from Rhodesia.')" style="cursor:pointer">Pecan Candy Book Club</div><div class="ev-meta">New Orleans, LA · May 10 · 6:00 PM</div></div><button class="ev-rsvp" onclick="tRsvp(this)">RSVP</button></div><div class="ev-row" data-city="New Orleans, LA" data-date="May 11" data-time="5:00 PM"><div class="ev-ico" onclick="flashOrbFromEl(this)" style="cursor:pointer"><svg viewBox="0 0 24 24" width="18" height="18" fill="#C8963E"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div><div class="ev-info"><div class="ev-name" onclick="openEvPopup('Creole Cooking &amp; Stories','New Orleans, LA','May 11 · 5:00 PM','An evening of Creole cooking demos and storytelling inspired by Smothered Okra &amp; Long-Grain Rice — taste the recipes straight off the page.')" style="cursor:pointer">Creole Cooking &amp; Stories</div><div class="ev-meta">New Orleans, LA · May 11 · 5:00 PM</div></div><button class="ev-rsvp" onclick="tRsvp(this)">RSVP</button></div>
       <div class="ev-row" data-city="Atlanta, GA" data-date="May 17" data-time="7:00 PM"><div class="ev-ico" onclick="flashOrbFromEl(this)" style="cursor:pointer"><svg viewBox="0 0 24 24" width="18" height="18" fill="#C8963E"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div><div class="ev-info"><div class="ev-name" onclick="openEvPopup('Author Q&amp;A — OE Live','Atlanta, GA','May 17 · 7:00 PM','A live Q&amp;A with Rhodesia Jackson about the Candy Trilogy, the writing process, and what comes next for the Orgena universe.')" style="cursor:pointer">Author Q&amp;A — OE Live</div><div class="ev-meta">Atlanta, GA · May 17 · 7:00 PM</div></div><button class="ev-rsvp" onclick="tRsvp(this)">RSVP</button></div>
@@ -1846,18 +1898,26 @@ function setHTML(id,val){var e=document.getElementById(id);if(e)e.innerHTML=val;
 function setDisp(id,val){var e=document.getElementById(id);if(e)e.style.display=val;}
 
 // ── Single source of truth for community events ──
-var ATTENDEE_POOL=['peggy_lavizzo_nola','marlena_k','n_boudreaux','soulful_mia','jazz_nola_88','creole_reads','bayou_booklover','sweet_boudreaux','orleans_ave_fan','candy_trilogy_stan','nola_book_club','clint_johnston_nola'];
+var ATTENDEE_POOL=['peggy_lavizzo_nola','marlena_k','n_boudreaux','soulful_mia','jazz_nola_88','creole_reads','bayou_booklover','sweet_boudreaux','orleans_ave_fan','candy_trilogy_stan','nola_book_club','clint_johnston_nola','gulf_coast_reader','miss_odessa_j','tremé_pages','frenchmen_st_fan','okra_and_ink','praline_prose','delta_daydreamer','crescent_city_lit','maple_st_marcus','audre_reads','langston_leigh','zora_z_fan','book_hound_bre','uptown_uma','ninth_ward_niecy','carver_reads','gumbo_and_grits','story_seeker_sy'];
+// tz = the event's OWN local time zone label (no per-viewer conversion yet — that comes with the backend).
 var EVENTS=[
- {name:'Pecan Candy Book Club',city:'New Orleans, LA',date:'May 10 · 6:00 PM',start:'20270510T180000',end:'20270510T200000',going:42,hybrid:false,desc:'Join fellow readers in New Orleans for an intimate book club evening celebrating Pecan Candy & Huck-A-Bucks. Light refreshments, guided discussion, and a special surprise from Rhodesia.'},
- {name:'Creole Cooking & Stories',city:'New Orleans, LA',date:'May 11 · 5:00 PM',start:'20270511T170000',end:'20270511T190000',going:27,hybrid:false,desc:'An evening of Creole cooking demos and storytelling inspired by Smothered Okra & Long-Grain Rice — taste the recipes straight off the page.'},
- {name:'Author Q&A — OE Live',city:'Atlanta, GA',date:'May 17 · 7:00 PM',start:'20270517T190000',end:'20270517T210000',going:128,hybrid:true,desc:'A live Q&A with Rhodesia Jackson about the Candy Trilogy, the writing process, and what comes next for the Orgena universe.'},
- {name:'Readers Meetup',city:'Houston, TX',date:'May 24 · 5:30 PM',start:'20270524T173000',end:'20270524T193000',going:36,hybrid:false,desc:'Connect with fellow Orgena community members in Houston. Share reflections, favorite quotes, and meet readers who love the stories as much as you do.'},
- {name:'The Candy Trilogy Discussion',city:'Chicago, IL',date:'Jun 1 · 4:00 PM',start:'20270601T160000',end:'20270601T180000',going:54,hybrid:true,desc:'A deep-dive panel discussion covering all three books in the Candy Trilogy — themes of love, home, and family in New Orleans. Facilitated by community leaders.'},
- {name:'OE Pop-Up Reading',city:'New York, NY',date:'Jun 7 · 6:30 PM',start:'20270607T183000',end:'20270607T203000',going:61,hybrid:false,desc:'Rhodesia Jackson reads exclusive passages from upcoming work at this intimate pop-up event. Limited spots. First come, first served.'},
- {name:'West Coast Book Night',city:'Los Angeles, CA',date:'Jun 14 · 7:00 PM',start:'20270614T190000',end:'20270614T210000',going:47,hybrid:false,desc:'Leimert Park hosts an Orgena evening — live readings, music inspired by the books, and community connection on the West Coast.'},
- {name:'Southern Lit Series',city:'Washington, DC',date:'Jun 21 · 5:00 PM',start:'20270621T170000',end:'20270621T190000',going:39,hybrid:true,desc:'Part of the Southern Lit Series, this event celebrates Black literature and storytelling. Rhodesia Jackson joins a panel of celebrated authors.'}
+ {name:'Pecan Candy Book Club',city:'New Orleans, LA',tz:'CT',date:'May 10 · 6:00 PM',start:'20270510T180000',end:'20270510T200000',going:42,hybrid:false,desc:'Join fellow readers in New Orleans for an intimate book club evening celebrating Pecan Candy & Huck-A-Bucks. Light refreshments, guided discussion, and a special surprise from Rhodesia.'},
+ {name:'Creole Cooking & Stories',city:'New Orleans, LA',tz:'CT',date:'May 11 · 5:00 PM',start:'20270511T170000',end:'20270511T190000',going:27,hybrid:false,desc:'An evening of Creole cooking demos and storytelling inspired by Smothered Okra & Long-Grain Rice — taste the recipes straight off the page.'},
+ {name:'Author Q&A — OE Live',city:'Atlanta, GA',tz:'ET',date:'May 17 · 7:00 PM',start:'20270517T190000',end:'20270517T210000',going:128,hybrid:true,desc:'A live Q&A with Rhodesia Jackson about the Candy Trilogy, the writing process, and what comes next for the Orgena universe.'},
+ {name:'Readers Meetup',city:'Houston, TX',tz:'CT',date:'May 24 · 5:30 PM',start:'20270524T173000',end:'20270524T193000',going:36,hybrid:false,desc:'Connect with fellow Orgena community members in Houston. Share reflections, favorite quotes, and meet readers who love the stories as much as you do.'},
+ {name:'The Candy Trilogy Discussion',city:'Chicago, IL',tz:'CT',date:'Jun 1 · 4:00 PM',start:'20270601T160000',end:'20270601T180000',going:54,hybrid:true,desc:'A deep-dive panel discussion covering all three books in the Candy Trilogy — themes of love, home, and family in New Orleans. Facilitated by community leaders.'},
+ {name:'OE Pop-Up Reading',city:'New York, NY',tz:'ET',date:'Jun 7 · 6:30 PM',start:'20270607T183000',end:'20270607T203000',going:61,hybrid:false,desc:'Rhodesia Jackson reads exclusive passages from upcoming work at this intimate pop-up event. Limited spots. First come, first served.'},
+ {name:'West Coast Book Night',city:'Los Angeles, CA',tz:'PT',date:'Jun 14 · 7:00 PM',start:'20270614T190000',end:'20270614T210000',going:47,hybrid:false,desc:'Leimert Park hosts an Orgena evening — live readings, music inspired by the books, and community connection on the West Coast.'},
+ {name:'Southern Lit Series',city:'Washington, DC',tz:'ET',date:'Jun 21 · 5:00 PM',start:'20270621T170000',end:'20270621T190000',going:39,hybrid:true,desc:'Part of the Southern Lit Series, this event celebrates Black literature and storytelling. Rhodesia Jackson joins a panel of celebrated authors.'},
+ // ── Past events (already happened, per the real calendar) — surface in My Events → History ──
+ {name:'Holiday Readers Social',city:'New Orleans, LA',tz:'CT',date:'Dec 14, 2025 · 5:00 PM',start:'20251214T170000',end:'20251214T190000',going:58,hybrid:false,desc:'An end-of-year gathering of the Orgena community in New Orleans — warm drinks, favorite reads of the year, and a toast to the stories that brought us together.'},
+ {name:'Winter Book Circle',city:'Atlanta, GA',tz:'ET',date:'Feb 8, 2026 · 6:30 PM',start:'20260208T183000',end:'20260208T203000',going:44,hybrid:true,desc:'A cozy winter discussion of Sweeter Than Candy — themes of resilience and home, with community readers sharing the passages that stayed with them.'},
+ {name:'Spring Author Brunch',city:'Los Angeles, CA',tz:'PT',date:'Apr 19, 2026 · 11:00 AM',start:'20260419T110000',end:'20260419T130000',going:36,hybrid:false,desc:'A West Coast brunch with readings, conversation, and community — a relaxed morning celebrating the Candy Trilogy in Leimert Park.'}
 ];
 var rsvpedEvents={};
+// Seed: the user already attended these past events (History), and RSVP'd one upcoming (Upcoming).
+['Holiday Readers Social','Winter Book Circle','Spring Author Brunch','Pecan Candy Book Club'].forEach(function(n){ rsvpedEvents[n]=true; });
+var eventRatings={}; // name -> {stars:1-5, comment:'', mode:'text'|'voice'}
 window.curEv=null;
 function evClean(n){ return (n||'').replace(/&amp;/g,'&').trim(); }
 function findEvent(name){ var c=evClean(name); return EVENTS.filter(function(e){return e.name===c;})[0]||null; }
@@ -1874,7 +1934,7 @@ function openEvPopup(name, city, date, desc){
   window.curEv=ev;
   setText('ev-popup-name', ev.name);
   setText('ev-popup-city', ev.city||city);
-  setText('ev-popup-date', ev.date||date);
+  setText('ev-popup-date', (ev.date||date)+(ev.tz?' '+ev.tz:''));
   setText('ev-popup-desc', ev.desc||desc);
   renderGoingLine(ev);
   var att=document.getElementById('ev-popup-attendees'); if(att){ att.style.display='none'; att.innerHTML=''; }
@@ -1894,12 +1954,20 @@ function evPopupRsvp(){
   haptic(18);
   if(rsvpedEvents[ev.name]){ if(typeof showToast==='function') showToast('✓ You\'re going to '+ev.name); }
 }
-// Attendee list — gated behind RSVP
+// Attendee list — gated behind RSVP. Build a COMPLETE, realistic list matching the count.
+var ATTENDEE_SUFFIX=['','_','x','_2','_nola','_reads','_88','_atl','_htx','_la','_nyc','_dc','_chi','_2027','_jr','_the3rd','_books','_fan','_official','_'];
 function buildAttendeeNames(ev){
   var idx=EVENTS.indexOf(ev); if(idx<0) idx=0;
-  var shown=Math.min(ev.going, 8);
-  var out=[];
-  for(var i=0;i<shown;i++){ out.push(ATTENDEE_POOL[(idx*3+i)%ATTENDEE_POOL.length]); }
+  var n=ev.going||0, out=[], seen={};
+  for(var i=0;i<n;i++){
+    var base=ATTENDEE_POOL[(idx*3+i)%ATTENDEE_POOL.length];
+    var name=base;
+    // Once we exhaust unique base handles, append on-brand suffixes so every attendee is distinct.
+    var pass=Math.floor(i/ATTENDEE_POOL.length);
+    if(pass>0) name=base+ATTENDEE_SUFFIX[pass%ATTENDEE_SUFFIX.length]+(pass>=ATTENDEE_SUFFIX.length?pass:'');
+    if(seen[name]) name=name+(i);
+    seen[name]=1; out.push(name);
+  }
   return out;
 }
 function toggleAttendees(){
@@ -1916,12 +1984,13 @@ function toggleAttendees(){
 }
 function openAttendees(){
   var ev=window.curEv; var att=document.getElementById('ev-popup-attendees'); if(!ev||!att) return;
-  var names=buildAttendeeNames(ev); var extra=ev.going-names.length;
-  att.innerHTML = names.map(function(n){
+  var names=buildAttendeeNames(ev);
+  var header='<div style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(200,150,62,.6);padding:2px 0 6px;position:sticky;top:0;background:#1A0E06">'+ev.going+' people going</div>';
+  att.innerHTML = header + names.map(function(n){
     var initials=n.replace(/[^a-z]/gi,'').substring(0,2).toUpperCase();
     return '<div style="display:flex;align-items:center;gap:9px;padding:5px 0"><div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#5C3D28,#C8963E);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--br);flex-shrink:0">'+initials+'</div><span style="font-size:12px;color:var(--cr)">'+n+'</span></div>';
-  }).join('') + (extra>0 ? '<div style="font-size:11px;color:rgba(247,241,232,.4);padding:6px 0 2px">and '+extra+' others going</div>' : '');
-  att.style.display='block';
+  }).join('');
+  att.style.display='block'; att.scrollTop=0;
 }
 function rsvpThenShowAttendees(){
   var ev=window.curEv; if(!ev) return;
@@ -1977,7 +2046,7 @@ function commToggle(mode){
     if(exploreFilters) exploreFilters.style.display = 'none';
     if(togEvents){ togEvents.style.background='var(--gd)'; togEvents.style.color='var(--br)'; }
     if(togExplore){ togExplore.style.background='transparent'; togExplore.style.color='#FFFFFF'; }
-    setTimeout(function(){ initEventsMap(); initMapGestures(); }, 100);
+    setTimeout(function(){ initEventsMap(); initMapGestures(); labelZones(); syncListRsvp(); }, 100);
   } else {
     if(eventsView) eventsView.style.display = 'none';
     if(exploreView) exploreView.style.display = 'block';
@@ -2012,7 +2081,8 @@ function showCityPopup(city){
   if(!popup||!cityEl||!evEl) return;
   cityEl.textContent = city;
   evEl.innerHTML = '';
-  var list = EVENTS.filter(function(e){ return e.city===city; });
+  // The map shows UPCOMING events only — past events live in My Events → History.
+  var list = EVENTS.filter(function(e){ return e.city===city && !evIsPast(e); });
   if(!list.length){ popup.style.display='none'; return; }
   list.forEach(function(ev){
     var row = document.createElement('div');
@@ -2036,7 +2106,8 @@ function showCityPopup(city){
 
 function tRsvp(btn){
   btn.classList.toggle('on');
-  if(btn.classList.contains('on')){
+  var on=btn.classList.contains('on');
+  if(on){
     btn.textContent = '✓ Going';
     btn.style.background = 'var(--gd)';
     btn.style.color = 'var(--br)';
@@ -2047,8 +2118,153 @@ function tRsvp(btn){
     btn.style.color = 'var(--gd)';
     btn.style.borderColor = 'rgba(200,150,62,.35)';
   }
+  // Keep the shared RSVP map in sync when toggled from a main list row (so My Events reflects it).
+  var row=btn.closest('.ev-row');
+  if(row){ var nm=evClean((row.querySelector('.ev-name')||{}).textContent||''); if(nm) rsvpedEvents[nm]=on; }
   haptic(18);
 }
+// Reflect the shared RSVP state on the main list rows (e.g. seeded/pre-RSVP'd events).
+function syncListRsvp(){
+  document.querySelectorAll('#comm-events-view .ev-row').forEach(function(row){
+    var nm=evClean((row.querySelector('.ev-name')||{}).textContent||'');
+    var btn=row.querySelector('.ev-rsvp'); if(!btn) return;
+    var on=!!rsvpedEvents[nm];
+    if(on!==btn.classList.contains('on')) tRsvp(btn);
+  });
+}
+// Show each event's OWN local time zone label on the list rows (e.g. "… 6:00 PM CT").
+function labelZones(){
+  document.querySelectorAll('#comm-events-view .ev-row').forEach(function(row){
+    var nm=evClean((row.querySelector('.ev-name')||{}).textContent||'');
+    var ev=findEvent(nm); var meta=row.querySelector('.ev-meta');
+    if(ev&&ev.tz&&meta&&meta.textContent.indexOf(' '+ev.tz)<0) meta.textContent=meta.textContent+' '+ev.tz;
+  });
+}
+
+// ═══ MY EVENTS (Upcoming / History + rating) ═══
+function parseEvDate(ev){
+  var s=ev&&ev.start; if(!s) return null;
+  return new Date(+s.substr(0,4),+s.substr(4,2)-1,+s.substr(6,2),+s.substr(9,2)||0,+s.substr(11,2)||0);
+}
+function evIsPast(ev){ var d=parseEvDate(ev); return d? d.getTime() < Date.now() : false; }
+function evWhen(ev){ return (ev.date||'')+(ev.tz?' '+ev.tz:''); }
+function starRow(n,size){ var s=''; for(var i=1;i<=5;i++){ s+='<span style="color:'+(i<=n?'#E8B96A':'rgba(247,241,232,.2)')+';font-size:'+(size||13)+'px">★</span>'; } return s; }
+
+function openMyEvents(){ renderMyEvents(); var bg=document.getElementById('myev-bg'); if(bg) bg.style.display='flex'; haptic(12); }
+function closeMyEvents(){ var bg=document.getElementById('myev-bg'); if(bg) bg.style.display='none'; }
+
+function renderMyEvents(){
+  var body=document.getElementById('myev-body'); if(!body) return;
+  var mine=EVENTS.filter(function(e){ return rsvpedEvents[e.name]; });
+  var upcoming=mine.filter(function(e){ return !evIsPast(e); }).sort(function(a,b){ return parseEvDate(a)-parseEvDate(b); });
+  var history=mine.filter(function(e){ return evIsPast(e); }).sort(function(a,b){ return parseEvDate(b)-parseEvDate(a); });
+  var html='';
+  html+=sectionHead('Upcoming', upcoming.length);
+  html+= upcoming.length ? upcoming.map(function(e){ return myEvRow(e,false); }).join('')
+    : '<div style="font-size:12px;color:rgba(247,241,232,.4);padding:6px 2px 14px;font-style:italic">No upcoming events yet — RSVP to an event and it\'ll show here.</div>';
+  html+=sectionHead('History', history.length);
+  html+= history.length ? history.map(function(e){ return myEvRow(e,true); }).join('')
+    : '<div style="font-size:12px;color:rgba(247,241,232,.4);padding:6px 2px;font-style:italic">No past events yet.</div>';
+  body.innerHTML=html;
+}
+function sectionHead(label,n){
+  return '<div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--gd);opacity:.7;padding:14px 2px 8px;border-bottom:1px solid rgba(200,150,62,.12);margin-bottom:6px">'+label+' <span style="color:rgba(247,241,232,.35)">· '+n+'</span></div>';
+}
+function myEvRow(ev,isHistory){
+  var safe=ev.name.replace(/'/g,"\\'").replace(/&/g,'&amp;');
+  var rated=eventRatings[ev.name];
+  var rateBlock='';
+  if(isHistory){
+    if(rated){
+      rateBlock='<div style="margin-top:7px;padding-top:7px;border-top:1px solid rgba(200,150,62,.1)"><div style="display:flex;align-items:center;gap:8px"><span>'+starRow(rated.stars,13)+'</span><span onclick="openRate(\''+safe+'\')" style="font-size:10px;color:var(--gd);cursor:pointer;text-decoration:underline">Edit</span></div>'
+        + (rated.comment?'<div style="font-size:11px;color:rgba(247,241,232,.55);font-style:italic;margin-top:4px">'+(rated.mode==='voice'?'🎙 ':'“')+rated.comment+(rated.mode==='voice'?'':'”')+'</div>':'')
+        + '</div>';
+    } else {
+      rateBlock='<div style="margin-top:7px"><button onclick="openRate(\''+safe+'\')" style="padding:5px 12px;background:rgba(200,150,62,.1);border:1px solid rgba(200,150,62,.3);border-radius:16px;color:var(--gd);font-size:10px;letter-spacing:.05em;cursor:pointer">★ Rate this event</button></div>';
+    }
+  }
+  return '<div style="padding:11px 2px;border-bottom:1px solid rgba(200,150,62,.08)">'
+    + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">'
+    +   '<div style="flex:1;min-width:0">'
+    +     '<div onclick="myEvDetails(\''+safe+'\')" style="font-size:14px;font-weight:500;color:var(--cr);cursor:pointer">'+ev.name+'</div>'
+    +     '<div style="font-size:11px;color:rgba(247,241,232,.45);margin-top:2px">'+ev.city+' · '+evWhen(ev)+'</div>'
+    +   '</div>'
+    +   '<button onclick="myEvDetails(\''+safe+'\')" style="flex-shrink:0;padding:5px 11px;background:transparent;border:1px solid rgba(200,150,62,.3);border-radius:16px;color:var(--gd);font-size:10px;cursor:pointer">Info</button>'
+    + '</div>' + rateBlock + '</div>';
+}
+function myEvDetails(name){ var ev=findEvent(name); if(!ev) return; openEvPopup(ev.name, ev.city, ev.date, ev.desc); }
+
+// ── Rating (stars + optional typed or voice comment) ──
+window._rateEv=null; window._rateStars=0; window._rateMode='text';
+function openRate(name){
+  var ev=findEvent(name); if(!ev) return;
+  window._rateEv=ev;
+  var existing=eventRatings[ev.name]||{stars:0,comment:'',mode:'text'};
+  window._rateStars=existing.stars; window._rateMode=existing.mode||'text';
+  setText('rate-city', ev.city); setText('rate-name', ev.name);
+  renderRateStars();
+  var ta=document.getElementById('rate-text'); if(ta) ta.value=(existing.mode!=='voice'?(existing.comment||''):'');
+  window._rateVoiceCaptured=(existing.mode==='voice'?existing.comment:'');
+  rateSetMode(window._rateMode);
+  var bg=document.getElementById('rate-bg'); if(bg) bg.style.display='flex';
+}
+function closeRate(){ rateStopRec(); var bg=document.getElementById('rate-bg'); if(bg) bg.style.display='none'; }
+function renderRateStars(){
+  var el=document.getElementById('rate-stars'); if(!el) return;
+  var s='';
+  for(var i=1;i<=5;i++){ s+='<span onclick="rateSetStars('+i+')" style="cursor:pointer;font-size:30px;line-height:1;color:'+(i<=window._rateStars?'#E8B96A':'rgba(247,241,232,.22)')+'">★</span>'; }
+  el.innerHTML=s;
+}
+function rateSetStars(n){ window._rateStars=n; renderRateStars(); haptic(12); }
+function rateSetMode(m){
+  window._rateMode=m;
+  var typeBtn=document.getElementById('rate-tab-type'), voiceBtn=document.getElementById('rate-tab-voice');
+  var ta=document.getElementById('rate-text'), voice=document.getElementById('rate-voice');
+  var isV=(m==='voice');
+  if(ta) ta.style.display=isV?'none':'block';
+  if(voice) voice.style.display=isV?'flex':'none';
+  if(typeBtn){ typeBtn.style.background=isV?'transparent':'var(--gd)'; typeBtn.style.color=isV?'var(--gd)':'var(--br)'; typeBtn.style.border=isV?'1px solid rgba(200,150,62,.3)':'none'; }
+  if(voiceBtn){ voiceBtn.style.background=isV?'var(--gd)':'transparent'; voiceBtn.style.color=isV?'var(--br)':'var(--gd)'; voiceBtn.style.border=isV?'none':'1px solid rgba(200,150,62,.3)'; }
+  if(!isV) rateStopRec();
+}
+// Voice comment recorder — reuses the same animated waveform UI as the create flow.
+window._rateRecOn=false; window._rateRecT=0; window._rateRecTimer=null;
+function rateSetWave(on){
+  var w=document.getElementById('rate-wave'); if(!w) return;
+  w.querySelectorAll('span').forEach(function(s){ s.style.animationPlayState=on?'running':'paused'; s.style.opacity=on?'1':'.3'; });
+}
+function rateToggleRec(){ if(window._rateRecOn) rateStopRec(true); else rateStartRec(); }
+function rateStartRec(){
+  window._rateRecOn=true; window._rateRecT=0;
+  var btn=document.getElementById('rate-rec-btn'); if(btn){ btn.textContent='■ Stop'; btn.style.background='#E0584F'; btn.style.color='#fff'; }
+  var note=document.getElementById('rate-voice-note'); if(note) note.textContent='Recording your voice reflection…';
+  setText('rate-voice-timer','0:00'); rateSetWave(true); haptic(15);
+  window._rateRecTimer=setInterval(function(){ window._rateRecT++; var m=Math.floor(window._rateRecT/60), s=window._rateRecT%60; setText('rate-voice-timer', m+':'+(s<10?'0':'')+s); },1000);
+}
+function rateStopRec(captured){
+  if(window._rateRecTimer){ clearInterval(window._rateRecTimer); window._rateRecTimer=null; }
+  rateSetWave(false);
+  var btn=document.getElementById('rate-rec-btn'); if(btn){ btn.textContent='● Record'; btn.style.background='var(--gd)'; btn.style.color='var(--br)'; }
+  if(captured && window._rateRecOn){
+    var m=Math.floor(window._rateRecT/60), s=window._rateRecT%60;
+    window._rateVoiceCaptured='Voice note ('+m+':'+(s<10?'0':'')+s+')';
+    var note=document.getElementById('rate-voice-note'); if(note) note.textContent='✓ '+window._rateVoiceCaptured+' captured';
+    haptic(15);
+  }
+  window._rateRecOn=false;
+}
+function saveRating(){
+  var ev=window._rateEv; if(!ev) return;
+  if(!window._rateStars){ if(typeof showToast==='function') showToast('Tap a star to rate first'); return; }
+  var mode=window._rateMode, comment='';
+  if(mode==='voice') comment=window._rateVoiceCaptured||'';
+  else { var ta=document.getElementById('rate-text'); comment=ta?ta.value.trim():''; }
+  eventRatings[ev.name]={stars:window._rateStars, comment:comment, mode:mode};
+  closeRate(); renderMyEvents();
+  haptic(18);
+  if(typeof showToast==='function') showToast('★ Rating saved — thanks for your feedback');
+}
+
 // ── Location icon → flash the city's orb white/gold x3 (+haptic) ──
 function flashOrbFromEl(el){
   var row=el.closest('.ev-row'); if(!row) return;
@@ -3716,6 +3932,8 @@ window.addEventListener('load',()=>{
   tagPostAuthors(document);
   initFeedAutoplay();
   initMapGestures();
+  labelZones();
+  syncListRsvp();
 });
 
 // ── PRIVACY TOGGLES ──
