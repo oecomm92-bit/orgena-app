@@ -855,6 +855,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
           <span onclick="closeEvPopup()" style="color:rgba(247,241,232,.3);cursor:pointer;font-size:20px;line-height:1;margin-left:8px">&times;</span>
         </div>
         <div id="ev-popup-date" style="font-size:11px;color:#C8963E;opacity:.7;margin-bottom:6px"></div>
+        <div id="ev-popup-addr" style="margin-bottom:8px"></div>
         <div id="ev-popup-going" style="font-size:11px;margin-bottom:8px"></div>
         <div id="ev-popup-attendees" style="display:none;margin-bottom:12px;max-height:190px;overflow-y:auto;padding-right:4px"></div>
         <div id="ev-popup-desc" style="font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:rgba(247,241,232,.65);line-height:1.6;margin-bottom:14px"></div>
@@ -1912,12 +1913,38 @@ var EVENTS=[
  // ── Past events (already happened, per the real calendar) — surface in My Events → History ──
  {name:'Holiday Readers Social',city:'New Orleans, LA',tz:'CT',date:'Dec 14, 2025 · 5:00 PM',start:'20251214T170000',end:'20251214T190000',going:58,hybrid:false,desc:'An end-of-year gathering of the Orgena community in New Orleans — warm drinks, favorite reads of the year, and a toast to the stories that brought us together.'},
  {name:'Winter Book Circle',city:'Atlanta, GA',tz:'ET',date:'Feb 8, 2026 · 6:30 PM',start:'20260208T183000',end:'20260208T203000',going:44,hybrid:true,desc:'A cozy winter discussion of Sweeter Than Candy — themes of resilience and home, with community readers sharing the passages that stayed with them.'},
- {name:'Spring Author Brunch',city:'Los Angeles, CA',tz:'PT',date:'Apr 19, 2026 · 11:00 AM',start:'20260419T110000',end:'20260419T130000',going:36,hybrid:false,desc:'A West Coast brunch with readings, conversation, and community — a relaxed morning celebrating the Candy Trilogy in Leimert Park.'}
+ {name:'Spring Author Brunch',city:'Los Angeles, CA',tz:'PT',date:'Apr 19, 2026 · 11:00 AM',start:'20260419T110000',end:'20260419T130000',going:36,hybrid:false,desc:'A West Coast brunch with readings, conversation, and community — a relaxed morning celebrating the Candy Trilogy in Leimert Park.'},
+ // ── Paid experiences (from Creations → Experiences) — unified into the same model so a
+ //    purchased experience flows into My Events exactly like an RSVP'd community event. ──
+ {name:'An Evening with Rhodesia',kind:'experience',city:'New Orleans, LA',tz:'CT',date:'May 18, 2027 · 7:00 PM',start:'20270518T190000',end:'20270518T213000',going:30,hybrid:false,desc:'An intimate evening with Rhodesia — readings, Q&A, and signed copies. Limited to 30 guests.'},
+ {name:'OE Experience Pass',kind:'experience',city:'Atlanta, GA',tz:'ET',date:'Jun 7, 2027 · 12:00 PM',start:'20270607T120000',end:'20270607T220000',going:120,hybrid:false,desc:'Film screening, book signing, panel discussion, and an exclusive meet & greet with Rhodesia Jackson.'}
 ];
+// ── Venue + street address per event (placeholder data, keyed by name → easy to replace later) ──
+var EV_VENUES={
+ 'Pecan Candy Book Club':{venue:'Community Book Hub',street:'2372 St Claude Ave',csz:'New Orleans, LA 70117'},
+ 'Creole Cooking & Stories':{venue:'Bayou Kitchen Loft',street:'1101 Chartres St',csz:'New Orleans, LA 70116'},
+ 'Author Q&A — OE Live':{venue:'Auburn Ave Theatre',street:'234 Auburn Ave NE',csz:'Atlanta, GA 30303'},
+ 'Readers Meetup':{venue:'Third Ward Reading Room',street:'3402 Emancipation Ave',csz:'Houston, TX 77004'},
+ 'The Candy Trilogy Discussion':{venue:'Bronzeville Arts Hall',street:'4655 S King Dr',csz:'Chicago, IL 60653'},
+ 'OE Pop-Up Reading':{venue:'Harlem Story House',street:'253 W 125th St',csz:'New York, NY 10027'},
+ 'West Coast Book Night':{venue:'Leimert Park Lounge',street:'4343 Leimert Blvd',csz:'Los Angeles, CA 90008'},
+ 'Southern Lit Series':{venue:'U Street Literary Center',street:'1215 U St NW',csz:'Washington, DC 20009'},
+ 'Holiday Readers Social':{venue:'Tremé Gathering Room',street:'1420 N Villere St',csz:'New Orleans, LA 70116'},
+ 'Winter Book Circle':{venue:'Sweet Auburn Loft',street:'101 Edgewood Ave SE',csz:'Atlanta, GA 30303'},
+ 'Spring Author Brunch':{venue:'West Adams Garden',street:'2670 W Adams Blvd',csz:'Los Angeles, CA 90018'},
+ 'An Evening with Rhodesia':{venue:'The Broadside',street:'600 N Broad St',csz:'New Orleans, LA 70119'},
+ 'OE Experience Pass':{venue:'The Fox Theatre',street:'660 Peachtree St NE',csz:'Atlanta, GA 30308'}
+};
+function evAddr(name){ return EV_VENUES[evClean(name)]||null; }
+function evMapsUrl(a){ return 'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(a.street+', '+a.csz); }
 var rsvpedEvents={};
+var purchasedExperiences={}; // name -> true once a ticket is purchased (drives My Events + address unlock)
 // Seed: the user already attended these past events (History), and RSVP'd one upcoming (Upcoming).
 ['Holiday Readers Social','Winter Book Circle','Spring Author Brunch','Pecan Candy Book Club'].forEach(function(n){ rsvpedEvents[n]=true; });
 var eventRatings={}; // name -> {stars:1-5, comment:'', mode:'text'|'voice'}
+// An event's address/details are gated: community events unlock on RSVP, experiences unlock on purchase.
+function evUnlocked(ev){ if(!ev) return false; return ev.kind==='experience' ? !!purchasedExperiences[ev.name] : !!rsvpedEvents[ev.name]; }
+function findExperience(name){ var c=evClean(name); return EVENTS.filter(function(e){return e.kind==='experience'&&e.name===c;})[0]||null; }
 window.curEv=null;
 function evClean(n){ return (n||'').replace(/&amp;/g,'&').trim(); }
 function findEvent(name){ var c=evClean(name); return EVENTS.filter(function(e){return e.name===c;})[0]||null; }
@@ -1928,6 +1955,26 @@ function renderGoingLine(ev){
   meta.innerHTML='<span onclick="toggleAttendees()" style="color:var(--gd);cursor:pointer;text-decoration:underline;text-decoration-color:rgba(200,150,62,.35)">👥 '+ev.going+' going ›</span>'
     + (ev.hybrid ? '<span style="color:rgba(247,241,232,.5);margin-left:10px">· Hybrid option available</span>' : '');
 }
+// Render the venue/address block — gated: shown only once RSVP'd (community) or purchased (experience).
+function renderEvAddr(ev){
+  var el=document.getElementById('ev-popup-addr'); if(!el) return;
+  var a=evAddr(ev.name);
+  if(!a){ el.innerHTML=''; el.style.display='none'; return; }
+  el.style.display='block';
+  if(evUnlocked(ev)){
+    el.innerHTML='<a href="'+evMapsUrl(a)+'" target="_blank" rel="noopener" onclick="haptic(12)" style="display:block;text-decoration:none;background:rgba(200,150,62,.07);border:1px solid rgba(200,150,62,.2);border-radius:8px;padding:9px 11px">'
+      +'<div style="display:flex;align-items:flex-start;gap:7px">'
+      +'<svg viewBox="0 0 24 24" width="13" height="13" fill="#C8963E" style="flex-shrink:0;margin-top:1px"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>'
+      +'<div style="min-width:0"><div style="font-size:12px;font-weight:500;color:var(--cr)">'+a.venue+'</div>'
+      +'<div style="font-size:11px;color:rgba(247,241,232,.55);line-height:1.4">'+a.street+'<br>'+a.csz+'</div>'
+      +'<div style="font-size:10px;color:var(--gd);margin-top:4px;letter-spacing:.04em">↗ Directions in Google Maps</div></div></div></a>';
+  } else {
+    var note=ev.kind==='experience'?'Address revealed after you purchase':'Address revealed after you RSVP';
+    el.innerHTML='<div style="display:flex;align-items:center;gap:6px;background:rgba(200,150,62,.05);border:1px dashed rgba(200,150,62,.25);border-radius:8px;padding:9px 11px;font-size:11px;color:rgba(247,241,232,.5)">'
+      +'<svg viewBox="0 0 24 24" width="12" height="12" fill="rgba(200,150,62,.7)"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/></svg>'
+      +'<span>'+note+'</span></div>';
+  }
+}
 function openEvPopup(name, city, date, desc){
   var bg=document.getElementById('ev-popup-bg');
   var ev=findEvent(name) || {name:evClean(name),city:city,date:date,desc:desc,going:30,hybrid:false,start:null,end:null};
@@ -1936,7 +1983,11 @@ function openEvPopup(name, city, date, desc){
   setText('ev-popup-city', ev.city||city);
   setText('ev-popup-date', (ev.date||date)+(ev.tz?' '+ev.tz:''));
   setText('ev-popup-desc', ev.desc||desc);
-  renderGoingLine(ev);
+  renderEvAddr(ev);
+  // Experiences are ticketed in Creations — no attendee list / RSVP toggle in their Info popup.
+  var goingEl=document.getElementById('ev-popup-going');
+  if(ev.kind==='experience'){ if(goingEl){ goingEl.style.display='none'; goingEl.innerHTML=''; } }
+  else { if(goingEl) goingEl.style.display='block'; renderGoingLine(ev); }
   var att=document.getElementById('ev-popup-attendees'); if(att){ att.style.display='none'; att.innerHTML=''; }
   syncRsvpButton(ev);
   if(bg) bg.style.display='flex';
@@ -1944,13 +1995,22 @@ function openEvPopup(name, city, date, desc){
 function closeEvPopup(){ var bg=document.getElementById('ev-popup-bg'); if(bg) bg.style.display='none'; }
 function syncRsvpButton(ev){
   var btn=document.getElementById('ev-popup-rsvp'); if(!btn) return;
+  if(ev.kind==='experience'){
+    // Experiences are ticketed in Creations — show purchase status instead of an RSVP toggle.
+    btn.style.display=''; btn.disabled=true; btn.style.cursor='default';
+    btn.textContent=purchasedExperiences[ev.name]?'✓ Ticket purchased':'Buy in Creations';
+    btn.style.background='transparent'; btn.style.color='var(--gd)'; btn.style.border='1px solid rgba(200,150,62,.4)';
+    return;
+  }
+  btn.disabled=false; btn.style.cursor='pointer'; btn.style.display='';
   if(rsvpedEvents[ev.name]){ btn.textContent='✓ Going'; btn.style.background='transparent'; btn.style.color='var(--gd)'; btn.style.border='1px solid rgba(200,150,62,.4)'; }
   else { btn.textContent='RSVP'; btn.style.background='#C8963E'; btn.style.color='#2C1A0E'; btn.style.border='none'; }
 }
 function evPopupRsvp(){
-  var ev=window.curEv; if(!ev) return;
+  var ev=window.curEv; if(!ev || ev.kind==='experience') return;
   rsvpedEvents[ev.name]=!rsvpedEvents[ev.name];
   syncRsvpButton(ev);
+  renderEvAddr(ev); // unlock/lock the address to match the new RSVP state
   haptic(18);
   if(rsvpedEvents[ev.name]){ if(typeof showToast==='function') showToast('✓ You\'re going to '+ev.name); }
 }
@@ -2081,8 +2141,8 @@ function showCityPopup(city){
   if(!popup||!cityEl||!evEl) return;
   cityEl.textContent = city;
   evEl.innerHTML = '';
-  // The map shows UPCOMING events only — past events live in My Events → History.
-  var list = EVENTS.filter(function(e){ return e.city===city && !evIsPast(e); });
+  // The map shows UPCOMING community events only — past events → History; experiences live in Creations.
+  var list = EVENTS.filter(function(e){ return e.city===city && !evIsPast(e) && e.kind!=='experience'; });
   if(!list.length){ popup.style.display='none'; return; }
   list.forEach(function(ev){
     var row = document.createElement('div');
@@ -2155,7 +2215,8 @@ function closeMyEvents(){ var bg=document.getElementById('myev-bg'); if(bg) bg.s
 
 function renderMyEvents(){
   var body=document.getElementById('myev-body'); if(!body) return;
-  var mine=EVENTS.filter(function(e){ return rsvpedEvents[e.name]; });
+  // "Mine" = RSVP'd community events + purchased experiences (evUnlocked covers both cases).
+  var mine=EVENTS.filter(function(e){ return evUnlocked(e); });
   var upcoming=mine.filter(function(e){ return !evIsPast(e); }).sort(function(a,b){ return parseEvDate(a)-parseEvDate(b); });
   var history=mine.filter(function(e){ return evIsPast(e); }).sort(function(a,b){ return parseEvDate(b)-parseEvDate(a); });
   var html='';
@@ -2183,10 +2244,11 @@ function myEvRow(ev,isHistory){
       rateBlock='<div style="margin-top:7px"><button onclick="openRate(\''+safe+'\')" style="padding:5px 12px;background:rgba(200,150,62,.1);border:1px solid rgba(200,150,62,.3);border-radius:16px;color:var(--gd);font-size:10px;letter-spacing:.05em;cursor:pointer">★ Rate this event</button></div>';
     }
   }
+  var badge = ev.kind==='experience' ? ' <span style="font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--gd);border:1px solid rgba(200,150,62,.35);border-radius:8px;padding:1px 5px;vertical-align:middle">🎟 Experience</span>' : '';
   return '<div style="padding:11px 2px;border-bottom:1px solid rgba(200,150,62,.08)">'
     + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">'
     +   '<div style="flex:1;min-width:0">'
-    +     '<div onclick="myEvDetails(\''+safe+'\')" style="font-size:14px;font-weight:500;color:var(--cr);cursor:pointer">'+ev.name+'</div>'
+    +     '<div onclick="myEvDetails(\''+safe+'\')" style="font-size:14px;font-weight:500;color:var(--cr);cursor:pointer">'+ev.name+badge+'</div>'
     +     '<div style="font-size:11px;color:rgba(247,241,232,.45);margin-top:2px">'+ev.city+' · '+evWhen(ev)+'</div>'
     +   '</div>'
     +   '<button onclick="myEvDetails(\''+safe+'\')" style="flex-shrink:0;padding:5px 11px;background:transparent;border:1px solid rgba(200,150,62,.3);border-radius:16px;color:var(--gd);font-size:10px;cursor:pointer">Info</button>'
@@ -2949,10 +3011,14 @@ function openPur(title,series,type){
   O('ov-pur');
 }
 function completePur(m){
+  // Was this purchase initiated straight from the ticket sheet ("Reserve Now")?
+  var expSheetOpen=(function(){ var e=document.getElementById('ov-exp-tickets'); return !!(e && e.classList.contains('show')); })();
   ['ov-pur','ov-cart','ov-exp-tickets','ov-merch'].forEach(function(id){
     var el=document.getElementById(id);
     if(el && el.classList.contains('show')){ el.classList.remove('show'); el.style.cssText=''; var h=el.querySelector('.hs'); if(h){h.classList.remove('up');h.style.transform='';} }
   });
+  // Link any purchased experience into My Events (unlocks its address + enables post-event rating).
+  linkExperiencePurchase(expSheetOpen);
   // Mark a purchased audiobook as owned and refresh the player UI (item #3)
   if(window._pendingAudiobook){
     ownedAudiobooks[window._pendingAudiobook]=true;
@@ -2967,6 +3033,22 @@ function completePur(m){
   cart=[]; updateCartDot();
 }
 function closePurDone(){ var b=document.getElementById('pur-done'); if(b) b.style.display='none'; }
+// Turn a completed experience purchase into a My Events entry (never fabricated — only names that
+// map to a real experience in the unified EVENTS model are marked purchased).
+function linkExperiencePurchase(expSheetOpen){
+  var names={};
+  // (a) experiences added to the cart (type:'experience'), and (b) a direct "Reserve Now" on the sheet.
+  if(typeof cartItems!=='undefined' && cartItems.forEach){ cartItems.forEach(function(it){ if(it && it.type==='experience' && it.name) names[evClean(it.name)]=1; }); }
+  if(expSheetOpen && typeof currentExpName!=='undefined' && currentExpName) names[evClean(currentExpName)]=1;
+  var linked=0;
+  Object.keys(names).forEach(function(n){ if(findExperience(n)){ purchasedExperiences[n]=true; linked++; } });
+  // Purchased experiences have left the cart, so drop them in place (cartItems is a const array).
+  if(linked && typeof cartItems!=='undefined' && cartItems.splice){
+    for(var i=cartItems.length-1;i>=0;i--){ if(cartItems[i] && cartItems[i].type==='experience') cartItems.splice(i,1); }
+    if(typeof updateCartDot==='function') updateCartDot();
+  }
+  return linked;
+}
 
 const aiR={
   "When are the next events?":"The next OE Experience event — An Evening with Rhodesia — is coming up soon. Head to Creations → Experiences to see dates and book tickets. Tap the bell icon to get alerts.",
