@@ -3118,12 +3118,18 @@ function getBookArt(name){return bookArt[bookKey(name)]||null;}
    - discPos : object-position for the round player disc (cover fills the circle; keeps FACES in view).
    - sqPos   : background-position for the SQUARE audiobook art (keeps the current good zoom).
    - sqTitle : styled title overlay for the square, matched to each cover's typography. */
+/* sqImg   : pre-cropped image used ONLY for the square audiobook art (fills the square nicely).
+   discImg : image used ONLY for the round player disc (fallback: bookArt.img). */
 const coverCfg = {
-  'Pecan Candy & Huck-A-Bucks': { gridBg:'#EDE7DA', discPos:'50% 46%', sqPos:'50% 52%',
-    sqTitle:'<div style="position:absolute;top:7px;left:8px;right:8px;font-family:\'Bebas Neue\',sans-serif;font-size:20px;line-height:.9;letter-spacing:.01em;color:#D31F1F;text-shadow:0 1px 3px rgba(0,0,0,.55)">PECAN CANDY<br><span style="font-size:14px">&amp; HUCK-A-BUCKS</span></div>' },
-  'Sweeter Than Candy': { gridBg:'#100C0B', discPos:'50% 34%', sqSize:'165%', sqPos:'34% 40%',
-    sqTitle:'<div style="position:absolute;bottom:9px;left:10px;right:10px;text-align:center;font-family:\'Snell Roundhand\',\'Brush Script MT\',\'Playfair Display\',cursive;font-style:italic;font-size:25px;line-height:1;color:#fff;text-shadow:0 1px 7px rgba(0,0,0,.85)">Sweeter Than Candy</div>' },
-  'Three Times Sweeter': { gridBg:'#2A1D14', discPos:'50% 30%', sqPos:'50% 70%', sqTitle:'' }
+  'Pecan Candy & Huck-A-Bucks': { gridBg:'#EDE7DA', discPos:'50% 46%',
+    sqImg:'images/pecan_candy_cover_crop.jpeg', sqPos:'50% 40%',
+    sqTitle:'<div style="position:absolute;top:6px;left:8px;right:6px;font-family:Arial,Helvetica,sans-serif;font-weight:800;font-size:16px;line-height:.94;letter-spacing:-.01em;color:#C0202A;transform:scaleX(.88);transform-origin:left top;text-shadow:0 1px 2px rgba(0,0,0,.4)">PECAN CANDY<br><span style="font-size:11.5px">&amp; HUCK-A-BUCKS</span></div>' },
+  'Sweeter Than Candy': { gridBg:'#100C0B', discPos:'50% 30%',
+    discImg:'images/sweeter_than_candy_cover_notext.jpeg',
+    sqImg:'images/sweeter_than_candy_cover_notext_cropped.jpeg', sqPos:'50% 40%',
+    sqTitle:'<div style="position:absolute;bottom:7px;left:10px;right:10px;text-align:center;font-family:\'Snell Roundhand\',\'Apple Chancery\',\'Brush Script MT\',cursive;font-weight:400;font-style:normal;font-size:23px;line-height:1;color:#F5F0E8;text-shadow:0 1px 5px rgba(0,0,0,.85)">Sweeter Than Candy</div>' },
+  'Three Times Sweeter': { gridBg:'#2A1D14', discPos:'50% 30%',
+    sqImg:'images/3_times_sweeter_cover_cropped.jpeg', sqPos:'50% 45%', sqTitle:'' }
 };
 function coverCfgFor(name){ return coverCfg[bookKey(name)]||{}; }
 // Styled title overlay for a square audiobook cover (added on top of the zoomed image).
@@ -3140,25 +3146,27 @@ function paintBookEl(el){
   var a=getBookArt(name); if(!a) return;
   var isSquare=el.classList.contains('sp-art'); // else: Creations grid cover (.bk-cv-art)
   var cfg=coverCfgFor(name);
-  if(a.img){
+  // Square uses the pre-cropped variant when provided; grid uses the full cover.
+  var src=isSquare ? (cfg.sqImg||a.img) : a.img;
+  if(src){
     // Gradient shows immediately; swap to the real cover once it loads. Missing file => gradient stays.
     el.style.background=a.grad; el.classList.remove('has-cover');
     var im=new Image();
     im.onload=function(){
-      el.style.backgroundImage='url("'+a.img+'")';
+      el.style.backgroundImage='url("'+src+'")';
       el.style.backgroundRepeat='no-repeat';
       if(isSquare){
-        // Square: keep the zoomed cover (fills the square), positioned per book; add the styled title.
+        // Square: fill the square with the (pre-cropped) cover, positioned per book; add the styled title.
         el.style.backgroundSize=cfg.sqSize||'cover'; el.style.backgroundPosition=cfg.sqPos||'center';
         injectSquareTitle(el, cfg.sqTitle);
       } else {
-        // Grid: show the WHOLE cover (title never cropped); matched color fills the thin margin.
-        el.style.backgroundSize='contain'; el.style.backgroundPosition='center';
+        // Grid: fill the FULL WIDTH of the slot (no side gaps); anchor to the top so the title stays.
+        el.style.backgroundSize='cover'; el.style.backgroundPosition='center top';
         el.style.backgroundColor=cfg.gridBg||'#1A0E06';
       }
       el.classList.add('has-cover');
     };
-    im.src=a.img;
+    im.src=src;
   } else { el.style.background=a.grad; el.classList.remove('has-cover'); }
 }
 function paintAllBookArt(){ document.querySelectorAll('[data-book]').forEach(paintBookEl); }
@@ -3172,16 +3180,17 @@ function applyDiscArt(name,fallbackBg){
   var disc=document.getElementById('np-disc'); if(!disc) return;
   disc.style.overflow='hidden'; disc.style.padding='0';
   var a=getBookArt(name); var cfg=coverCfgFor(name);
+  var discSrc=cfg.discImg||(a&&a.img); // disc may use a dedicated (e.g. no-text) variant
   if(a){
-    if(a.img){
+    if(discSrc){
       // Placeholder first (numeral on gradient), then swap to the filled cover once it loads.
       disc.style.background=a.grad; disc.innerHTML=discNumHTML(a.num);
       var im=new Image();
       im.onload=function(){
         disc.style.background=a.discBg||'#2C1A0E';
-        disc.innerHTML='<img src="'+a.img+'" alt="" style="width:100%;height:100%;object-fit:cover;object-position:'+(cfg.discPos||'center')+';display:block">';
+        disc.innerHTML='<img src="'+discSrc+'" alt="" style="width:100%;height:100%;object-fit:cover;object-position:'+(cfg.discPos||'center')+';display:block">';
       };
-      im.src=a.img; // on error, the numeral placeholder above simply remains
+      im.src=discSrc; // on error, the numeral placeholder above simply remains
     }
     else { disc.style.background=a.grad; disc.innerHTML=discNumHTML(a.num); }
   } else {
@@ -4457,6 +4466,8 @@ function setupCreationsScroll(){
       wrap.style.animation = 'fadeIn .4s ease';
       wrap.innerHTML = html;
       screen.insertBefore(wrap, sentinel);
+      // Repeated book cards carry data-book but no paint — give them the real covers too.
+      wrap.querySelectorAll('[data-book]').forEach(paintBookEl);
     }
     loading = false;
   }, {rootMargin:'250px', threshold:0});
