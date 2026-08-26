@@ -330,6 +330,9 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .cv-n{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:rgba(200,150,62,.13);position:absolute;top:4px;right:7px;line-height:1}
 .cv-t{font-family:'Playfair Display',serif;font-size:9px;font-weight:700;font-style:italic;color:var(--cr);line-height:1.2;position:relative;z-index:2}
 .cv-a{font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--gdl);margin-top:2px;position:relative;z-index:2;opacity:.75}
+/* When a real cover image is present, hide the placeholder numeral/title/author overlay so they don't double up on the artwork. */
+.bk-cv-art.has-cover .cv-n,.bk-cv-art.has-cover .cv-t,.bk-cv-art.has-cover .cv-a{display:none}
+.sp-art.has-cover .sp-at{display:none}
 .bk-info{display:flex;flex-direction:column}
 .bk-series{font-size:9px;letter-spacing:.11em;text-transform:uppercase;color:var(--gd);opacity:.7;margin-bottom:3px}
 .bk-name{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--cr);line-height:1.15;margin-bottom:4px;cursor:pointer}
@@ -3098,11 +3101,13 @@ function updatePlUI(){
    the Soul Player audiobook squares, and the round player disc. Placeholders
    use `grad`; drop a real image URL into `img` and every surface that reads
    this map (all tagged with data-book, plus the disc) updates automatically. */
+// img = real cover file in images/ (referenced by path, never embedded). discBg = a color matching
+// each cover, used to fill the round disc around the fitted (uncropped) cover. Empty img => placeholder.
 const bookArt = {
-  'Pecan Candy & Huck-A-Bucks':   {grad:'linear-gradient(155deg,#5C3D28,#2C1A0E,#7A4E35)', num:'I',   img:''},
-  'Sweeter Than Candy':           {grad:'linear-gradient(155deg,#3B2010,#7A4E35,#2C1A0E)', num:'II',  img:''},
-  'Three Times Sweeter':          {grad:'linear-gradient(155deg,#2C1A0E,#4A2C18,#3B2010)', num:'III', img:''},
-  'Smothered Okra & Long-Grain Rice':{grad:'linear-gradient(155deg,#2A3E18,#5E7A3E)',      num:'IV',  img:''}
+  'Pecan Candy & Huck-A-Bucks':   {grad:'linear-gradient(155deg,#5C3D28,#2C1A0E,#7A4E35)', num:'I',   img:'images/pecan_candy_cover__upscale_.jpeg',      discBg:'#E7DECB'},
+  'Sweeter Than Candy':           {grad:'linear-gradient(155deg,#3B2010,#7A4E35,#2C1A0E)', num:'II',  img:'images/sweeter_than_candy_cover__upscale_.jpeg', discBg:'#0F0C0B'},
+  'Three Times Sweeter':          {grad:'linear-gradient(155deg,#2C1A0E,#4A2C18,#3B2010)', num:'III', img:'images/3_times_sweeter_cover__upscale_.jpeg',    discBg:'#2E2017'},
+  'Smothered Okra & Long-Grain Rice':{grad:'linear-gradient(155deg,#2A3E18,#5E7A3E)',      num:'IV',  img:'', discBg:'#2A3E18'}
 };
 const bookAlias = {'Smothered Okra':'Smothered Okra & Long-Grain Rice','Pecan Candy':'Pecan Candy & Huck-A-Bucks'};
 function bookKey(name){name=(name||'').replace(/&amp;/g,'&').trim();return bookAlias[name]||name;}
@@ -3110,19 +3115,38 @@ function getBookArt(name){return bookArt[bookKey(name)]||null;}
 // Paint any element tagged with data-book (Creations covers + Soul squares)
 function paintBookEl(el){
   var a=getBookArt(el.getAttribute('data-book')); if(!a) return;
-  if(a.img){ el.style.backgroundImage='url("'+a.img+'")'; el.style.backgroundSize='cover'; el.style.backgroundPosition='center'; el.classList.add('has-cover'); }
-  else { el.style.background=a.grad; }
+  if(a.img){
+    // Show the gradient immediately, then swap to the real cover once it loads. If the file is
+    // missing (not uploaded yet) the gradient placeholder simply stays — no broken-image icon.
+    el.style.background=a.grad; el.classList.remove('has-cover');
+    var im=new Image();
+    im.onload=function(){ el.style.backgroundImage='url("'+a.img+'")'; el.style.backgroundSize='cover'; el.style.backgroundPosition='center'; el.classList.add('has-cover'); };
+    im.src=a.img;
+  } else { el.style.background=a.grad; el.classList.remove('has-cover'); }
 }
 function paintAllBookArt(){ document.querySelectorAll('[data-book]').forEach(paintBookEl); }
 // OE fallback logo for the disc (non-book audio: podcasts / playlists)
 const OE_DISC_SVG='<svg width="58" height="54" viewBox="0 0 120 110" fill="none"><text x="2" y="76" font-family="serif" font-size="72" font-weight="900" fill="white" opacity=".65">O</text><text x="42" y="76" font-family="serif" font-size="72" font-weight="900" fill="white" opacity=".65">E</text><line x1="88" y1="8" x2="88" y2="88" stroke="white" stroke-width="1.8" opacity=".5"/><ellipse cx="100" cy="38" rx="5" ry="3.5" fill="white" opacity=".65"/><path d="M97 65 Q104 70 111 65" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none" opacity=".65"/></svg>';
-// Fill the round player disc with the book's cover (keeps circle + pulse animation)
+function discNumHTML(n){ return '<div style="font-family:\'Playfair Display\',serif;font-size:46px;font-weight:900;font-style:italic;color:rgba(255,255,255,.32);text-shadow:0 2px 12px rgba(0,0,0,.45)">'+n+'</div>'; }
+// Fill the round player disc with the book's cover. Keeps the circle + pulse animation. The cover is
+// FITTED (object-fit:contain) so the title/author are never cropped off; the ring around it is filled
+// with the cover-matched color. Falls back to the numeral placeholder until/unless the cover loads.
 function applyDiscArt(name,fallbackBg){
   var disc=document.getElementById('np-disc'); if(!disc) return;
+  disc.style.overflow='hidden'; disc.style.padding='0';
   var a=getBookArt(name);
   if(a){
-    if(a.img){ disc.style.background='#2C1A0E'; disc.innerHTML='<img src="'+a.img+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">'; }
-    else { disc.style.background=a.grad; disc.innerHTML='<div style="font-family:\'Playfair Display\',serif;font-size:46px;font-weight:900;font-style:italic;color:rgba(255,255,255,.32);text-shadow:0 2px 12px rgba(0,0,0,.45)">'+a.num+'</div>'; }
+    if(a.img){
+      // Placeholder first (numeral on gradient), then swap to the fitted cover once it loads.
+      disc.style.background=a.grad; disc.innerHTML=discNumHTML(a.num);
+      var im=new Image();
+      im.onload=function(){
+        disc.style.background=a.discBg||'#2C1A0E'; disc.style.padding='8px';
+        disc.innerHTML='<img src="'+a.img+'" alt="" style="width:100%;height:100%;object-fit:contain;display:block">';
+      };
+      im.src=a.img; // on error, the numeral placeholder above simply remains
+    }
+    else { disc.style.background=a.grad; disc.innerHTML=discNumHTML(a.num); }
   } else {
     if(fallbackBg) disc.style.background=fallbackBg;
     disc.innerHTML=OE_DISC_SVG;
@@ -3645,7 +3669,14 @@ function showBookDesc(name){
   var cover=document.getElementById('book-desc-cover');
   var inner=document.getElementById('book-desc-cover-inner');
   if(cover){
-    if(art && art.img){ cover.style.backgroundImage='url("'+art.img+'")'; cover.style.background='#2C1A0E url("'+art.img+'") center/cover'; if(inner) inner.innerHTML=''; }
+    if(art && art.img){
+      // Placeholder (gradient + numeral) first; swap to the real cover once it loads. Missing file => gradient stays.
+      cover.style.backgroundImage='none'; cover.style.background=art.grad;
+      if(inner) inner.innerHTML='<div style="font-family:\'Playfair Display\',serif;font-size:44px;font-weight:900;font-style:italic;color:rgba(255,255,255,.28)">'+art.num+'</div>';
+      var im=new Image();
+      im.onload=function(){ cover.style.background='#2C1A0E url("'+art.img+'") center/cover'; if(inner) inner.innerHTML=''; };
+      im.src=art.img;
+    }
     else if(art){ cover.style.backgroundImage='none'; cover.style.background=art.grad; if(inner) inner.innerHTML='<div style="font-family:\'Playfair Display\',serif;font-size:44px;font-weight:900;font-style:italic;color:rgba(255,255,255,.28)">'+art.num+'</div>'; }
     else { cover.style.backgroundImage='none'; cover.style.background='linear-gradient(155deg,#5C3D28,#2C1A0E)'; if(inner) inner.innerHTML=''; }
   }
