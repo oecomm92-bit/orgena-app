@@ -376,7 +376,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .sp-alb{background:var(--br);border-radius:6px;overflow:hidden;cursor:pointer;transition:transform .15s;border:1px solid rgba(200,150,62,.08)}
 .sp-alb:active{transform:scale(.97)}
 .sp-art{width:100%;aspect-ratio:1;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.sp-buy-tag{position:absolute;top:7px;right:7px;background:rgba(200,150,62,.88);color:var(--br);font-size:8px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;padding:2px 5px;border-radius:2px}
+.sp-buy-tag{position:absolute;top:7px;right:7px;background:rgba(200,150,62,.88);color:var(--br);font-size:8px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;padding:2px 5px;border-radius:2px;z-index:4}
 .sp-pi{width:32px;height:32px;border-radius:50%;background:rgba(200,150,62,.75);display:flex;align-items:center;justify-content:center}
 .sp-pi svg{fill:var(--br);width:12px;height:12px;margin-left:2px}
 .sp-at{position:absolute;bottom:0;left:0;right:0;padding:18px 9px 7px;background:linear-gradient(to top,rgba(13,8,4,.9),transparent)}
@@ -3112,15 +3112,52 @@ const bookArt = {
 const bookAlias = {'Smothered Okra':'Smothered Okra & Long-Grain Rice','Pecan Candy':'Pecan Candy & Huck-A-Bucks'};
 function bookKey(name){name=(name||'').replace(/&amp;/g,'&').trim();return bookAlias[name]||name;}
 function getBookArt(name){return bookArt[bookKey(name)]||null;}
-// Paint any element tagged with data-book (Creations covers + Soul squares)
+/* Per-book cover-display tuning:
+   - gridBg  : color behind the fully-contained grid cover (matches each cover so the thin side margin
+               isn't white); grid shows the WHOLE cover so the title is never cropped.
+   - discPos : object-position for the round player disc (cover fills the circle; keeps FACES in view).
+   - sqPos   : background-position for the SQUARE audiobook art (keeps the current good zoom).
+   - sqTitle : styled title overlay for the square, matched to each cover's typography. */
+const coverCfg = {
+  'Pecan Candy & Huck-A-Bucks': { gridBg:'#EDE7DA', discPos:'50% 46%', sqPos:'50% 52%',
+    sqTitle:'<div style="position:absolute;top:7px;left:8px;right:8px;font-family:\'Bebas Neue\',sans-serif;font-size:20px;line-height:.9;letter-spacing:.01em;color:#D31F1F;text-shadow:0 1px 3px rgba(0,0,0,.55)">PECAN CANDY<br><span style="font-size:14px">&amp; HUCK-A-BUCKS</span></div>' },
+  'Sweeter Than Candy': { gridBg:'#100C0B', discPos:'50% 34%', sqSize:'165%', sqPos:'34% 40%',
+    sqTitle:'<div style="position:absolute;bottom:9px;left:10px;right:10px;text-align:center;font-family:\'Snell Roundhand\',\'Brush Script MT\',\'Playfair Display\',cursive;font-style:italic;font-size:25px;line-height:1;color:#fff;text-shadow:0 1px 7px rgba(0,0,0,.85)">Sweeter Than Candy</div>' },
+  'Three Times Sweeter': { gridBg:'#2A1D14', discPos:'50% 30%', sqPos:'50% 70%', sqTitle:'' }
+};
+function coverCfgFor(name){ return coverCfg[bookKey(name)]||{}; }
+// Styled title overlay for a square audiobook cover (added on top of the zoomed image).
+function injectSquareTitle(el, html){
+  var old=el.querySelector('.sp-title-ov'); if(old) old.remove();
+  if(!html) return;
+  var d=document.createElement('div'); d.className='sp-title-ov';
+  d.style.cssText='position:absolute;inset:0;pointer-events:none;z-index:3'; d.innerHTML=html;
+  el.appendChild(d);
+}
+// Paint any element tagged with data-book (Creations grid covers + Soul squares).
 function paintBookEl(el){
-  var a=getBookArt(el.getAttribute('data-book')); if(!a) return;
+  var name=el.getAttribute('data-book');
+  var a=getBookArt(name); if(!a) return;
+  var isSquare=el.classList.contains('sp-art'); // else: Creations grid cover (.bk-cv-art)
+  var cfg=coverCfgFor(name);
   if(a.img){
-    // Show the gradient immediately, then swap to the real cover once it loads. If the file is
-    // missing (not uploaded yet) the gradient placeholder simply stays — no broken-image icon.
+    // Gradient shows immediately; swap to the real cover once it loads. Missing file => gradient stays.
     el.style.background=a.grad; el.classList.remove('has-cover');
     var im=new Image();
-    im.onload=function(){ el.style.backgroundImage='url("'+a.img+'")'; el.style.backgroundSize='cover'; el.style.backgroundPosition='center'; el.classList.add('has-cover'); };
+    im.onload=function(){
+      el.style.backgroundImage='url("'+a.img+'")';
+      el.style.backgroundRepeat='no-repeat';
+      if(isSquare){
+        // Square: keep the zoomed cover (fills the square), positioned per book; add the styled title.
+        el.style.backgroundSize=cfg.sqSize||'cover'; el.style.backgroundPosition=cfg.sqPos||'center';
+        injectSquareTitle(el, cfg.sqTitle);
+      } else {
+        // Grid: show the WHOLE cover (title never cropped); matched color fills the thin margin.
+        el.style.backgroundSize='contain'; el.style.backgroundPosition='center';
+        el.style.backgroundColor=cfg.gridBg||'#1A0E06';
+      }
+      el.classList.add('has-cover');
+    };
     im.src=a.img;
   } else { el.style.background=a.grad; el.classList.remove('has-cover'); }
 }
@@ -3128,21 +3165,21 @@ function paintAllBookArt(){ document.querySelectorAll('[data-book]').forEach(pai
 // OE fallback logo for the disc (non-book audio: podcasts / playlists)
 const OE_DISC_SVG='<svg width="58" height="54" viewBox="0 0 120 110" fill="none"><text x="2" y="76" font-family="serif" font-size="72" font-weight="900" fill="white" opacity=".65">O</text><text x="42" y="76" font-family="serif" font-size="72" font-weight="900" fill="white" opacity=".65">E</text><line x1="88" y1="8" x2="88" y2="88" stroke="white" stroke-width="1.8" opacity=".5"/><ellipse cx="100" cy="38" rx="5" ry="3.5" fill="white" opacity=".65"/><path d="M97 65 Q104 70 111 65" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none" opacity=".65"/></svg>';
 function discNumHTML(n){ return '<div style="font-family:\'Playfair Display\',serif;font-size:46px;font-weight:900;font-style:italic;color:rgba(255,255,255,.32);text-shadow:0 2px 12px rgba(0,0,0,.45)">'+n+'</div>'; }
-// Fill the round player disc with the book's cover. Keeps the circle + pulse animation. The cover is
-// FITTED (object-fit:contain) so the title/author are never cropped off; the ring around it is filled
-// with the cover-matched color. Falls back to the numeral placeholder until/unless the cover loads.
+// Fill the round player disc with the book's cover. Keeps the circle + pulse animation. The cover
+// FILLS the circle (object-fit:cover), positioned per book so people's FACES stay in view. Falls back
+// to the numeral placeholder until/unless the cover loads.
 function applyDiscArt(name,fallbackBg){
   var disc=document.getElementById('np-disc'); if(!disc) return;
   disc.style.overflow='hidden'; disc.style.padding='0';
-  var a=getBookArt(name);
+  var a=getBookArt(name); var cfg=coverCfgFor(name);
   if(a){
     if(a.img){
-      // Placeholder first (numeral on gradient), then swap to the fitted cover once it loads.
+      // Placeholder first (numeral on gradient), then swap to the filled cover once it loads.
       disc.style.background=a.grad; disc.innerHTML=discNumHTML(a.num);
       var im=new Image();
       im.onload=function(){
-        disc.style.background=a.discBg||'#2C1A0E'; disc.style.padding='8px';
-        disc.innerHTML='<img src="'+a.img+'" alt="" style="width:100%;height:100%;object-fit:contain;display:block">';
+        disc.style.background=a.discBg||'#2C1A0E';
+        disc.innerHTML='<img src="'+a.img+'" alt="" style="width:100%;height:100%;object-fit:cover;object-position:'+(cfg.discPos||'center')+';display:block">';
       };
       im.src=a.img; // on error, the numeral placeholder above simply remains
     }
@@ -3673,8 +3710,10 @@ function showBookDesc(name){
       // Placeholder (gradient + numeral) first; swap to the real cover once it loads. Missing file => gradient stays.
       cover.style.backgroundImage='none'; cover.style.background=art.grad;
       if(inner) inner.innerHTML='<div style="font-family:\'Playfair Display\',serif;font-size:44px;font-weight:900;font-style:italic;color:rgba(255,255,255,.28)">'+art.num+'</div>';
+      var cfg=coverCfgFor(name);
       var im=new Image();
-      im.onload=function(){ cover.style.background='#2C1A0E url("'+art.img+'") center/cover'; if(inner) inner.innerHTML=''; };
+      // Portrait popup: show the FULL cover (contain, never cropped); matched color fills any margin.
+      im.onload=function(){ cover.style.background=(cfg.gridBg||'#2C1A0E')+' url("'+art.img+'") center/contain no-repeat'; if(inner) inner.innerHTML=''; };
       im.src=art.img;
     }
     else if(art){ cover.style.backgroundImage='none'; cover.style.background=art.grad; if(inner) inner.innerHTML='<div style="font-family:\'Playfair Display\',serif;font-size:44px;font-weight:900;font-style:italic;color:rgba(255,255,255,.28)">'+art.num+'</div>'; }
@@ -4470,9 +4509,9 @@ function setupCreationsScroll(){
 <!-- Book description popup -->
 <div class="ov ov-center" id="ov-book-desc" style="align-items:center;justify-content:center">
   <div class="ov-bg" onclick="C('ov-book-desc')"></div>
-  <div style="width:300px;background:#1A0E06;border-radius:14px;overflow:hidden;border:1px solid rgba(200,150,62,.3);z-index:2">
-    <div id="book-desc-cover" style="height:190px;position:relative;display:flex;align-items:center;justify-content:center;background:linear-gradient(155deg,#5C3D28,#2C1A0E);background-size:cover;background-position:center"><div id="book-desc-cover-inner"></div></div>
-    <div style="padding:16px 18px 18px">
+  <div style="width:236px;max-height:94vh;overflow-y:auto;background:#1A0E06;border-radius:14px;border:1px solid rgba(200,150,62,.3);z-index:2">
+    <div id="book-desc-cover" style="width:100%;aspect-ratio:2/3;position:relative;display:flex;align-items:center;justify-content:center;background:#2C1A0E;background-size:contain;background-repeat:no-repeat;background-position:center"><div id="book-desc-cover-inner"></div></div>
+    <div style="padding:14px 16px 16px">
       <div id="book-desc-name" style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;font-style:italic;color:#F7F1E8;margin-bottom:8px"></div>
       <div id="book-desc-body" style="font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:rgba(247,241,232,.65);line-height:1.6;margin-bottom:16px">[placeholder/add book description]</div>
       <div style="display:flex;gap:8px">
