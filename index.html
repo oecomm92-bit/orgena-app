@@ -3125,11 +3125,14 @@ const coverCfg = {
     // disc uses the face crop (no red title / white line / author) — clean face in the circle.
     discImg:'images/pecan_candy_cover_crop.jpeg', discPos:'50% 56%',
     sqImg:'images/pecan_candy_cover_crop.jpeg', sqPos:'50% 40%',
-    // Bold condensed all-caps sans in the cover's red, printed flat on the image (no floating shadow).
-    sqTitle:'<div style="position:absolute;top:6px;left:8px;right:6px;font-family:Arial,Helvetica,sans-serif;font-weight:800;font-size:16px;line-height:.94;letter-spacing:-.01em;color:#C0202A;transform:scaleX(.88);transform-origin:left top">PECAN CANDY<br><span style="font-size:11.5px">&amp; HUCK-A-BUCKS</span></div>' },
+    // WIDE heavy grotesque (Arial Black / Franklin Gothic Heavy) — extended, not condensed — in the
+    // cover red, all-caps, printed flat on the image (no floating shadow).
+    sqTitle:'<div style="position:absolute;top:6px;left:8px;right:7px;font-family:\'Arial Black\',\'Franklin Gothic Heavy\',Arial,sans-serif;font-weight:900;font-size:15px;line-height:1;letter-spacing:.02em;color:#C0202A;transform:scaleX(1.06);transform-origin:left top">PECAN CANDY<br><span style="font-size:11px">&amp; HUCK-A-BUCKS</span></div>' },
   'Sweeter Than Candy': { gridBg:'#100C0B', discPos:'50% 30%',
     discImg:'images/sweeter_than_candy_cover_notext.jpeg',
     sqImg:'images/sweeter_than_candy_cover_notext_cropped.jpeg', sqPos:'50% 40%',
+    // Grid: crop the author line by SHORTENING the slot (crisp full-res downscale, no upscaling); title kept.
+    gridSlot:'0.79',
     // Grid: default full-cover framing (crisp full-res source, title not cropped) — no extra zoom.
     // White script, one word per line, BOTTOM-LEFT, printed flat (no floating shadow).
     sqTitle:'<div style="position:absolute;bottom:9px;left:11px;text-align:left;font-family:\'Snell Roundhand\',\'Apple Chancery\',\'Brush Script MT\',cursive;font-weight:400;font-style:normal;font-size:24px;line-height:1.02;color:#FFFFFF">Sweeter<br>Than<br>Candy</div>' },
@@ -3141,8 +3144,8 @@ const coverCfg = {
     gridPos:'50% 22%',
     // Match the real cover: "Three Times Sweeter" script at the very TOP, and a much smaller/thinner
     // BLACK "LOVE HOME FAMILY" set LOWER (off the faces), one word per line.
-    sqTitle:'<div style="position:absolute;top:5px;left:0;right:0;text-align:center;font-family:\'Snell Roundhand\',\'Apple Chancery\',\'Brush Script MT\',cursive;font-weight:400;font-size:21px;line-height:1;color:#FBF6EC;text-shadow:0 1px 3px rgba(0,0,0,.55)">Three Times Sweeter</div>'
-      +'<div style="position:absolute;bottom:10px;left:0;right:0;text-align:center;font-family:Georgia,\'Times New Roman\',serif;font-weight:400;font-size:9px;line-height:1.4;letter-spacing:.22em;color:#000000">LOVE<br>HOME<br>FAMILY</div>' }
+    sqTitle:'<div style="position:absolute;top:6px;left:0;right:0;text-align:center;font-family:\'Snell Roundhand\',\'Apple Chancery\',\'Brush Script MT\',cursive;font-weight:400;font-size:18px;line-height:1;color:#FBF6EC;text-shadow:0 1px 3px rgba(0,0,0,.55)">Three Times Sweeter</div>'
+      +'<div style="position:absolute;bottom:5px;left:0;right:0;text-align:center;font-family:Georgia,\'Times New Roman\',serif;font-weight:400;font-size:8px;line-height:1.12;letter-spacing:.22em;color:#000000">LOVE<br>HOME<br>FAMILY</div>' }
 };
 function coverCfgFor(name){ return coverCfg[bookKey(name)]||{}; }
 // Styled title overlay for a square audiobook cover (added on top of the zoomed image).
@@ -3174,7 +3177,10 @@ function paintBookEl(el){
         injectSquareTitle(el, cfg.sqTitle);
       } else {
         // Grid: fill the FULL WIDTH of the slot (no side gaps); per-book framing (default: top-anchored).
-        // gridSize/gridPos are shared by every grid instance (All, infinite-scroll, Books & Audio).
+        // gridSize/gridPos/gridSlot are shared by every grid instance (All, infinite-scroll, Books & Audio).
+        // gridSlot shortens the slot so a top-anchored full-res cover crops the bottom (e.g. an author
+        // line) by pure DOWNSCALE — stays crisp, no upscaling, no side-cropping.
+        var slot=el.closest('.bk-cv'); if(slot) slot.style.aspectRatio=cfg.gridSlot||'';
         el.style.backgroundSize=cfg.gridSize||'cover'; el.style.backgroundPosition=cfg.gridPos||'center top';
         el.style.backgroundColor=cfg.gridBg||'#1A0E06';
       }
