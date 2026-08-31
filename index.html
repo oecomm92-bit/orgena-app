@@ -3130,18 +3130,19 @@ const coverCfg = {
   'Sweeter Than Candy': { gridBg:'#100C0B', discPos:'50% 30%',
     discImg:'images/sweeter_than_candy_cover_notext.jpeg',
     sqImg:'images/sweeter_than_candy_cover_notext_cropped.jpeg', sqPos:'50% 40%',
-    // Grid only: zoom + top-anchor so the bottom author name is cropped off entirely.
-    gridSize:'122%', gridPos:'50% 4%',
-    // White script, one word per line, on the LEFT (near the man's arm), printed flat (no floating shadow).
-    sqTitle:'<div style="position:absolute;top:9px;left:11px;text-align:left;font-family:\'Snell Roundhand\',\'Apple Chancery\',\'Brush Script MT\',cursive;font-weight:400;font-style:normal;font-size:24px;line-height:1.02;color:#FFFFFF">Sweeter<br>Than<br>Candy</div>' },
+    // Grid: default full-cover framing (crisp full-res source, title not cropped) — no extra zoom.
+    // White script, one word per line, BOTTOM-LEFT, printed flat (no floating shadow).
+    sqTitle:'<div style="position:absolute;bottom:9px;left:11px;text-align:left;font-family:\'Snell Roundhand\',\'Apple Chancery\',\'Brush Script MT\',cursive;font-weight:400;font-style:normal;font-size:24px;line-height:1.02;color:#FFFFFF">Sweeter<br>Than<br>Candy</div>' },
   'Three Times Sweeter': { gridBg:'#2A1D14',
     // disc uses the family crop (no baked text) — only faces, no LOVE/HOME/FAMILY visible.
     discImg:'images/3_times_sweeter_cover_cropped.jpeg', discPos:'50% 38%',
     sqImg:'images/3_times_sweeter_cover_cropped.jpeg', sqPos:'50% 30%',
     // Grid only: nudge so the bottom cuts cleanly in the gap below FAMILY, not through the letters.
     gridPos:'50% 22%',
-    // Add the cover's serif title, one word per line, printed on the image.
-    sqTitle:'<div style="position:absolute;bottom:8px;left:0;right:0;text-align:center;font-family:\'Playfair Display\',Georgia,\'Times New Roman\',serif;font-weight:500;font-size:15px;line-height:1.14;letter-spacing:.14em;color:#F3EBDD;text-shadow:0 1px 2px rgba(0,0,0,.6)">LOVE<br>HOME<br>FAMILY</div>' }
+    // Match the real cover: "Three Times Sweeter" script at the very TOP, and a much smaller/thinner
+    // BLACK "LOVE HOME FAMILY" set LOWER (off the faces), one word per line.
+    sqTitle:'<div style="position:absolute;top:5px;left:0;right:0;text-align:center;font-family:\'Snell Roundhand\',\'Apple Chancery\',\'Brush Script MT\',cursive;font-weight:400;font-size:21px;line-height:1;color:#FBF6EC;text-shadow:0 1px 3px rgba(0,0,0,.55)">Three Times Sweeter</div>'
+      +'<div style="position:absolute;bottom:10px;left:0;right:0;text-align:center;font-family:Georgia,\'Times New Roman\',serif;font-weight:400;font-size:9px;line-height:1.4;letter-spacing:.22em;color:#000000">LOVE<br>HOME<br>FAMILY</div>' }
 };
 function coverCfgFor(name){ return coverCfg[bookKey(name)]||{}; }
 // Styled title overlay for a square audiobook cover (added on top of the zoomed image).
@@ -3734,8 +3735,13 @@ function showBookDesc(name){
       if(inner) inner.innerHTML='<div style="font-family:\'Playfair Display\',serif;font-size:44px;font-weight:900;font-style:italic;color:rgba(255,255,255,.28)">'+art.num+'</div>';
       var cfg=coverCfgFor(name);
       var im=new Image();
-      // Portrait popup: show the FULL cover (contain, never cropped); matched color fills any margin.
-      im.onload=function(){ cover.style.background=(cfg.gridBg||'#2C1A0E')+' url("'+art.img+'") center/contain no-repeat'; if(inner) inner.innerHTML=''; };
+      // Match the frame to the cover's own aspect ratio, then fill — the whole cover shows edge-to-edge
+      // with NO empty margin bars and NO cropping/distortion.
+      im.onload=function(){
+        if(im.naturalWidth && im.naturalHeight){ cover.style.aspectRatio = im.naturalWidth+' / '+im.naturalHeight; }
+        cover.style.background='#2C1A0E url("'+art.img+'") center/cover no-repeat';
+        if(inner) inner.innerHTML='';
+      };
       im.src=art.img;
     }
     else if(art){ cover.style.backgroundImage='none'; cover.style.background=art.grad; if(inner) inner.innerHTML='<div style="font-family:\'Playfair Display\',serif;font-size:44px;font-weight:900;font-style:italic;color:rgba(255,255,255,.28)">'+art.num+'</div>'; }
