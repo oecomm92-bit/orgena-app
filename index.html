@@ -717,22 +717,22 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
           <button class="mc-add" onclick="event.stopPropagation();openMerchCardPur(this.closest('.mc').querySelector('.mc-name').textContent.trim())">Buy Now</button>
         </div>
       </div>
-            <div class="mc" onclick="openMerchDetail('OE Print','Collectibles','$45','🖼️','linear-gradient(135deg,#2C1A0E,var(--brl))')">
+            <div class="mc" onclick="openMerchDetail('OE Blanket','Collectibles','$45','🖼️','linear-gradient(135deg,#2C1A0E,var(--brl))')">
         <div class="mc-art" style="background:linear-gradient(135deg,#2C1A0E,var(--brl));cursor:pointer">🖼️</div>
         <div class="mc-info">
           <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1px">
-            <div class="mc-name">OE Print</div>
+            <div class="mc-name">OE Blanket</div>
             <div class="mc-price">$45</div>
           </div>
           <div class="mc-cat">Collectibles</div>
           <button class="mc-add" onclick="event.stopPropagation();openMerchCardPur(this.closest('.mc').querySelector('.mc-name').textContent.trim())">Buy Now</button>
         </div>
       </div>
-      <div class="mc" onclick="openMerchDetail('OE Chocolate','Gift','$16','🍫','linear-gradient(135deg,#3B1205,#2C1A0E)')">
+      <div class="mc" onclick="openMerchDetail('OE Sweets','Gift','$16','🍫','linear-gradient(135deg,#3B1205,#2C1A0E)')">
         <div class="mc-art" style="background:linear-gradient(135deg,#3B1205,#2C1A0E);cursor:pointer">🍫</div>
         <div class="mc-info">
           <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1px">
-            <div class="mc-name">OE Chocolate</div>
+            <div class="mc-name">OE Sweets</div>
             <div class="mc-price">$16</div>
           </div>
           <div class="mc-cat">Gift</div>
@@ -3190,6 +3190,33 @@ function paintBookEl(el){
   } else { el.style.background=a.grad; el.classList.remove('has-cover'); }
 }
 function paintAllBookArt(){ document.querySelectorAll('[data-book]').forEach(paintBookEl); }
+
+/* ── Single source of truth for MERCH product photos ──
+   Set an item's photo once here and it appears everywhere the item shows: the Merch grid tile,
+   the infinite-scroll repeats, and the tap-to-view color/size detail. Items without an entry keep
+   their placeholder icon + gradient (ready to receive a photo the same way). pos biases the crop
+   toward the product for the landscape tiles. */
+const merchArt = {
+  'OE Journal': {img:'images/oe_journal.jpeg', pos:'center 72%'},
+  'OE Pen':     {img:'images/oe_pen.jpeg',     pos:'center 52%'},
+  'OE Sweets':  {img:'images/oe_sweets.jpeg',  pos:'center 60%'},
+  'OE Tote':    {img:'images/oe_tote.jpeg',    pos:'center 55%'}
+};
+function getMerchArt(name){ return merchArt[(name||'').replace(/&amp;/g,'&').trim()]||null; }
+// Paint one .mc-art tile with its product photo (object-fit:cover), else leave the placeholder.
+function paintMerchEl(el){
+  var mc=el.closest('.mc'); if(!mc) return;
+  var nm=((mc.querySelector('.mc-name')||{}).textContent||'').trim();
+  var a=getMerchArt(nm); if(!a) return;
+  var im=new Image();
+  im.onload=function(){
+    el.style.backgroundImage='url("'+a.img+'")';
+    el.style.backgroundSize='cover'; el.style.backgroundPosition=a.pos||'center'; el.style.backgroundRepeat='no-repeat';
+    el.textContent=''; el.classList.add('has-photo'); // drop the placeholder emoji
+  };
+  im.src=a.img; // missing file => placeholder emoji/gradient simply stays
+}
+function paintAllMerchArt(){ document.querySelectorAll('.mc-art').forEach(paintMerchEl); }
 // OE fallback logo for the disc (non-book audio: podcasts / playlists)
 const OE_DISC_SVG='<svg width="58" height="54" viewBox="0 0 120 110" fill="none"><text x="2" y="76" font-family="serif" font-size="72" font-weight="900" fill="white" opacity=".65">O</text><text x="42" y="76" font-family="serif" font-size="72" font-weight="900" fill="white" opacity=".65">E</text><line x1="88" y1="8" x2="88" y2="88" stroke="white" stroke-width="1.8" opacity=".5"/><ellipse cx="100" cy="38" rx="5" ry="3.5" fill="white" opacity=".65"/><path d="M97 65 Q104 70 111 65" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none" opacity=".65"/></svg>';
 function discNumHTML(n){ return '<div style="font-family:\'Playfair Display\',serif;font-size:46px;font-weight:900;font-style:italic;color:rgba(255,255,255,.32);text-shadow:0 2px 12px rgba(0,0,0,.45)">'+n+'</div>'; }
@@ -3415,7 +3442,7 @@ function openMerchCardPur(name){
   setText('apple-price',price);setText('cart-price',price);
   var sized=[];
   var needsSize=sized.some(function(s){return name.indexOf(s)>-1;});
-  var colored=['OE Tote','OE Mug','OE Print'];
+  var colored=['OE Tote','OE Mug','OE Blanket'];
   var needsColor=colored.some(function(s){return name.indexOf(s)>-1;});
   var lbl=document.getElementById('pur-fmt-lbl');
   var fo=document.getElementById('fmt-opts');
@@ -3533,13 +3560,22 @@ function openMerchDetail(name,cat,price,icon,bg){
   setText('merch-qty','1');
   setText('merch-total',price);
   const img=document.getElementById('merch-img');
-  img.style.background=bg;img.textContent=icon;
+  var a=getMerchArt(name);
+  if(a){
+    // Show the product photo (same single source as the grid tile).
+    img.style.background='#2C1A0E'; img.style.backgroundImage='url("'+a.img+'")';
+    img.style.backgroundSize='cover'; img.style.backgroundPosition=a.pos||'center'; img.style.backgroundRepeat='no-repeat';
+    img.textContent=''; img.dataset.photo='1';
+  } else {
+    img.style.backgroundImage='none'; img.style.background=bg; img.textContent=icon; img.dataset.photo='';
+  }
   O('ov-merch');
 }
 function selColor(el,name){
   const colorBgs={'Black':'linear-gradient(135deg,#1a1a1a,#333)','Brown':'linear-gradient(135deg,#4A2C18,#2C1A0E)','Cream':'linear-gradient(135deg,#F7F1E8,#EDE3D2)','Gold':'linear-gradient(135deg,#C8963E,#E8B96A)'};
   const img=document.getElementById('merch-img');
-  if(img&&colorBgs[name]){img.style.background=colorBgs[name];}
+  // Keep the real product photo when one is shown; only recolor the placeholder swatch view.
+  if(img&&colorBgs[name]&&img.dataset.photo!=='1'){img.style.background=colorBgs[name];}
   document.querySelectorAll('#merch-colors div').forEach(d=>d.style.border='2px solid transparent');
   el.style.border='2px solid var(--gd)';
   currentMerchColor=name;
@@ -4112,6 +4148,7 @@ window.addEventListener('load',()=>{
   initCommGrid();
   initBdayWheels();
   paintAllBookArt();
+  paintAllMerchArt();
   initStoryHold();
   // Remember the logged-in user's own posts grid, then wire feed author tags + autoplay.
   var _pg=document.getElementById('pr-grid'); if(_pg) window._ownGridHTML=_pg.innerHTML;
@@ -4493,6 +4530,7 @@ function setupCreationsScroll(){
       screen.insertBefore(wrap, sentinel);
       // Repeated book cards carry data-book but no paint — give them the real covers too.
       wrap.querySelectorAll('[data-book]').forEach(paintBookEl);
+      wrap.querySelectorAll('.mc-art').forEach(paintMerchEl);
     }
     loading = false;
   }, {rootMargin:'250px', threshold:0});
