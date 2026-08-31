@@ -3121,15 +3121,27 @@ function getBookArt(name){return bookArt[bookKey(name)]||null;}
 /* sqImg   : pre-cropped image used ONLY for the square audiobook art (fills the square nicely).
    discImg : image used ONLY for the round player disc (fallback: bookArt.img). */
 const coverCfg = {
-  'Pecan Candy & Huck-A-Bucks': { gridBg:'#EDE7DA', discPos:'50% 46%',
+  'Pecan Candy & Huck-A-Bucks': { gridBg:'#EDE7DA',
+    // disc uses the face crop (no red title / white line / author) — clean face in the circle.
+    discImg:'images/pecan_candy_cover_crop.jpeg', discPos:'50% 56%',
     sqImg:'images/pecan_candy_cover_crop.jpeg', sqPos:'50% 40%',
-    sqTitle:'<div style="position:absolute;top:6px;left:8px;right:6px;font-family:Arial,Helvetica,sans-serif;font-weight:800;font-size:16px;line-height:.94;letter-spacing:-.01em;color:#C0202A;transform:scaleX(.88);transform-origin:left top;text-shadow:0 1px 2px rgba(0,0,0,.4)">PECAN CANDY<br><span style="font-size:11.5px">&amp; HUCK-A-BUCKS</span></div>' },
+    // Bold condensed all-caps sans in the cover's red, printed flat on the image (no floating shadow).
+    sqTitle:'<div style="position:absolute;top:6px;left:8px;right:6px;font-family:Arial,Helvetica,sans-serif;font-weight:800;font-size:16px;line-height:.94;letter-spacing:-.01em;color:#C0202A;transform:scaleX(.88);transform-origin:left top">PECAN CANDY<br><span style="font-size:11.5px">&amp; HUCK-A-BUCKS</span></div>' },
   'Sweeter Than Candy': { gridBg:'#100C0B', discPos:'50% 30%',
     discImg:'images/sweeter_than_candy_cover_notext.jpeg',
     sqImg:'images/sweeter_than_candy_cover_notext_cropped.jpeg', sqPos:'50% 40%',
-    sqTitle:'<div style="position:absolute;bottom:7px;left:10px;right:10px;text-align:center;font-family:\'Snell Roundhand\',\'Apple Chancery\',\'Brush Script MT\',cursive;font-weight:400;font-style:normal;font-size:23px;line-height:1;color:#F5F0E8;text-shadow:0 1px 5px rgba(0,0,0,.85)">Sweeter Than Candy</div>' },
-  'Three Times Sweeter': { gridBg:'#2A1D14', discPos:'50% 30%',
-    sqImg:'images/3_times_sweeter_cover_cropped.jpeg', sqPos:'50% 45%', sqTitle:'' }
+    // Grid only: zoom + top-anchor so the bottom author name is cropped off entirely.
+    gridSize:'122%', gridPos:'50% 4%',
+    // White script, one word per line, on the LEFT (near the man's arm), printed flat (no floating shadow).
+    sqTitle:'<div style="position:absolute;top:9px;left:11px;text-align:left;font-family:\'Snell Roundhand\',\'Apple Chancery\',\'Brush Script MT\',cursive;font-weight:400;font-style:normal;font-size:24px;line-height:1.02;color:#FFFFFF">Sweeter<br>Than<br>Candy</div>' },
+  'Three Times Sweeter': { gridBg:'#2A1D14',
+    // disc uses the family crop (no baked text) — only faces, no LOVE/HOME/FAMILY visible.
+    discImg:'images/3_times_sweeter_cover_cropped.jpeg', discPos:'50% 38%',
+    sqImg:'images/3_times_sweeter_cover_cropped.jpeg', sqPos:'50% 30%',
+    // Grid only: nudge so the bottom cuts cleanly in the gap below FAMILY, not through the letters.
+    gridPos:'50% 22%',
+    // Add the cover's serif title, one word per line, printed on the image.
+    sqTitle:'<div style="position:absolute;bottom:8px;left:0;right:0;text-align:center;font-family:\'Playfair Display\',Georgia,\'Times New Roman\',serif;font-weight:500;font-size:15px;line-height:1.14;letter-spacing:.14em;color:#F3EBDD;text-shadow:0 1px 2px rgba(0,0,0,.6)">LOVE<br>HOME<br>FAMILY</div>' }
 };
 function coverCfgFor(name){ return coverCfg[bookKey(name)]||{}; }
 // Styled title overlay for a square audiobook cover (added on top of the zoomed image).
@@ -3160,8 +3172,9 @@ function paintBookEl(el){
         el.style.backgroundSize=cfg.sqSize||'cover'; el.style.backgroundPosition=cfg.sqPos||'center';
         injectSquareTitle(el, cfg.sqTitle);
       } else {
-        // Grid: fill the FULL WIDTH of the slot (no side gaps); anchor to the top so the title stays.
-        el.style.backgroundSize='cover'; el.style.backgroundPosition='center top';
+        // Grid: fill the FULL WIDTH of the slot (no side gaps); per-book framing (default: top-anchored).
+        // gridSize/gridPos are shared by every grid instance (All, infinite-scroll, Books & Audio).
+        el.style.backgroundSize=cfg.gridSize||'cover'; el.style.backgroundPosition=cfg.gridPos||'center top';
         el.style.backgroundColor=cfg.gridBg||'#1A0E06';
       }
       el.classList.add('has-cover');
