@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Orgena App</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--br:#2C1A0E;--brm:#4A2C18;--brl:#7A4E35;--cr:#F7F1E8;--crw:#EDE3D2;--gd:#C8963E;--gdl:#E8B96A;--gdp:#F5DFA8;--ok:#5E7A3E;--blk:#0D0804;--mu:rgba(247,241,232,0.35)}
@@ -3107,7 +3107,7 @@ const bookArt = {
   'Pecan Candy & Huck-A-Bucks':   {grad:'linear-gradient(155deg,#5C3D28,#2C1A0E,#7A4E35)', num:'I',   img:'images/pecan_candy_cover__upscale_.jpeg',      discBg:'#E7DECB'},
   'Sweeter Than Candy':           {grad:'linear-gradient(155deg,#3B2010,#7A4E35,#2C1A0E)', num:'II',  img:'images/sweeter_than_candy_cover__upscale_.jpeg', discBg:'#0F0C0B'},
   'Three Times Sweeter':          {grad:'linear-gradient(155deg,#2C1A0E,#4A2C18,#3B2010)', num:'III', img:'images/3_times_sweeter_cover__upscale_.jpeg',    discBg:'#2E2017'},
-  'Smothered Okra & Long-Grain Rice':{grad:'linear-gradient(155deg,#2A3E18,#5E7A3E)',      num:'IV',  img:'', discBg:'#2A3E18'}
+  'Smothered Okra & Long-Grain Rice':{grad:'linear-gradient(155deg,#2A3E18,#5E7A3E)',      num:'IV',  img:'images/smothered_okra_cover.jpeg', discBg:'#7A3B10'}
 };
 const bookAlias = {'Smothered Okra':'Smothered Okra & Long-Grain Rice','Pecan Candy':'Pecan Candy & Huck-A-Bucks'};
 function bookKey(name){name=(name||'').replace(/&amp;/g,'&').trim();return bookAlias[name]||name;}
@@ -3145,7 +3145,14 @@ const coverCfg = {
     // Match the real cover: "Three Times Sweeter" script at the very TOP, and a much smaller/thinner
     // BLACK "LOVE HOME FAMILY" set LOWER (off the faces), one word per line.
     sqTitle:'<div style="position:absolute;top:6px;left:0;right:0;text-align:center;font-family:\'Snell Roundhand\',\'Apple Chancery\',\'Brush Script MT\',cursive;font-weight:400;font-size:18px;line-height:1;color:#FBF6EC;text-shadow:0 1px 3px rgba(0,0,0,.55)">Three Times Sweeter</div>'
-      +'<div style="position:absolute;bottom:5px;left:0;right:0;text-align:center;font-family:Georgia,\'Times New Roman\',serif;font-weight:400;font-size:8px;line-height:1.12;letter-spacing:.22em;color:#000000">LOVE<br>HOME<br>FAMILY</div>' }
+      +'<div style="position:absolute;bottom:5px;left:0;right:0;text-align:center;font-family:Georgia,\'Times New Roman\',serif;font-weight:400;font-size:8px;line-height:1.12;letter-spacing:.22em;color:#000000">LOVE<br>HOME<br>FAMILY</div>' },
+  'Smothered Okra & Long-Grain Rice': { gridBg:'#7A3B10',
+    // disc + square use the no-text crop (faces only). Square adds an approximation of the cover's
+    // bold rounded golden title; disc has no overlay.
+    discImg:'images/smothered_okra_cropped.jpeg', discPos:'50% 34%',
+    sqImg:'images/smothered_okra_cropped.jpeg', sqPos:'50% 34%',
+    gridSlot:'0.74', // shorten the slot so the bottom synopsis is cropped but the full title stays (crisp downscale)
+    sqTitle:'<div style="position:absolute;bottom:7px;left:5px;right:5px;text-align:center;font-family:\'Fredoka\',\'Baloo 2\',\'Varela Round\',\'Trebuchet MS\',sans-serif;font-weight:700;font-size:16px;line-height:1.02;color:#F2B21C;-webkit-text-stroke:0.6px #3A1E08;text-shadow:0 2px 3px rgba(0,0,0,.5)">Smothered Okra<br>&amp; Long-Grain Rice</div>' }
 };
 function coverCfgFor(name){ return coverCfg[bookKey(name)]||{}; }
 // Styled title overlay for a square audiobook cover (added on top of the zoomed image).
@@ -3197,13 +3204,15 @@ function paintAllBookArt(){ document.querySelectorAll('[data-book]').forEach(pai
    their placeholder icon + gradient (ready to receive a photo the same way). pos biases the crop
    toward the product for the landscape tiles. */
 const merchArt = {
-  'OE Journal': {img:'images/oe_journal.jpeg', pos:'center 72%'},
-  'OE Pen':     {img:'images/oe_pen.jpeg',     pos:'center 52%'},
-  'OE Sweets':  {img:'images/oe_sweets.jpeg',  pos:'center 60%'},
+  // fit:'contain' shows the WHOLE product (tall pen / wide sweets tray) centered on a matched dark
+  // field so nothing is cropped; default is cover (fills the tile) with a product-biased position.
+  'OE Journal': {img:'images/oe_journal.jpeg', pos:'center 60%'},
+  'OE Pen':     {img:'images/oe_pen.jpeg',     fit:'contain', bg:'#150B08'},
+  'OE Sweets':  {img:'images/oe_sweets.jpeg',  fit:'contain', bg:'#140C08'},
   'OE Tote':    {img:'images/oe_tote.jpeg',    pos:'center 55%'}
 };
 function getMerchArt(name){ return merchArt[(name||'').replace(/&amp;/g,'&').trim()]||null; }
-// Paint one .mc-art tile with its product photo (object-fit:cover), else leave the placeholder.
+// Paint one .mc-art tile with its product photo, else leave the placeholder.
 function paintMerchEl(el){
   var mc=el.closest('.mc'); if(!mc) return;
   var nm=((mc.querySelector('.mc-name')||{}).textContent||'').trim();
@@ -3211,7 +3220,8 @@ function paintMerchEl(el){
   var im=new Image();
   im.onload=function(){
     el.style.backgroundImage='url("'+a.img+'")';
-    el.style.backgroundSize='cover'; el.style.backgroundPosition=a.pos||'center'; el.style.backgroundRepeat='no-repeat';
+    el.style.backgroundSize=a.fit||'cover'; el.style.backgroundPosition=a.pos||'center'; el.style.backgroundRepeat='no-repeat';
+    if(a.bg) el.style.backgroundColor=a.bg;
     el.textContent=''; el.classList.add('has-photo'); // drop the placeholder emoji
   };
   im.src=a.img; // missing file => placeholder emoji/gradient simply stays
@@ -3562,9 +3572,9 @@ function openMerchDetail(name,cat,price,icon,bg){
   const img=document.getElementById('merch-img');
   var a=getMerchArt(name);
   if(a){
-    // Show the product photo (same single source as the grid tile).
-    img.style.background='#2C1A0E'; img.style.backgroundImage='url("'+a.img+'")';
-    img.style.backgroundSize='cover'; img.style.backgroundPosition=a.pos||'center'; img.style.backgroundRepeat='no-repeat';
+    // Show the product photo (same single source + framing as the grid tile).
+    img.style.backgroundColor=a.bg||'#2C1A0E'; img.style.backgroundImage='url("'+a.img+'")';
+    img.style.backgroundSize=a.fit||'cover'; img.style.backgroundPosition=a.pos||'center'; img.style.backgroundRepeat='no-repeat';
     img.textContent=''; img.dataset.photo='1';
   } else {
     img.style.backgroundImage='none'; img.style.background=bg; img.textContent=icon; img.dataset.photo='';
