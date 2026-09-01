@@ -231,6 +231,29 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .ti-acts{display:flex;gap:8px;padding:0 15px 14px}
 .ti-close{flex:1;padding:10px;background:transparent;border:1px solid rgba(200,150,62,.25);color:var(--gd);font-size:11px;letter-spacing:.09em;text-transform:uppercase;border-radius:3px;cursor:pointer}
 .ti-buy{flex:1;padding:10px;background:var(--gd);color:var(--br);border:none;font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;border-radius:3px;cursor:pointer}
+/* FULL-SCREEN FILM PLAYER */
+#ov-film{position:fixed;inset:0;background:#000;z-index:900;padding:0}
+.film-stage{position:absolute;inset:0;background:#000;overflow:hidden}
+#film-video{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;background:#000;display:block}
+.film-poster{position:absolute;top:0;left:0;width:100%;height:100%;background-position:center;background-size:cover;background-repeat:no-repeat}
+.film-scrim{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 30%,rgba(0,0,0,.35) 100%)}
+.film-play{position:absolute;inset:0;z-index:6;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.film-play .pring{width:64px;height:64px;background:rgba(200,150,62,.9);box-shadow:0 0 0 14px rgba(200,150,62,.12)}
+.film-play .pring svg{width:22px;height:22px}
+.film-x{position:absolute;top:16px;right:16px;z-index:12;width:40px;height:40px;border-radius:50%;background:rgba(20,12,6,.62);color:#F7F1E8;border:1px solid rgba(200,150,62,.4);font-size:17px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.film-cap{position:absolute;top:18px;left:18px;z-index:11;max-width:60%}
+.film-cap-t{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;font-style:italic;color:var(--cr);text-shadow:0 1px 6px rgba(0,0,0,.85)}
+.film-cap-s{font-family:'Cormorant Garamond',serif;font-size:12px;font-style:italic;color:rgba(247,241,232,.7);text-shadow:0 1px 5px rgba(0,0,0,.9);margin-top:1px}
+.film-bar{position:absolute;left:0;right:0;bottom:0;z-index:11;background:linear-gradient(to top,#160A04 0%,#2C1205 100%);border-top:1px solid rgba(200,150,62,.28);padding:12px 14px calc(12px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:10px}
+.film-bar-t{flex:1;min-width:0;font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;color:rgba(247,241,232,.75);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.film-bar-btns{display:flex;gap:8px;flex-shrink:0}
+.film-notify{padding:9px 14px;background:transparent;color:var(--gd);border:1px solid rgba(200,150,62,.5);border-radius:4px;font-size:11px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+.film-notify.on{background:rgba(200,150,62,.18);color:var(--cr)}
+.film-buy{padding:9px 16px;background:var(--gd);color:var(--br);border:none;border-radius:4px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+/* Rotated to landscape: video reflows to a wide 16:9 band filling the width (YouTube-style), centered on black. */
+@media (orientation:landscape){
+  #film-video,.film-poster{top:50%;bottom:auto;height:auto;width:100%;aspect-ratio:16/9;transform:translateY(-50%);object-fit:contain}
+}
 /* CREATE */
 #ov-create{align-items:flex-end;z-index:600}
 .cr-sheet{position:absolute;bottom:0;left:0;right:0;background:#0E0703;border-radius:22px 22px 0 0;border-top:1px solid rgba(200,150,62,.18);z-index:2;transform:translateY(100%);transition:transform .32s cubic-bezier(.34,1.4,.64,1)}
@@ -549,7 +572,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <div class="pui" onclick="goPublicProfile('rhodesia_official')"><div class="pun" onclick="goPublicProfile('rhodesia_official')" style="color:var(--gdl);cursor:pointer">rhodesia_official ✦</div><div class="ptag">The Tradition Film · Coming Soon</div></div>
       <span class="pdots" onclick="openShare(this)">⋯</span>
     </div>
-    <div class="pstill"><canvas id="cv-cs"></canvas><div class="pgrain"></div><div class="pscan"></div><div class="ptap" onclick="O('ov-trailer');setTrailer('The Tradition','Film · In Production')"><div class="pring"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div><span class="vlbl">Exclusive Preview</span></div>
+    <div class="pstill"><canvas id="cv-cs"></canvas><div class="pgrain"></div><div class="pscan"></div><div class="ptap" onclick="openFilm('The Tradition','Film · In Production')"><div class="pring"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div><span class="vlbl">Exclusive Preview</span></div>
     <div class="pcap"><span class="pcap-u" onclick="goPublicProfile('rhodesia_official')" style="cursor:pointer">Rhodesia</span>The Tradition is moving into a new phase. New Orleans has always been a character in every story I've written. 🎬</div>
     <div class="pa">
       <button class="pab" onclick="tLike(this)"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 9.8k</button>
@@ -787,7 +810,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <!-- Experience 3 -->
     <div class="exp-card">
       <div class="exp-art" style="cursor:pointer;position:relative" onclick="openExpTrailer('OE Martha&apos;s Vineyard Experience','Island Retreat')">
-        <div style="position:absolute;inset:0;background:linear-gradient(135deg,#12220E,#3B2A10);display:flex;align-items:center;justify-content:center">
+        <div style="position:absolute;inset:0;background:linear-gradient(135deg,#1A0805,#4A2C18);display:flex;align-items:center;justify-content:center">
           <div style="text-align:center"><div style="font-size:32px">🏝️</div><div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--gd);margin-top:4px">▶ Watch Preview</div></div>
         </div>
       </div>
@@ -808,16 +831,17 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
   <!-- The Tradition Film Box -->
   <div data-cr="all" style="margin:0 13px 9px">
     <div style="background:linear-gradient(135deg,#1A0805,#3B1205);border-radius:8px;overflow:hidden;border:1px solid rgba(200,150,62,.2)">
-      <div style="height:90px;display:flex;align-items:center;justify-content:center;gap:14px;background:linear-gradient(135deg,#1A0805,#2C0E05)">
-        <div style="font-size:40px">🎬</div>
-        <div>
-          <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;font-style:italic;color:var(--cr)">The Tradition</div>
-          <div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--gd);opacity:.7;margin-top:4px">Film · In Production</div>
+      <div onclick="openFilm('The Tradition','Film · In Production')" style="height:172px;position:relative;cursor:pointer;background:#1A0805 url('images/The%20Tradition%20Cover.jpeg') center/cover no-repeat">
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(13,8,4,.92) 0%,rgba(13,8,4,.35) 40%,rgba(13,8,4,0) 68%)"></div>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><div style="width:46px;height:46px;border-radius:50%;background:rgba(200,150,62,.85);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 10px rgba(200,150,62,.12)"><svg viewBox="0 0 24 24" width="16" height="16" style="fill:var(--br);margin-left:2px"><path d="M8 5v14l11-7z"/></svg></div></div>
+        <div style="position:absolute;left:13px;bottom:10px;right:13px">
+          <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;font-style:italic;color:var(--cr);text-shadow:0 1px 6px rgba(0,0,0,.8)">The Tradition</div>
+          <div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--gd);margin-top:3px;text-shadow:0 1px 4px rgba(0,0,0,.9)">Film · In Production</div>
         </div>
       </div>
       <div style="display:flex;gap:8px;padding:11px 13px 13px">
         <button onclick="toggleNotifyMe(this)" style="flex:1;padding:10px;background:var(--gd);color:var(--br);border:none;border-radius:3px;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">🔔 Notify Me</button>
-        <button onclick="O('ov-trailer');setTrailer('The Tradition','Film · In Production')" style="flex:1;padding:10px;background:transparent;color:rgba(247,241,232,.5);border:1px solid rgba(247,241,232,.1);border-radius:3px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Watch Teaser</button>
+        <button onclick="openFilm('The Tradition','Film · In Production')" style="flex:1;padding:10px;background:transparent;color:rgba(247,241,232,.5);border:1px solid rgba(247,241,232,.1);border-radius:3px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Watch Teaser</button>
       </div>
     </div>
   </div>
@@ -847,8 +871,8 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
   </div>
   <div class="sp-lbl" data-sp="all films">Film Trailers</div>
   <div class="sp-grid" data-sp="all films">
-    <div class="sp-alb" onclick="openTrailerFromPlayer('The Tradition','Film Trailer')"><div class="sp-art" style="background:linear-gradient(160deg,#1A0805,#4A1A0E)"><div class="sp-pi"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><div class="sp-at"><div class="sp-atn">The Tradition</div><div class="sp-ats">Film Trailer</div></div></div></div>
-    <div class="sp-alb" onclick="openTrailerFromPlayer('Evolution of Communications','Teaser')"><div class="sp-art" style="background:linear-gradient(160deg,#0D0804,#2C1A0E)"><div class="sp-pi"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><div class="sp-at"><div class="sp-atn">Evolution of Comms</div><div class="sp-ats">Teaser</div></div></div></div>
+    <div class="sp-alb" onclick="openFilm('The Tradition','Film Trailer')"><div class="sp-art has-cover" style="background:#1A0805 url('images/The%20Tradition%20Cover.jpeg') center/cover no-repeat"><div class="sp-pi"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><div class="sp-at"><div class="sp-atn">The Tradition</div><div class="sp-ats">Film Trailer</div></div></div></div>
+    <div class="sp-alb" onclick="openFilm('Evolution of Communications','Teaser')"><div class="sp-art" style="background:linear-gradient(160deg,#0D0804,#2C1A0E)"><div class="sp-pi"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><div class="sp-at"><div class="sp-atn">Evolution of Comms</div><div class="sp-ats">Teaser</div></div></div></div>
   </div>
   <div class="sp-lbl" data-sp="all podcasts author">Podcasts</div>
   <div class="sp-pods" data-sp="all podcasts author">
@@ -1362,6 +1386,24 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <div class="ti-acts"><button class="ti-close" onclick="C('ov-trailer')">Close</button><button class="ti-buy" onclick="C('ov-trailer');setTimeout(()=>openPur(currentTrailer,'','book'),200)">Buy Now</button></div>
   </div>
 </div>
+<!-- Full-screen film trailer player (portrait fills screen; landscape → 16:9 widescreen). Real clip drops in via filmMedia[name].src -->
+<div class="ov" id="ov-film">
+  <div class="film-stage">
+    <video id="film-video" playsinline webkit-playsinline muted preload="none"></video>
+    <div class="film-poster" id="film-poster"></div>
+    <div class="film-scrim"></div>
+    <div class="film-play" id="film-play" onclick="filmPlay()"><div class="pring"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
+  </div>
+  <div class="film-cap"><div class="film-cap-t" id="film-cap-t">Title</div><div class="film-cap-s" id="film-cap-s">Sub</div></div>
+  <button class="film-x" onclick="closeFilm()" aria-label="Close">✕</button>
+  <div class="film-bar">
+    <div class="film-bar-t" id="film-bar-t">Preview · full trailer coming soon</div>
+    <div class="film-bar-btns">
+      <button class="film-notify" id="film-notify" onclick="filmNotify(this)">🔔 Notify Me</button>
+      <button class="film-buy" onclick="filmBuy()">Buy Now</button>
+    </div>
+  </div>
+</div>
 <!-- Create -->
 <div class="ov" id="ov-create" style="align-items:flex-end">
   <div class="ov-bg" onclick="C('ov-create')"></div>
@@ -1653,6 +1695,9 @@ function fitPhone(){
 window.addEventListener('resize', fitPhone);
 window.addEventListener('load', fitPhone);
 fitPhone();
+// The full-screen film player must escape the scaled phone mock so its position:fixed fills the TRUE
+// viewport — this is what lets portrait fill the screen and landscape become a full-width 16:9 band.
+(function(){var f=document.getElementById('ov-film'); if(f && f.parentElement!==document.body) document.body.appendChild(f);})();
 function shopItem(name){
   T('creations');
   setTimeout(function(){
@@ -2614,6 +2659,66 @@ function openTrailerFromPlayer(title,sub){
   setTimeout(()=>playTrailerWave('tv-cv'),200);
 }
 
+// ── FULL-SCREEN FILM TRAILER PLAYER ──
+// Drop a real trailer in later by setting `src` below (one line per film). Empty src = poster placeholder.
+const filmMedia = {
+  'The Tradition':               {poster:"images/The%20Tradition%20Cover.jpeg", src:''},
+  'Evolution of Communications': {poster:'', src:''}
+};
+let currentFilm='';
+function openFilm(name,sub){
+  currentFilm=name; currentTrailer=name;
+  var m=filmMedia[name]||{poster:'',src:''};
+  var v=document.getElementById('film-video');
+  var poster=document.getElementById('film-poster');
+  var play=document.getElementById('film-play');
+  if(poster){
+    poster.style.display='block';
+    poster.style.background=m.poster?("#000 url('"+m.poster+"') center/cover no-repeat"):'linear-gradient(160deg,#1A0805,#2C1A0E)';
+  }
+  if(v){
+    try{v.pause();}catch(e){}
+    if(m.src){ v.setAttribute('src',m.src); v.poster=m.poster||''; v.style.display='block'; }
+    else { v.removeAttribute('src'); try{v.load();}catch(e){} v.style.display='none'; }
+  }
+  if(play) play.style.display='flex';
+  setText('film-cap-t',name);
+  setText('film-cap-s',sub||'');
+  setText('film-bar-t', m.src?('Now playing · '+name):'Preview · full trailer coming soon');
+  var nb=document.getElementById('film-notify'); if(nb){nb.classList.remove('on'); nb.textContent='🔔 Notify Me';}
+  O('ov-film');
+}
+function filmPlay(){
+  var m=filmMedia[currentFilm]||{};
+  var v=document.getElementById('film-video');
+  var poster=document.getElementById('film-poster');
+  var play=document.getElementById('film-play');
+  if(m.src && v){
+    v.style.display='block';
+    if(poster) poster.style.display='none';
+    if(play) play.style.display='none';
+    try{v.play();}catch(e){}
+  } else {
+    // Placeholder — no clip hosted yet; pulse the Notify affordance so people opt in.
+    var nb=document.getElementById('film-notify');
+    if(nb && nb.animate){ nb.animate([{transform:'scale(1)'},{transform:'scale(1.09)'},{transform:'scale(1)'}],{duration:300}); }
+    if(navigator.vibrate){ try{navigator.vibrate(12);}catch(e){} }
+  }
+}
+function closeFilm(){
+  var v=document.getElementById('film-video'); if(v){ try{v.pause();}catch(e){} }
+  C('ov-film');
+}
+function filmNotify(btn){
+  if(btn){ btn.classList.add('on'); btn.textContent="✓ We'll Notify You"; }
+  if(navigator.vibrate){ try{navigator.vibrate(15);}catch(e){} }
+}
+function filmBuy(){
+  var name=currentFilm||'The Tradition';
+  closeFilm();
+  setTimeout(function(){ openPur(name,'','book'); },200);
+}
+
 // ── MINI PLAYER: tap area logic ──
 function miniPlayerTap(e){
   // If the tap is on the mini-play button area, don't open full player
@@ -3234,8 +3339,8 @@ const merchArt = {
   // fit:'contain' shows the WHOLE product (tall pen / wide sweets tray) centered on a matched dark
   // field so nothing is cropped; default is cover (fills the tile) with a product-biased position.
   'OE Journal': {img:'images/oe_journal.jpeg', pos:'center 60%'},
-  'OE Pen':     {img:'images/OE%20Merch%20%7C%20Pens%20%7C%20Cocoa.jpeg',     fit:'contain', bg:'#150B08'},
-  'OE Sweets':  {img:'images/OE%20Merch%20%7C%20Sweets%20%7C%20Cocoa.jpeg',  fit:'contain', bg:'#140C08'},
+  'OE Pen':     {img:'images/OE%20Merch%20%7C%20Pens%20%7C%20Cocoa.jpeg',     pos:'center'},
+  'OE Sweets':  {img:'images/OE%20Merch%20%7C%20Sweets%20%7C%20Cocoa.jpeg',  pos:'center'},
   'OE Tote':    {img:'images/oe_tote.jpeg',    pos:'center 55%'}
 };
 function getMerchArt(name){ return merchArt[(name||'').replace(/&amp;/g,'&').trim()]||null; }
