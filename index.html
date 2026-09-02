@@ -376,7 +376,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .spec{position:absolute;top:6px;right:6px;background:rgba(200,150,62,.88);color:var(--br);font-size:8px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;padding:2px 5px;border-radius:2px}
 .mc-info{padding:7px 9px 8px}
 .mc-name{font-size:12px;font-weight:500;color:var(--cr);margin-bottom:1px}
-.mc-cat{font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:rgba(247,241,232,.28)}
+.mc-cat{display:none}
 .mc-price{font-size:11px;font-weight:500;color:var(--gd);}
 .mc-add{width:100%;padding:6px;background:var(--gd);color:var(--br);font-size:9px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;border:none;border-radius:3px;cursor:pointer;margin-top:5px}
 .exp-card{margin:0 13px 9px;background:linear-gradient(135deg,#241305,#2E1808);border-radius:8px;overflow:hidden;border:1px solid rgba(200,150,62,.18);cursor:pointer}
@@ -871,7 +871,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
   </div>
   <div class="sp-lbl" data-sp="all films">Film Trailers</div>
   <div class="sp-grid" data-sp="all films">
-    <div class="sp-alb" onclick="openFilm('The Tradition','Film Trailer')"><div class="sp-art has-cover" style="background:#1A0805 url('images/The%20Tradition%20Cover.jpeg') center/cover no-repeat"><div class="sp-pi"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><div class="sp-at"><div class="sp-atn">The Tradition</div><div class="sp-ats">Film Trailer</div></div></div></div>
+    <div class="sp-alb" onclick="openFilm('The Tradition','Film Trailer')"><div class="sp-art has-cover" style="background:#8A0300 url('images/The%20Tradition%20Cover.jpeg') center/90% no-repeat"><div class="sp-pi"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><div class="sp-at"><div class="sp-atn">The Tradition</div><div class="sp-ats">Film Trailer</div></div></div></div>
     <div class="sp-alb" onclick="openFilm('Evolution of Communications','Teaser')"><div class="sp-art" style="background:linear-gradient(160deg,#0D0804,#2C1A0E)"><div class="sp-pi"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><div class="sp-at"><div class="sp-atn">Evolution of Comms</div><div class="sp-ats">Teaser</div></div></div></div>
   </div>
   <div class="sp-lbl" data-sp="all podcasts author">Podcasts</div>
@@ -924,9 +924,9 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
   <div id="myev-bg" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.72);z-index:850;align-items:flex-end;justify-content:center" onclick="closeMyEvents()">
     <div style="width:100%;max-height:82%;background:linear-gradient(180deg,#F4E1AC 0%,#E9CD86 52%,#D9B360 100%);border-radius:18px 18px 0 0;overflow:hidden;border-top:1px solid rgba(120,78,30,.4);display:flex;flex-direction:column" onclick="event.stopPropagation()">
       <div style="height:4px;background:linear-gradient(to right,#B5842E,#5A3A16,#B5842E)"></div>
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px;flex-shrink:0">
-        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;font-style:italic;color:#3E2610">My Events</div>
-        <span onclick="closeMyEvents()" style="color:#6B4A22;cursor:pointer;font-size:20px;line-height:1">&times;</span>
+      <div style="position:relative;display:flex;align-items:center;justify-content:center;padding:14px 18px 10px;flex-shrink:0">
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;font-style:italic;color:#3E2610;text-align:center">My Events</div>
+        <span onclick="closeMyEvents()" style="position:absolute;right:18px;top:11px;color:#6B4A22;cursor:pointer;font-size:20px;line-height:1">&times;</span>
       </div>
       <div id="myev-body" style="overflow-y:auto;padding:0 16px 22px"></div>
     </div>
@@ -982,7 +982,6 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
   <div id="comm-events-view" style="display:block">
     <!-- Map area -->
     <div style="margin:12px 13px 0;border-radius:12px;overflow:hidden;border:1px solid rgba(200,150,62,.15);position:relative;background:#0A0602">
-      <div style="position:absolute;top:10px;left:12px;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(200,150,62,.55);z-index:2">Events Map</div>
       <div style="position:absolute;top:10px;right:12px;display:flex;align-items:center;gap:5px;z-index:2"><div style="width:7px;height:7px;border-radius:50%;background:var(--gd);box-shadow:0 0 6px var(--gd)"></div><span style="font-size:10px;color:rgba(247,241,232,.5)">7 events</span></div>
       <!-- SVG USA Map (pinch-zoom + pan enabled) -->
       <div id="map-gesture" style="position:relative;width:100%;padding-top:62.5%;touch-action:none;overflow:hidden">
@@ -1136,7 +1135,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 </div>
 </div>
 <!-- FAB -->
-<div class="fab" id="fab" onclick="openCreate()"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+<div class="fab" id="fab" onclick="fabAction()"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
 <!-- MINI PLAYER -->
 <div class="mini-pl" id="miniPl" onclick="miniPlayerTap(event)">
   <div class="mini-disc" id="miniDisc" style="background:linear-gradient(135deg,#5C3D28,#2C1A0E)"><svg width="34" height="32" viewBox="0 0 120 110" fill="none"><text x="2" y="76" font-family="serif" font-size="72" font-weight="900" fill="white" opacity=".6">O</text><text x="42" y="76" font-family="serif" font-size="72" font-weight="900" fill="white" opacity=".6">E</text></svg></div>
@@ -1614,7 +1613,6 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <div class="ti-info">
       <div class="ti-title" id="merch-name">OE Classic Tee</div>
       <div class="ti-sub" id="merch-cat">Apparel</div>
-      <div style="font-size:16px;font-weight:500;color:var(--gd);margin-top:5px" id="merch-price">$34</div>
     </div>
     <!-- Color selector -->
     <div style="padding:0 15px 8px">
@@ -1626,17 +1624,10 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
         <div onclick="selColor(this,'Gold')" style="width:26px;height:26px;border-radius:50%;background:#C8963E;border:2px solid transparent;cursor:pointer" title="Gold"></div>
       </div>
     </div>
-    <!-- Size selector -->
-    <div style="padding:0 15px 8px">
-      <div style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(247,241,232,.35);margin-bottom:7px">SIZE</div>
-      <div style="display:flex;gap:7px;flex-wrap:wrap" id="merch-sizes">
-        <button onclick="selSize(this)" style="padding:5px 12px;border-radius:4px;border:1px solid rgba(200,150,62,.3);background:transparent;color:rgba(247,241,232,.6);font-size:11px;cursor:pointer">XS</button>
-        <button onclick="selSize(this)" style="padding:5px 12px;border-radius:4px;border:1px solid var(--gd);background:rgba(200,150,62,.08);color:var(--gd);font-size:11px;cursor:pointer">S</button>
-        <button onclick="selSize(this)" style="padding:5px 12px;border-radius:4px;border:1px solid rgba(200,150,62,.3);background:transparent;color:rgba(247,241,232,.6);font-size:11px;cursor:pointer">M</button>
-        <button onclick="selSize(this)" style="padding:5px 12px;border-radius:4px;border:1px solid rgba(200,150,62,.3);background:transparent;color:rgba(247,241,232,.6);font-size:11px;cursor:pointer">L</button>
-        <button onclick="selSize(this)" style="padding:5px 12px;border-radius:4px;border:1px solid rgba(200,150,62,.3);background:transparent;color:rgba(247,241,232,.6);font-size:11px;cursor:pointer">XL</button>
-        <button onclick="selSize(this)" style="padding:5px 12px;border-radius:4px;border:1px solid rgba(200,150,62,.3);background:transparent;color:rgba(247,241,232,.6);font-size:11px;cursor:pointer">2XL</button>
-      </div>
+    <!-- Option selector (Style / Sizes) — label + buttons injected per item by openMerchDetail -->
+    <div style="padding:0 15px 8px" id="merch-size-block">
+      <div id="merch-size-label" style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(247,241,232,.35);margin-bottom:7px">SIZE</div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap" id="merch-sizes"></div>
     </div>
     <!-- Qty -->
     <div style="padding:0 15px 12px;display:flex;align-items:center;gap:12px">
@@ -1651,6 +1642,50 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <button class="ti-buy" onclick="C('ov-merch');setTimeout(()=>{addMerchToCart(currentMerchName,currentMerchPrice,'🛍');completePur('Apple Pay');},200)">Buy Now</button>
     </div>
     </div><!-- end ch-panel-chapters -->
+  </div>
+</div>
+<!-- Host or Recommend an Event (Community → Events → +) -->
+<div class="ov ov-center" id="ov-evform">
+  <div class="ov-bg" onclick="C('ov-evform')"></div>
+  <div class="tbox" style="width:330px;max-height:88%;overflow-y:auto;z-index:2">
+    <div style="padding:16px 16px 4px;position:relative">
+      <div class="ti-title" style="padding-right:22px">Host or Recommend an Event</div>
+      <div class="ti-sub">Bring an Orgena event to your city</div>
+      <span onclick="C('ov-evform')" style="position:absolute;top:14px;right:15px;color:rgba(247,241,232,.5);cursor:pointer;font-size:18px;line-height:1">&times;</span>
+    </div>
+    <div id="evform-fields" style="padding:8px 16px 16px;display:flex;flex-direction:column;gap:11px">
+      <div>
+        <label style="display:block;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(247,241,232,.4);margin-bottom:4px">Name</label>
+        <input id="evform-name" type="text" placeholder="Your name" style="width:100%;box-sizing:border-box;padding:9px 11px;border-radius:6px;border:1px solid rgba(200,150,62,.3);background:rgba(255,255,255,.04);color:var(--cr);font-size:13px">
+      </div>
+      <div>
+        <label style="display:block;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(247,241,232,.4);margin-bottom:4px">Email</label>
+        <input id="evform-email" type="email" placeholder="you@email.com" style="width:100%;box-sizing:border-box;padding:9px 11px;border-radius:6px;border:1px solid rgba(200,150,62,.3);background:rgba(255,255,255,.04);color:var(--cr);font-size:13px">
+      </div>
+      <div>
+        <label style="display:block;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(247,241,232,.4);margin-bottom:4px">Cell Phone #</label>
+        <input id="evform-phone" type="tel" placeholder="(555) 555-5555" style="width:100%;box-sizing:border-box;padding:9px 11px;border-radius:6px;border:1px solid rgba(200,150,62,.3);background:rgba(255,255,255,.04);color:var(--cr);font-size:13px">
+      </div>
+      <div>
+        <label style="display:block;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(247,241,232,.4);margin-bottom:6px">I'd like to</label>
+        <div style="display:flex;gap:16px">
+          <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--cr);cursor:pointer"><input id="evform-host" type="checkbox" style="width:16px;height:16px;accent-color:#C8963E">Host</label>
+          <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--cr);cursor:pointer"><input id="evform-recommend" type="checkbox" style="width:16px;height:16px;accent-color:#C8963E">Recommend</label>
+        </div>
+      </div>
+      <div>
+        <label style="display:block;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(247,241,232,.4);margin-bottom:6px">Event Season</label>
+        <input id="evform-season" type="month" style="width:100%;box-sizing:border-box;padding:9px 11px;border-radius:6px;border:1px solid rgba(200,150,62,.3);background:rgba(255,255,255,.04);color:var(--cr);font-size:13px;color-scheme:dark">
+        <label style="display:flex;align-items:center;gap:7px;font-size:12px;color:rgba(247,241,232,.7);cursor:pointer;margin-top:7px"><input id="evform-flexible" type="checkbox" onchange="evformToggleFlexible(this)" style="width:16px;height:16px;accent-color:#C8963E">Flexible</label>
+      </div>
+      <button onclick="submitEventForm()" style="margin-top:4px;padding:11px;background:var(--gd);color:var(--br);border:none;border-radius:6px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Submit</button>
+    </div>
+    <div id="evform-thanks" style="display:none;padding:26px 20px 30px;text-align:center">
+      <div style="font-size:34px;margin-bottom:8px">🎉</div>
+      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;font-style:italic;color:var(--cr);margin-bottom:8px">Thank you<span id="evform-thanks-name"></span>!</div>
+      <div style="font-size:13px;color:rgba(247,241,232,.65);line-height:1.5">We've received your submission. Please <b style="color:var(--gd)">check your email</b> for next steps on hosting or recommending your event.</div>
+      <button onclick="C('ov-evform')" style="margin-top:18px;padding:9px 22px;background:transparent;border:1px solid rgba(200,150,62,.4);color:var(--gd);border-radius:6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Done</button>
+    </div>
   </div>
 </div>
 <div class="bn" id="bottom-nav">
@@ -1695,9 +1730,6 @@ function fitPhone(){
 window.addEventListener('resize', fitPhone);
 window.addEventListener('load', fitPhone);
 fitPhone();
-// The full-screen film player must escape the scaled phone mock so its position:fixed fills the TRUE
-// viewport — this is what lets portrait fill the screen and landscape become a full-width 16:9 band.
-(function(){var f=document.getElementById('ov-film'); if(f && f.parentElement!==document.body) document.body.appendChild(f);})();
 function shopItem(name){
   T('creations');
   setTimeout(function(){
@@ -2323,7 +2355,7 @@ function myEvRow(ev,isHistory){
   return '<div style="padding:11px 2px;border-bottom:1px solid rgba(90,58,22,.2)">'
     + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">'
     +   '<div style="flex:1;min-width:0">'
-    +     '<div onclick="myEvDetails(\''+safe+'\')" style="font-size:14px;font-weight:700;color:#FFFFFF;cursor:pointer;text-shadow:0 1px 2px rgba(52,28,8,.75),0 0 2px rgba(52,28,8,.5)">'+ev.name+badge+'</div>'
+    +     '<div onclick="myEvDetails(\''+safe+'\')" style="font-size:14px;font-weight:700;color:#3E2610;cursor:pointer">'+ev.name+badge+'</div>'
     +     '<div style="font-size:11px;color:rgba(58,34,14,.75);margin-top:2px">'+ev.city+' · '+evWhen(ev)+'</div>'
     +   '</div>'
     +   '<button onclick="myEvDetails(\''+safe+'\')" style="flex-shrink:0;padding:5px 11px;background:rgba(255,255,255,.28);border:1px solid rgba(74,44,20,.45);border-radius:16px;color:#4A2C12;font-size:10px;cursor:pointer">Info</button>'
@@ -3338,12 +3370,44 @@ function paintAllBookArt(){ document.querySelectorAll('[data-book]').forEach(pai
 const merchArt = {
   // fit:'contain' shows the WHOLE product (tall pen / wide sweets tray) centered on a matched dark
   // field so nothing is cropped; default is cover (fills the tile) with a product-biased position.
+  // Grid tiles crop (cover) with a product-biased `pos`; `dfit`/`dpos`/`bg` override the framing in the
+  // larger detail popup (e.g. contain to show a whole product centered on a matched dark field).
   'OE Journal': {img:'images/oe_journal.jpeg', pos:'center 60%'},
-  'OE Pen':     {img:'images/OE%20Merch%20%7C%20Pens%20%7C%20Cocoa.jpeg',     pos:'center'},
-  'OE Sweets':  {img:'images/OE%20Merch%20%7C%20Sweets%20%7C%20Cocoa.jpeg',  pos:'center'},
+  'OE Pen':     {img:'images/OE%20Merch%20%7C%20Pens%20%7C%20Cocoa.jpeg',     pos:'center 40%', dfit:'contain', dpos:'center', bg:'#160C07'},
+  'OE Sweets':  {img:'images/OE%20Merch%20%7C%20Sweets%20%7C%20Cocoa.jpeg',  pos:'center 60%', dfit:'contain', dpos:'center', bg:'#050301'},
   'OE Tote':    {img:'images/oe_tote.jpeg',    pos:'center 55%'}
 };
 function getMerchArt(name){ return merchArt[(name||'').replace(/&amp;/g,'&').trim()]||null; }
+// Per-item detail-popup options. label = group heading; values = choices. null/absent = hide the group.
+const merchOptions = {
+  'OE Pen':     {label:'Style',       values:['Fountain','Ball-point']},
+  'OE Journal': {label:'Sizes (in.)', values:['4.5 x 6','6 x 8','8.5 x 11']},
+  'OE Tote':    {label:'Sizes (in.)', values:['14 x 16','24 x 17']},
+  'OE Mug':     {label:'Sizes (oz)',  values:['14 oz.','20 oz.','40 oz.']},
+  'OE Blanket': {label:'Sizes (in.)', values:['4.5 x 6','6 x 8','8.5 x 11']},
+  'OE Sweets':  null
+};
+// Build the option buttons for a merch item (or hide the group when it has none).
+function renderMerchOptions(name){
+  var block=document.getElementById('merch-size-block');
+  var label=document.getElementById('merch-size-label');
+  var wrap=document.getElementById('merch-sizes');
+  if(!block||!wrap) return;
+  var opt=merchOptions.hasOwnProperty(name)?merchOptions[name]:{label:'Size',values:['XS','S','M','L','XL','2XL']};
+  if(!opt||!opt.values||!opt.values.length){ block.style.display='none'; wrap.innerHTML=''; currentMerchSize=''; return; }
+  block.style.display='block';
+  if(label) label.textContent=(opt.label||'Size').toUpperCase();
+  wrap.innerHTML='';
+  opt.values.forEach(function(v,i){
+    var b=document.createElement('button');
+    b.textContent=v;
+    b.setAttribute('onclick','selSize(this)');
+    var on=(i===0);
+    b.style.cssText='padding:5px 12px;border-radius:4px;border:1px solid '+(on?'var(--gd)':'rgba(200,150,62,.3)')+';background:'+(on?'rgba(200,150,62,.08)':'transparent')+';color:'+(on?'var(--gd)':'rgba(247,241,232,.6)')+';font-size:11px;cursor:pointer';
+    wrap.appendChild(b);
+  });
+  currentMerchSize=opt.values[0];
+}
 // Paint one .mc-art tile with its product photo, else leave the placeholder.
 function paintMerchEl(el){
   var mc=el.closest('.mc'); if(!mc) return;
@@ -3459,6 +3523,33 @@ function setPlRate(v){plRate=parseFloat(v)||1;}
 
 let crMode='';
 function openCreate(){crGo(1,'');O('ov-create');setTimeout(function(){var s=document.getElementById('cr-sheet');if(s)s.classList.add('up');if(typeof crSetMode==='function')crSetMode('video');},10);}
+// Community FAB is context-aware: record content on Explore/Home, but open the event form on the Events view.
+function fabAction(){
+  var comm=document.getElementById('s-community');
+  var ev=document.getElementById('comm-events-view');
+  var onEvents = comm && comm.classList.contains('on') && ev && getComputedStyle(ev).display!=='none';
+  if(onEvents) openEventForm(); else openCreate();
+}
+function openEventForm(){
+  var f=document.getElementById('evform-fields'), t=document.getElementById('evform-thanks');
+  if(f) f.style.display='flex'; if(t) t.style.display='none';
+  ['evform-name','evform-email','evform-phone','evform-season'].forEach(function(id){var e=document.getElementById(id); if(e){e.value='';e.disabled=false;e.style.opacity='1';}});
+  ['evform-host','evform-recommend','evform-flexible'].forEach(function(id){var e=document.getElementById(id); if(e) e.checked=false;});
+  O('ov-evform');
+}
+function evformToggleFlexible(cb){
+  var s=document.getElementById('evform-season');
+  if(s){ s.disabled=cb.checked; s.style.opacity=cb.checked?'.4':'1'; if(cb.checked) s.value=''; }
+}
+function submitEventForm(){
+  var name=((document.getElementById('evform-name')||{}).value||'').trim();
+  var email=((document.getElementById('evform-email')||{}).value||'').trim();
+  if(!name||!email){ showToast('Please add your name and email.'); return; }
+  var nm=document.getElementById('evform-thanks-name'); if(nm) nm.textContent=', '+name.split(/\s+/)[0];
+  var f=document.getElementById('evform-fields'), t=document.getElementById('evform-thanks');
+  if(f) f.style.display='none'; if(t) t.style.display='block';
+  haptic(15);
+}
 function crGo(step,mode){if(mode)crMode=mode;document.querySelectorAll('.cr-step').forEach(s=>s.classList.remove('on'));document.getElementById('cr-s'+step).classList.add('on');document.querySelectorAll('#cr-dots .cr-dot').forEach((d,i)=>d.classList.toggle('on',i<step));
   if(step===2){const icos={video:'🎬',photo:'📸',upload:'📁',voice:'🎙'};const lbls={video:'Tap to record',photo:'Tap to capture',upload:'Pick from library',voice:'Tap to start recording'};const ttls={video:'Record Your Video',photo:'Frame Your Shot',upload:'Choose Media',voice:'Record Voice Note'};setText('cr-cam-ico',icos[crMode]||'📸');setText('cr-cam-lbl',lbls[crMode]||'Tap to capture');setText('cr-s2t',ttls[crMode]||'Frame Your Shot');}
 }
@@ -3695,10 +3786,10 @@ function openMerchDetail(name,cat,price,icon,bg){
   currentMerchName=name;
   currentMerchPrice=parseInt(price.replace('$',''));
   currentMerchQty=1;
-  currentMerchSize='S';currentMerchColor='Black';
+  currentMerchSize='';currentMerchColor='Black';
   setText('merch-name',name);
   setText('merch-cat',cat);
-  setText('merch-price',price);
+  renderMerchOptions(name);
   setText('merch-qty','1');
   setText('merch-total',price);
   const img=document.getElementById('merch-img');
@@ -3706,7 +3797,7 @@ function openMerchDetail(name,cat,price,icon,bg){
   if(a){
     // Show the product photo (same single source + framing as the grid tile).
     img.style.backgroundColor=a.bg||'#2C1A0E'; img.style.backgroundImage='url("'+a.img+'")';
-    img.style.backgroundSize=a.fit||'cover'; img.style.backgroundPosition=a.pos||'center'; img.style.backgroundRepeat='no-repeat';
+    img.style.backgroundSize=a.dfit||a.fit||'cover'; img.style.backgroundPosition=a.dpos||a.pos||'center'; img.style.backgroundRepeat='no-repeat';
     img.textContent=''; img.dataset.photo='1';
   } else {
     img.style.backgroundImage='none'; img.style.background=bg; img.textContent=icon; img.dataset.photo='';
