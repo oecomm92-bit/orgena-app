@@ -376,7 +376,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .spec{position:absolute;top:6px;right:6px;background:rgba(200,150,62,.88);color:var(--br);font-size:8px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;padding:2px 5px;border-radius:2px}
 .mc-info{padding:7px 9px 8px}
 .mc-name{font-size:12px;font-weight:500;color:var(--cr);margin-bottom:1px}
-.mc-cat{display:none}
+.mc-cat{font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:rgba(247,241,232,.28);visibility:hidden}
 .mc-price{font-size:11px;font-weight:500;color:var(--gd);}
 .mc-add{width:100%;padding:6px;background:var(--gd);color:var(--br);font-size:9px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;border:none;border-radius:3px;cursor:pointer;margin-top:5px}
 .exp-card{margin:0 13px 9px;background:linear-gradient(135deg,#241305,#2E1808);border-radius:8px;overflow:hidden;border:1px solid rgba(200,150,62,.18);cursor:pointer}
@@ -3373,8 +3373,8 @@ const merchArt = {
   // Grid tiles crop (cover) with a product-biased `pos`; `dfit`/`dpos`/`bg` override the framing in the
   // larger detail popup (e.g. contain to show a whole product centered on a matched dark field).
   'OE Journal': {img:'images/oe_journal.jpeg', pos:'center 60%'},
-  'OE Pen':     {img:'images/OE%20Merch%20%7C%20Pens%20%7C%20Cocoa.jpeg',     pos:'center 40%', dfit:'contain', dpos:'center', bg:'#160C07'},
-  'OE Sweets':  {img:'images/OE%20Merch%20%7C%20Sweets%20%7C%20Cocoa.jpeg',  pos:'center 60%', dfit:'contain', dpos:'center', bg:'#050301'},
+  'OE Pen':     {img:'images/OE%20Merch%20%7C%20Pens%20%7C%20Cocoa.jpeg',     pos:'center 60%', dfit:'contain', dpos:'center', bg:'#0E0604'},
+  'OE Sweets':  {img:'images/OE%20Merch%20%7C%20Sweets%20%7C%20Cocoa.jpeg',  pos:'center 76%', dfit:'contain', dpos:'center', bg:'#0B0605'},
   'OE Tote':    {img:'images/oe_tote.jpeg',    pos:'center 55%'}
 };
 function getMerchArt(name){ return merchArt[(name||'').replace(/&amp;/g,'&').trim()]||null; }
