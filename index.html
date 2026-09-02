@@ -244,12 +244,14 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .film-cap{position:absolute;top:18px;left:18px;z-index:11;max-width:60%}
 .film-cap-t{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;font-style:italic;color:var(--cr);text-shadow:0 1px 6px rgba(0,0,0,.85)}
 .film-cap-s{font-family:'Cormorant Garamond',serif;font-size:12px;font-style:italic;color:rgba(247,241,232,.7);text-shadow:0 1px 5px rgba(0,0,0,.9);margin-top:1px}
-.film-bar{position:absolute;left:0;right:0;bottom:0;z-index:11;background:linear-gradient(to top,#160A04 0%,#2C1205 100%);border-top:1px solid rgba(200,150,62,.28);padding:12px 14px calc(12px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:10px}
-.film-bar-t{flex:1;min-width:0;font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;color:rgba(247,241,232,.75);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.film-bar-btns{display:flex;gap:8px;flex-shrink:0}
-.film-notify{padding:9px 14px;background:transparent;color:var(--gd);border:1px solid rgba(200,150,62,.5);border-radius:4px;font-size:11px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+.film-bar{position:absolute;left:0;right:0;bottom:0;z-index:11;background:linear-gradient(to top,#160A04 0%,#2C1205 100%);border-top:1px solid rgba(200,150,62,.28);padding:12px 14px calc(12px + env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:space-evenly;gap:8px}
+.film-act{display:flex;align-items:center;justify-content:center;gap:5px;padding:9px 14px;background:transparent;color:var(--gd);border:1px solid rgba(200,150,62,.5);border-radius:4px;font-size:11px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+.film-act svg{width:14px;height:14px;fill:currentColor}
 .film-notify.on{background:rgba(200,150,62,.18);color:var(--cr)}
-.film-buy{padding:9px 16px;background:var(--gd);color:var(--br);border:none;border-radius:4px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+.film-support{padding:9px 16px;background:var(--gd);color:var(--br);border:none;border-radius:4px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+#ov-donate{z-index:1000}
+.dn-chip{padding:8px 14px;border-radius:20px;border:1px solid rgba(200,150,62,.35);background:transparent;color:rgba(247,241,232,.7);font-size:13px;font-weight:500;cursor:pointer}
+.dn-chip.on{border-color:var(--gd);background:rgba(200,150,62,.14);color:var(--gd)}
 /* Rotated to landscape: video reflows to a wide 16:9 band filling the width (YouTube-style), centered on black. */
 @media (orientation:landscape){
   #film-video,.film-poster{top:50%;bottom:auto;height:auto;width:100%;aspect-ratio:16/9;transform:translateY(-50%);object-fit:contain}
@@ -1396,10 +1398,39 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
   <div class="film-cap"><div class="film-cap-t" id="film-cap-t">Title</div><div class="film-cap-s" id="film-cap-s">Sub</div></div>
   <button class="film-x" onclick="closeFilm()" aria-label="Close">✕</button>
   <div class="film-bar">
-    <div class="film-bar-t" id="film-bar-t">Preview · full trailer coming soon</div>
-    <div class="film-bar-btns">
-      <button class="film-notify" id="film-notify" onclick="filmNotify(this)">🔔 Notify Me</button>
-      <button class="film-buy" onclick="filmBuy()">Buy Now</button>
+    <button class="film-act" onclick="filmShare()"><svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>Share</button>
+    <button class="film-act film-notify" id="film-notify" onclick="filmNotify(this)">🔔 Notify Me</button>
+    <button class="film-support" onclick="filmSupport()">Support</button>
+  </div>
+</div>
+<!-- Donate to the film (from the trailer player's Support button) -->
+<div class="ov ov-center" id="ov-donate">
+  <div class="ov-bg" onclick="C('ov-donate')"></div>
+  <div class="tbox" style="width:320px;z-index:2">
+    <div style="padding:16px 16px 4px;position:relative">
+      <div class="ti-title" style="padding-right:22px">Support the Film</div>
+      <div class="ti-sub">Donate to <span id="donate-film">The Tradition</span></div>
+      <span onclick="C('ov-donate')" style="position:absolute;top:14px;right:15px;color:rgba(247,241,232,.5);cursor:pointer;font-size:18px;line-height:1">&times;</span>
+    </div>
+    <div id="donate-body" style="padding:10px 16px 16px">
+      <div style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(247,241,232,.35);margin-bottom:8px">Choose an amount</div>
+      <div id="donate-chips" style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px">
+        <button class="dn-chip" onclick="donateChip(this,10)">$10</button>
+        <button class="dn-chip" onclick="donateChip(this,25)">$25</button>
+        <button class="dn-chip" onclick="donateChip(this,50)">$50</button>
+        <button class="dn-chip" onclick="donateChip(this,100)">$100</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;border:1px solid rgba(200,150,62,.3);border-radius:6px;padding:2px 12px;background:rgba(255,255,255,.04)">
+        <span style="font-size:17px;color:var(--gd)">$</span>
+        <input id="donate-amt" type="number" min="1" step="1" inputmode="decimal" placeholder="Other amount" oninput="donateClearChips()" style="flex:1;border:none;background:transparent;color:var(--cr);font-size:15px;padding:9px 0;outline:none">
+      </div>
+      <button onclick="submitDonate()" style="width:100%;margin-top:14px;padding:12px;background:var(--gd);color:var(--br);border:none;border-radius:6px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Donate</button>
+    </div>
+    <div id="donate-thanks" style="display:none;padding:26px 20px 30px;text-align:center">
+      <div style="font-size:34px;margin-bottom:8px">🎬</div>
+      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;font-style:italic;color:var(--cr);margin-bottom:8px">Thank you!</div>
+      <div style="font-size:13px;color:rgba(247,241,232,.65);line-height:1.5">Your <b style="color:var(--gd)" id="donate-amt-shown">$0</b> gift helps bring <span id="donate-film-2">The Tradition</span> to the screen.</div>
+      <button onclick="C('ov-donate')" style="margin-top:18px;padding:9px 22px;background:transparent;border:1px solid rgba(200,150,62,.4);color:var(--gd);border-radius:6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Done</button>
     </div>
   </div>
 </div>
@@ -2716,7 +2747,6 @@ function openFilm(name,sub){
   if(play) play.style.display='flex';
   setText('film-cap-t',name);
   setText('film-cap-s',sub||'');
-  setText('film-bar-t', m.src?('Now playing · '+name):'Preview · full trailer coming soon');
   var nb=document.getElementById('film-notify'); if(nb){nb.classList.remove('on'); nb.textContent='🔔 Notify Me';}
   O('ov-film');
 }
@@ -2745,10 +2775,44 @@ function filmNotify(btn){
   if(btn){ btn.classList.add('on'); btn.textContent="✓ We'll Notify You"; }
   if(navigator.vibrate){ try{navigator.vibrate(15);}catch(e){} }
 }
-function filmBuy(){
+function filmShare(){
   var name=currentFilm||'The Tradition';
-  closeFilm();
-  setTimeout(function(){ openPur(name,'','book'); },200);
+  var msg='Watch the trailer for “'+name+'” on Orgena';
+  if(navigator.share){ try{ navigator.share({title:name,text:msg}); }catch(e){} }
+  else { showToast('Link copied — share “'+name+'”'); }
+  if(navigator.vibrate){ try{navigator.vibrate(12);}catch(e){} }
+}
+// Support = donate to the film. Opens a $-amount sheet (real payment wired later).
+let filmDonateAmt=0;
+function filmSupport(){
+  var name=currentFilm||'The Tradition';
+  setText('donate-film',name); setText('donate-film-2',name);
+  filmDonateAmt=0;
+  var amt=document.getElementById('donate-amt'); if(amt) amt.value='';
+  document.querySelectorAll('#donate-chips .dn-chip').forEach(function(b){b.classList.remove('on');});
+  var body=document.getElementById('donate-body'), th=document.getElementById('donate-thanks');
+  if(body) body.style.display='block'; if(th) th.style.display='none';
+  O('ov-donate');
+}
+function donateChip(btn,v){
+  filmDonateAmt=v;
+  document.querySelectorAll('#donate-chips .dn-chip').forEach(function(b){b.classList.remove('on');});
+  if(btn) btn.classList.add('on');
+  var amt=document.getElementById('donate-amt'); if(amt) amt.value='';
+}
+function donateClearChips(){
+  filmDonateAmt=0;
+  document.querySelectorAll('#donate-chips .dn-chip').forEach(function(b){b.classList.remove('on');});
+}
+function submitDonate(){
+  var amt=document.getElementById('donate-amt');
+  var custom=amt&&amt.value?parseFloat(amt.value):0;
+  var v=custom>0?custom:filmDonateAmt;
+  if(!v||v<=0){ showToast('Enter a donation amount.'); return; }
+  setText('donate-amt-shown','$'+(Number.isInteger(v)?v:v.toFixed(2)));
+  var body=document.getElementById('donate-body'), th=document.getElementById('donate-thanks');
+  if(body) body.style.display='none'; if(th) th.style.display='block';
+  haptic(15);
 }
 
 // ── MINI PLAYER: tap area logic ──
