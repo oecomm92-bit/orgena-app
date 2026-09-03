@@ -46,7 +46,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .nb.on .nb-i{color:var(--gd)}
 .nb.on .nb-l{color:var(--gd)}
 .nb-soul{flex:1;text-align:center;cursor:pointer;padding-top:9px;padding-bottom:14px;position:relative}
-.nb-soul-circle{width:50px;height:50px;border-radius:50%;background:var(--gd);display:inline-flex;align-items:center;justify-content:center;margin-top:-16px;box-shadow:0 4px 16px rgba(200,150,62,.4)}
+.nb-soul-circle{width:50px;height:50px;border-radius:50%;background:var(--gd);display:inline-flex;align-items:center;justify-content:center;margin-top:-4px;box-shadow:0 4px 16px rgba(200,150,62,.4)}
 
 /* HERO */
 .hero{width:100%;height:250px;position:relative;overflow:hidden;background:#1A0805}
@@ -124,6 +124,8 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .ov-center{align-items:center !important;justify-content:center !important}
 .sh{width:38px;height:4px;background:rgba(200,150,62,.2);border-radius:2px;margin:11px auto 13px}
 .sh-t{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;font-style:italic;color:var(--cr);padding:0 18px 11px;border-bottom:1px solid rgba(200,150,62,.1)}
+.ntab{flex:1;max-width:150px;padding:8px 10px;border-radius:20px;border:1px solid rgba(200,150,62,.3);background:transparent;color:rgba(247,241,232,.55);font-size:12px;font-weight:500;letter-spacing:.04em;cursor:pointer;transition:all .2s}
+.ntab.on{background:var(--gd);color:var(--br);border-color:var(--gd)}
 /* AI SEARCH */
 #ov-srch{z-index:600}
 #ov-srch .hs{height:52%}
@@ -419,12 +421,17 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 /* SOUL PLAYER SCREEN */
 .sp-sc{background:var(--blk)}
 .sp-hdr{position:relative;overflow:hidden;padding:16px 16px 11px;background:linear-gradient(160deg,var(--br),var(--blk));border-bottom:1px solid rgba(200,150,62,.1)}
-/* A slow, soothing ombre wave sweeps right->left every ~3.6s with quiet still gaps (sunrise/sunset). */
-.sp-wave{position:absolute;top:0;bottom:0;left:0;width:62%;pointer-events:none;z-index:0;
-  background:linear-gradient(90deg,transparent 0%,rgba(232,185,106,.10) 28%,rgba(245,223,168,.20) 50%,rgba(200,150,62,.10) 72%,transparent 100%);
-  transform:translateX(185%);animation:spwave 3.6s ease-in-out infinite}
+/* A long, slow, natural warm-ombre wave that cascades LEFT->RIGHT like an ocean current (~12s).
+   Two layers: a broad soft sunrise band + a fine warm striation for texture (not a flat color).
+   Fades in on entry / out on exit so the loop reset is invisible. */
+.sp-wave{position:absolute;top:0;bottom:0;left:0;width:72%;pointer-events:none;z-index:0;
+  background:
+    linear-gradient(92deg,transparent 0%,rgba(214,140,90,.05) 16%,rgba(232,185,106,.13) 39%,rgba(250,229,182,.21) 52%,rgba(226,176,100,.12) 66%,rgba(200,150,62,.05) 85%,transparent 100%),
+    repeating-linear-gradient(92deg,rgba(250,229,182,.05) 0,rgba(250,229,182,0) 3px,transparent 6px,rgba(210,150,95,.038) 9px,transparent 13px);
+  background-repeat:no-repeat,repeat;
+  transform:translateX(-165%);animation:spwave 12s ease-in-out infinite;will-change:transform}
 .sp-hdr>.sp-hr{position:relative;z-index:1}
-@keyframes spwave{0%{transform:translateX(185%)}12%{transform:translateX(185%)}60%{transform:translateX(-185%)}100%{transform:translateX(-185%)}}
+@keyframes spwave{0%{transform:translateX(-165%);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateX(165%);opacity:0}}
 @media (prefers-reduced-motion:reduce){.sp-wave{animation:none;opacity:0}}
 .sp-hr{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
 .sp-title{font-family:'Playfair Display',serif;font-size:21px;font-weight:900;font-style:italic;color:var(--cr)}
@@ -946,10 +953,9 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
         <div id="ev-popup-going" style="font-size:11px;margin-bottom:8px"></div>
         <div id="ev-popup-attendees" style="display:none;margin-bottom:12px;max-height:190px;overflow-y:auto;padding-right:4px"></div>
         <div id="ev-popup-desc" style="font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:rgba(247,241,232,.65);line-height:1.6;margin-bottom:14px"></div>
-        <button onclick="addToCalendar()" style="width:100%;padding:10px;margin-bottom:8px;background:rgba(200,150,62,.1);border:1px solid rgba(200,150,62,.3);color:var(--gd);font-size:11px;letter-spacing:.06em;text-transform:uppercase;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">📅 Add to Calendar</button>
         <div style="display:flex;gap:8px">
-          <button onclick="closeEvPopup()" style="flex:1;padding:10px;background:transparent;border:1px solid rgba(200,150,62,.25);color:rgba(247,241,232,.5);font-size:11px;letter-spacing:.07em;text-transform:uppercase;border-radius:4px;cursor:pointer">Close</button>
-          <button id="ev-popup-rsvp" onclick="evPopupRsvp()" style="flex:1;padding:10px;background:#C8963E;color:#2C1A0E;border:none;font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;border-radius:4px;cursor:pointer">RSVP</button>
+          <button onclick="addToCalendar()" style="flex:1;padding:11px;background:transparent;border:1px solid rgba(200,150,62,.4);color:var(--gd);font-size:11px;letter-spacing:.06em;text-transform:uppercase;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">📅 Add to Calendar</button>
+          <button id="ev-popup-rsvp" class="pbuy" onclick="evPopupRsvp()" style="flex:1;padding:11px;font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;border-radius:4px;cursor:pointer">RSVP</button>
         </div>
       </div>
     </div>
@@ -1200,9 +1206,15 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 <div class="ov" id="ov-notif" style="align-items:flex-end">
   <div class="ov-bg" onclick="C('ov-notif')"></div>
   <div class="hs" id="notif-hs">
-    <div class="sh"></div><div class="sh-t">Notifications</div>
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 18px 10px;border-bottom:1px solid rgba(200,150,62,.08)">
-      <span style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(247,241,232,.35)">Recent</span>
+    <div class="sh"></div>
+    <!-- Notifications / Messages toggle (messages are a form of notification). -->
+    <div style="display:flex;gap:8px;justify-content:center;padding:0 18px 11px">
+      <button id="ntab-notif" class="ntab on" onclick="notifTab('notif')">Notifications</button>
+      <button id="ntab-msgs" class="ntab" onclick="notifTab('msgs')">Messages</button>
+    </div>
+    <div id="notif-seg">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 18px 10px;border-bottom:1px solid rgba(200,150,62,.08)">
+      <span onclick="markAllRead()" style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--gd);cursor:pointer">Mark all read</span>
       <span onclick="goNotifCenter()" style="font-size:10px;color:var(--gd);cursor:pointer;letter-spacing:.08em;text-transform:uppercase;text-decoration:underline">Notification Center →</span>
     </div>
     <!-- Auto-generated 48-hour event reminders are injected here by generateEventReminders(). -->
@@ -1221,6 +1233,16 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <div style="width:8px;height:8px;border-radius:50%;background:transparent;flex-shrink:0;margin-top:4px"></div>
       <div class="notif-av" style="background:var(--gd)">🏆</div>
       <div style="flex:1"><div class="notif-txt"><b>Rewards:</b> You earned 50 pts! 380 pts to Pecan Sweet tier</div><div class="notif-time" style="color:rgba(247,241,232,.18)">1d ago · read</div></div>
+    </div>
+    </div><!-- end notif-seg -->
+    <!-- Messages segment: the user's message threads (messages are a form of notification). -->
+    <div id="msgs-seg" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:0 18px 10px;border-bottom:1px solid rgba(200,150,62,.08)">
+        <span style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(247,241,232,.35)">Recent chats</span>
+        <span onclick="C('ov-notif');O('ov-msgs')" style="font-size:10px;color:var(--gd);cursor:pointer;letter-spacing:.08em;text-transform:uppercase;text-decoration:underline">Open Messages →</span>
+      </div>
+      <div class="msg-item" onclick="C('ov-notif');openConvo('peggy_lavizzo_nola','Did you read chapter 18 yet? 🌿')"><div class="msg-av" style="background:linear-gradient(135deg,#5C3D28,#C8963E)">PJ</div><div class="msg-info"><div class="msg-un">peggy_lavizzo_nola</div><div class="msg-pre">Did you read chapter 18 yet? 🌿</div></div><div class="msg-time">2h</div></div>
+      <div class="msg-item" onclick="C('ov-notif');openConvo('marlena_k','That grocery scene gets me every time')"><div class="msg-av" style="background:linear-gradient(135deg,#C8963E,#4A2C18)">MK</div><div class="msg-info"><div class="msg-un">marlena_k</div><div class="msg-pre">That grocery scene gets me every time</div></div><div class="msg-time">5h</div></div>
     </div>
   </div>
 </div>
@@ -1810,7 +1832,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <canvas id="exp-tv-cv" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
       <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:2">
         <div id="exp-trailer-title" style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;font-style:italic;color:var(--cr);text-align:center;padding:0 20px;text-shadow:0 1px 6px rgba(0,0,0,.6)"></div>
-        <button id="exp-tv-play" onclick="toggleExpTrailer(event)" style="margin-top:8px;width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg viewBox="0 0 24 24" width="20" height="20" style="fill:#fff;margin-left:3px"><path d="M8 5v14l11-7z"/></svg></button>
+        <button id="exp-tv-play" onclick="toggleExpTrailer(event)" style="margin-top:8px;width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg viewBox="0 0 24 24" width="20" height="20" style="fill:#3A2408;margin-left:3px"><path d="M8 5v14l11-7z"/></svg></button>
       </div>
     </div>
     <div class="ti-info">
@@ -1977,8 +1999,8 @@ function openMsgCenter(){
   if(hs && hs.scrollTo){ hs.scrollTo({top:0}); }
   if(typeof showToast==='function') showToast('All conversations');
 }
-var EXP_PLAY_SVG='<svg viewBox="0 0 24 24" width="20" height="20" style="fill:#fff;margin-left:3px"><path d="M8 5v14l11-7z"/></svg>';
-var EXP_PAUSE_SVG='<svg viewBox="0 0 24 24" width="20" height="20" style="fill:#fff"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>';
+var EXP_PLAY_SVG='<svg viewBox="0 0 24 24" width="20" height="20" style="fill:#3A2408;margin-left:3px"><path d="M8 5v14l11-7z"/></svg>';
+var EXP_PAUSE_SVG='<svg viewBox="0 0 24 24" width="20" height="20" style="fill:#3A2408"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>';
 function toggleExpTrailer(e){
   if(e) e.stopPropagation();
   var btn=document.getElementById('exp-tv-play');
@@ -2241,16 +2263,18 @@ function openEvPopup(name, city, date, desc){
 function closeEvPopup(){ var bg=document.getElementById('ev-popup-bg'); if(bg) bg.style.display='none'; }
 function syncRsvpButton(ev){
   var btn=document.getElementById('ev-popup-rsvp'); if(!btn) return;
+  // Outline = a done/secondary state; goldPrimary = the pearlescent-gold RSVP call-to-action (.pbuy).
+  function outline(txt){ btn.classList.remove('pbuy'); btn.textContent=txt; btn.style.background='transparent'; btn.style.color='var(--gd)'; btn.style.border='1px solid rgba(200,150,62,.4)'; }
+  function goldPrimary(txt){ btn.classList.add('pbuy'); btn.textContent=txt; btn.style.background=''; btn.style.color=''; btn.style.border=''; }
   if(ev.kind==='experience'){
     // Experiences are ticketed in Creations — show purchase status instead of an RSVP toggle.
     btn.style.display=''; btn.disabled=true; btn.style.cursor='default';
-    btn.textContent=purchasedExperiences[ev.name]?'✓ Ticket purchased':'Buy in Creations';
-    btn.style.background='transparent'; btn.style.color='var(--gd)'; btn.style.border='1px solid rgba(200,150,62,.4)';
+    outline(purchasedExperiences[ev.name]?'✓ Ticket purchased':'Buy in Creations');
     return;
   }
   btn.disabled=false; btn.style.cursor='pointer'; btn.style.display='';
-  if(rsvpedEvents[ev.name]){ btn.textContent='✓ Going'; btn.style.background='transparent'; btn.style.color='var(--gd)'; btn.style.border='1px solid rgba(200,150,62,.4)'; }
-  else { btn.textContent='RSVP'; btn.style.background='#C8963E'; btn.style.color='#2C1A0E'; btn.style.border='none'; }
+  if(rsvpedEvents[ev.name]){ outline('✓ Going'); }
+  else { goldPrimary('RSVP'); }
 }
 function evPopupRsvp(){
   var ev=window.curEv; if(!ev || ev.kind==='experience') return;
@@ -3204,6 +3228,18 @@ function T(id){
   document.getElementById('s-'+id).classList.add('on');
   document.getElementById('nb-'+id).classList.add('on');
   setDisp('fab',(id==='home'||id==='community')?'flex':'none');
+  // Creations always defaults to the "All" filter on entry (never remembers Merch/Experiences).
+  if(id==='creations'){
+    var af=document.querySelector('#s-creations .cr-fbar .fp');
+    if(af && typeof crFilter==='function') crFilter(af,'all');
+    var cs=document.getElementById('s-creations'); if(cs) cs.scrollTop=0;
+  }
+  // Community always defaults to the Events view showing ALL upcoming events (reset city filter).
+  if(id==='community'){
+    if(typeof commToggle==='function') commToggle('events');
+    if(typeof filterEventsByCity==='function') filterEventsByCity(null);
+    setDisp('city-popup','none');
+  }
 }
 function O(id){
   var el=document.getElementById(id);
@@ -3211,6 +3247,10 @@ function O(id){
   if(typeof closeAllCmtMenus==='function') closeAllCmtMenus();
   // Opening the Messages inbox always lands on the conversation list, never the stuck composer.
   if(id==='ov-msgs'){ var nb=document.getElementById('new-msg-box'); if(nb) nb.style.display='none'; var nr=document.getElementById('new-msg-results'); if(nr) nr.innerHTML=''; }
+  // Notifications and the standalone Messages sheet are mutually exclusive top-bar panels — opening
+  // one closes the other, so tapping the bell always returns to Notifications (even after Messages).
+  if(id==='ov-notif'){ var m=document.getElementById('ov-msgs'); if(m&&m.classList.contains('show')) C('ov-msgs'); if(typeof notifTab==='function') notifTab('notif'); }
+  if(id==='ov-msgs'){ var n=document.getElementById('ov-notif'); if(n&&n.classList.contains('show')) C('ov-notif'); }
   if(id==='ov-notif' && typeof generateEventReminders==='function'){ generateEventReminders(); }
   el.style.cssText='';
   el.classList.add('show');
@@ -3768,8 +3808,10 @@ const merchArt = {
   'OE Sweets':  {img:'images/OE%20Merch%20%7C%20Sweets%20%7C%20Cocoa.jpeg',  pos:'center 76%', dpos:'center'},
   // Blanket photo is square (1024x1024) -> cover fills both the grid tile and the square detail
   // frame with the product centered and even margins, no side bars.
-  'OE Blanket': {img:'images/OE%20Merch%20%7C%20Blanket%20%7C%20Cocoa%20.jpg', fit:'contain', dfit:'contain', pos:'center', dpos:'center', bg:'#140A04'},
-  'OE Tote':    {img:'images/oe_tote.jpeg',    pos:'center 55%'}
+  // Grid tile fills (cover) so the blanket is large; detail stays contain (square->square = no crop).
+  // Source will be re-cropped later; for now cover only trims the plain top/bottom margins.
+  'OE Blanket': {img:'images/OE%20Merch%20%7C%20Blanket%20%7C%20Cocoa%20.jpg', fit:'cover', dfit:'contain', pos:'center', dpos:'center', bg:'#140A04'},
+  'OE Tote':    {img:'images/OE%20Merch%20%7C%20Tote%20%7C%20Cocoa%20.jpeg', pos:'center', dpos:'center'}
 };
 function getMerchArt(name){ return merchArt[(name||'').replace(/&amp;/g,'&').trim()]||null; }
 // Per-item detail-popup options. label = group heading; values = choices. null/absent = hide the group.
@@ -3782,7 +3824,7 @@ const merchOptions = {
   'OE Sweets':  null
 };
 // OE Sweets is a flavor box of 4 (no colors/sizes) — flat price.
-const SWEETS_FLAVORS=['Berry','Honey','Mint Match','Caramel'];
+const SWEETS_FLAVORS=['Berry','Honeycomb','Mint Match','Caramel'];
 const SWEETS_PRICE=40;
 var sweetsPick={};
 // Build the option buttons for a merch item (or hide the group when it has none).
@@ -4254,6 +4296,7 @@ function openMerchDetail(name,cat,price,icon,bg){
   // OE Sweets: swap Color -> Flavors (box of 4), flat price. Others keep Color.
   var isSweets=(name==='OE Sweets');
   setDisp('merch-color-block', isSweets?'none':'block');
+  if(!isSweets) renderMerchColors(name);
   setDisp('merch-flavor-block', isSweets?'block':'none');
   if(isSweets){ currentMerchPrice=SWEETS_PRICE; openSweetsFlavors(); }
   renderMerchOptions(name);
@@ -4270,6 +4313,55 @@ function openMerchDetail(name,cat,price,icon,bg){
     img.style.backgroundImage='none'; img.style.background=bg; img.textContent=icon; img.dataset.photo='';
   }
   O('ov-merch');
+}
+// Bouclé-knit texture: base tone crosshatched with the second tone (two diagonals) to read as knit nubs.
+function boucleCss(a,b){
+  return 'background-color:'+a+';background-image:'
+    +'repeating-linear-gradient(45deg,'+b+' 0,'+b+' 1.5px,transparent 1.5px,transparent 4px),'
+    +'repeating-linear-gradient(-45deg,'+b+' 0,'+b+' 1px,transparent 1px,transparent 4px),'
+    +'radial-gradient(rgba(255,255,255,.18) 0.5px,transparent 0.6px);background-size:auto,auto,5px 5px';
+}
+// Per-item color swatches. Stripes are single downward diagonals (135deg), all the same direction.
+var merchSwatches={
+  'OE Journal':[
+    {n:'Ivory',s:'background:#EFE7D6'},
+    {n:'Brown',s:'background:#4A2C18'},
+    {n:'Olive',s:'background:#6E6A38'},
+    {n:'Black',s:'background:#1a1a1a'}
+  ],
+  'OE Pen':[
+    {n:'Ivory',s:'background:linear-gradient(135deg,#EFE7D6 0 38%,#1a1a1a 38% 46%,#EFE7D6 46% 56%,#C9CCD2 56% 64%,#EFE7D6 64% 100%)'},
+    {n:'Olive',s:'background:linear-gradient(135deg,#6E6A38 0 46%,#E8B96A 46% 56%,#6E6A38 56% 100%)'},
+    {n:'Brown',s:'background:linear-gradient(135deg,#4A2C18 0 46%,#E8B96A 46% 56%,#4A2C18 56% 100%)'},
+    {n:'Black',s:'background:linear-gradient(135deg,#1a1a1a 0 46%,#C9CCD2 46% 56%,#1a1a1a 56% 100%)'}
+  ],
+  'OE Tote':[
+    {n:'White',s:'background:linear-gradient(135deg,#F4F1EA 0 47%,#1a1a1a 47% 55%,#F4F1EA 55% 100%)'},
+    {n:'Canvas',s:'background:linear-gradient(135deg,#D9C9A3 0 47%,#5A3A22 47% 55%,#D9C9A3 55% 100%)'},
+    {n:'Brown',s:'background:linear-gradient(135deg,#4A2C18 0 47%,#F4F1EA 47% 55%,#4A2C18 55% 100%)'},
+    {n:'Black',s:'background:linear-gradient(135deg,#1a1a1a 0 47%,#F4F1EA 47% 55%,#1a1a1a 55% 100%)'}
+  ],
+  'OE Blanket':[
+    {n:'Taupe',s:boucleCss('#B7A98E','#EFE7D6')},
+    {n:'Silver',s:boucleCss('#9A9A9A','#E6E6E6')},
+    {n:'Black',s:boucleCss('#2A2A2A','#E8E8E8')},
+    {n:'Brown',s:boucleCss('#5A3A22','#EFE7D6')}
+  ]
+};
+var MERCH_SWATCH_DEFAULT=[
+  {n:'Cream',s:'background:#F7F1E8'},
+  {n:'Brown',s:'background:#4A2C18'},
+  {n:'Black',s:'background:#1a1a1a'},
+  {n:'Gold',s:'background:#C8963E'}
+];
+function renderMerchColors(name){
+  var wrap=document.getElementById('merch-colors'); if(!wrap) return;
+  var list=merchSwatches[name]||MERCH_SWATCH_DEFAULT;
+  wrap.innerHTML=list.map(function(c,i){
+    return '<div onclick="selColor(this,\''+c.n+'\')" title="'+c.n+'" style="width:26px;height:26px;border-radius:50%;overflow:hidden;'+c.s
+      +';border:2px solid '+(i===0?'var(--gd)':'transparent')+';box-shadow:0 0 0 1px rgba(200,150,62,.25);cursor:pointer"></div>';
+  }).join('');
+  currentMerchColor=list[0].n;
 }
 function selColor(el,name){
   const colorBgs={'Black':'linear-gradient(135deg,#1a1a1a,#333)','Brown':'linear-gradient(135deg,#4A2C18,#2C1A0E)','Cream':'linear-gradient(135deg,#F7F1E8,#EDE3D2)','Gold':'linear-gradient(135deg,#C8963E,#E8B96A)'};
@@ -4362,13 +4454,22 @@ function playTrailerWave(canvasId){
   }
   wave();
 }
+// Toggle the notifications panel between the Notifications feed and the Messages threads.
+function notifTab(which){
+  var isMsgs = which==='msgs';
+  setDisp('notif-seg', isMsgs?'none':'block');
+  setDisp('msgs-seg', isMsgs?'block':'none');
+  var tn=document.getElementById('ntab-notif'), tm=document.getElementById('ntab-msgs');
+  if(tn) tn.classList.toggle('on', !isMsgs);
+  if(tm) tm.classList.toggle('on', isMsgs);
+}
 function goNotifCenter(){
   C('ov-notif');
+  // Switch the Profile screen to the notification-center view BEFORE showing the tab, so the
+  // Profile main view never flashes on the way in.
+  setDisp('notif-center','block');
+  setDisp('profile-main','none');
   T('profile');
-  setTimeout(()=>{
-    setDisp('notif-center','block');
-    setDisp('profile-main','none');
-  },150);
 }
 function hideNotifCenter(){
   setDisp('notif-center','none');
@@ -4729,6 +4830,8 @@ function goPublicProfile(name){
 function showMyProfile(){
   window._viewingProfile = null;
   window._profileFromEvents = false;
+  // Reset the notification-center view so tapping Profile shows the profile, not a stale notif center.
+  setDisp('notif-center','none'); setDisp('profile-main','block');
   var pb=document.getElementById('pr-public-banner'); if(pb){ pb.style.display='none'; pb.innerHTML=''; }
   setDisp('pr-view-toggle','flex');
   if(typeof setPrView==='function') setPrView('private');
