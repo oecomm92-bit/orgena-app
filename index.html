@@ -250,8 +250,8 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .film-notify.on{background:rgba(200,150,62,.18);color:var(--cr)}
 .film-support{padding:9px 16px;background:var(--gd);color:var(--br);border:none;border-radius:4px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
 #ov-donate{z-index:1000}
-.dn-chip{padding:8px 14px;border-radius:20px;border:1px solid rgba(200,150,62,.35);background:transparent;color:rgba(247,241,232,.7);font-size:13px;font-weight:500;cursor:pointer}
-.dn-chip.on{border-color:var(--gd);background:rgba(200,150,62,.14);color:var(--gd)}
+.dn-chip{padding:8px 13px;border-radius:20px;border:1px solid rgba(120,78,30,.4);background:rgba(255,255,255,.4);color:#5A3A16;font-size:13px;font-weight:600;cursor:pointer}
+.dn-chip.on{border-color:#5A3A16;background:#5A3A16;color:#F4E1AC}
 /* Rotated to landscape: video reflows to a wide 16:9 band filling the width (YouTube-style), centered on black. */
 @media (orientation:landscape){
   #film-video,.film-poster{top:50%;bottom:auto;height:auto;width:100%;aspect-ratio:16/9;transform:translateY(-50%);object-fit:contain}
@@ -369,6 +369,14 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .btn-tr{display:flex;align-items:center;gap:4px;background:rgba(200,150,62,.08);border:1px solid rgba(200,150,62,.26);color:var(--gd);font-size:10px;letter-spacing:.07em;text-transform:uppercase;padding:6px 11px;border-radius:2px;cursor:pointer}
 .btn-tr svg{width:10px;height:10px;fill:currentColor}
 .btn-buy{background:var(--gd);color:var(--br);font-size:10px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;padding:6px 13px;border-radius:2px;cursor:pointer;border:none}
+/* Glazed, glowy light-gold for every Buy Now / Book Now / Support button (subtle sheen + halo). */
+.btn-buy,.mc-add,.exp-bk,.film-support{background:linear-gradient(150deg,#F7D488 0%,#EBBE70 46%,#D3A24A 100%)!important;color:#3A2408!important;box-shadow:0 2px 10px rgba(224,176,84,.5),inset 0 1px 0 rgba(255,249,229,.7),inset 0 -2px 4px rgba(150,100,28,.32);text-shadow:0 1px 0 rgba(255,247,224,.35);transition:box-shadow .15s,transform .1s}
+.btn-buy:hover,.mc-add:hover,.exp-bk:hover,.film-support:hover{box-shadow:0 3px 15px rgba(232,185,106,.6),inset 0 1px 0 rgba(255,249,229,.75),inset 0 -2px 4px rgba(150,100,28,.32)}
+.btn-buy:active,.mc-add:active,.exp-bk:active,.film-support:active{transform:translateY(1px);box-shadow:0 1px 6px rgba(200,150,62,.45),inset 0 1px 2px rgba(120,80,20,.35)}
+/* Section labels ("Seasonal Releases" / "Experiences"): hidden on first pass, shown on infinite-scroll repeats. */
+.sec-label{display:none}
+.cr-infinite .sec-label{display:block}
+#ov-share{z-index:1000}
 .btn-rev{background:transparent;border:1px solid rgba(247,241,232,.1);color:rgba(247,241,232,.35);font-size:10px;letter-spacing:.05em;text-transform:uppercase;padding:6px 9px;border-radius:2px;cursor:pointer;margin-left:auto}
 /* MERCH */
 .merch-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:11px 13px}
@@ -696,7 +704,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     </div>
   </div>
   <div data-cr="all merch">
-    <div style="font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:rgba(247,241,232,.3);padding:14px 16px 7px">Seasonal Releases</div>
+    <div class="sec-label" style="font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:rgba(247,241,232,.3);padding:14px 16px 7px">Seasonal Releases</div>
     <div class="merch-grid" id="merch-main-grid">
       <div class="mc" onclick="openMerchDetail('OE Journal','Stationery','$20','📓','linear-gradient(135deg,var(--br),#2C1A0E)')">
         <div class="mc-art" style="background:linear-gradient(135deg,var(--br),#2C1A0E);cursor:pointer">📓</div>
@@ -768,7 +776,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <!-- Infinite scroll sentinel — no spinner, just load more cards seamlessly -->
     <div id="merch-sentinel" style="height:4px" data-cr="all merch"></div>
   </div>
-  <div data-cr="all experiences"><div style="font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:rgba(247,241,232,.3);padding:14px 16px 7px">Experiences</div>
+  <div data-cr="all experiences"><div class="sec-label" style="font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:rgba(247,241,232,.3);padding:14px 16px 7px">Experiences</div>
     <!-- Experience 1 -->
     <div class="exp-card">
       <div class="exp-art" style="cursor:pointer;position:relative" onclick="openExpTrailer('OE French Quarter Fest Experience','Live Reading &amp; Q&amp;A')">
@@ -811,7 +819,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     </div>
     <!-- Experience 3 -->
     <div class="exp-card">
-      <div class="exp-art" style="cursor:pointer;position:relative" onclick="openExpTrailer('OE Martha&apos;s Vineyard Experience','Island Retreat')">
+      <div class="exp-art" style="cursor:pointer;position:relative" onclick="openExpTrailer('OE Martha\'s Vineyard Experience','Island Retreat')">
         <div style="position:absolute;inset:0;background:linear-gradient(135deg,#1A0805,#4A2C18);display:flex;align-items:center;justify-content:center">
           <div style="text-align:center"><div style="font-size:32px">🏝️</div><div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--gd);margin-top:4px">▶ Watch Preview</div></div>
         </div>
@@ -826,7 +834,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
           <div id="exp-countdown-3" style="font-size:10px;color:var(--gd);letter-spacing:.06em;white-space:nowrap"></div>
         </div>
         <div class="exp-desc">A seaside weekend retreat on Martha's Vineyard — sunrise readings, a private author dinner, and coastal community with Rhodesia Jackson.</div>
-        <div class="exp-btm"><button class="exp-bk" onclick="openExpTickets('OE Martha&apos;s Vineyard Experience',175)">Book Now</button></div>
+        <div class="exp-btm"><button class="exp-bk" onclick="openExpTickets('OE Martha\'s Vineyard Experience',175)">Book Now</button></div>
       </div>
     </div>
   </div>
@@ -1406,31 +1414,36 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 <!-- Donate to the film (from the trailer player's Support button) -->
 <div class="ov ov-center" id="ov-donate">
   <div class="ov-bg" onclick="C('ov-donate')"></div>
-  <div class="tbox" style="width:320px;z-index:2">
-    <div style="padding:16px 16px 4px;position:relative">
-      <div class="ti-title" style="padding-right:22px">Support the Film</div>
-      <div class="ti-sub">Donate to <span id="donate-film">The Tradition</span></div>
-      <span onclick="C('ov-donate')" style="position:absolute;top:14px;right:15px;color:rgba(247,241,232,.5);cursor:pointer;font-size:18px;line-height:1">&times;</span>
+  <div style="width:322px;z-index:2;border-radius:14px;overflow:hidden;background:linear-gradient(180deg,#F4E1AC 0%,#E9CD86 52%,#D9B360 100%);border:1px solid rgba(120,78,30,.4);box-shadow:0 20px 60px rgba(0,0,0,.55)">
+    <div style="height:4px;background:linear-gradient(to right,#B5842E,#5A3A16,#B5842E)"></div>
+    <div style="padding:15px 16px 4px;position:relative">
+      <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;font-style:italic;color:#3E2610;padding-right:64px">Support the Film</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;color:#6B4A22;padding-right:64px">Donate to <span id="donate-film">The Tradition</span></div>
+      <!-- % to goal radial dial (placeholder pct; swap donate-pie / #donate-pie-pct with real data) -->
+      <div id="donate-pie" title="Funding progress" style="position:absolute;top:12px;right:44px;width:46px;height:46px;border-radius:50%;background:conic-gradient(#5A3A16 62%, rgba(120,78,30,.22) 0)">
+        <div style="position:absolute;inset:5px;border-radius:50%;background:#F4E1AC;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1"><span id="donate-pie-pct" style="font-size:11px;font-weight:800;color:#3E2610">62%</span><span style="font-size:5px;letter-spacing:.06em;text-transform:uppercase;color:#6B4A22;margin-top:1px">to goal</span></div>
+      </div>
+      <span onclick="C('ov-donate')" style="position:absolute;top:13px;right:15px;color:#6B4A22;cursor:pointer;font-size:19px;line-height:1">&times;</span>
     </div>
-    <div id="donate-body" style="padding:10px 16px 16px">
-      <div style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(247,241,232,.35);margin-bottom:8px">Choose an amount</div>
+    <div id="donate-body" style="padding:8px 16px 16px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px"><span style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#6B4A22">Choose an amount</span><span style="font-size:10px;font-style:italic;color:#6B4A22">Suggested min $25</span></div>
       <div id="donate-chips" style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px">
         <button class="dn-chip" onclick="donateChip(this,10)">$10</button>
         <button class="dn-chip" onclick="donateChip(this,25)">$25</button>
-        <button class="dn-chip" onclick="donateChip(this,50)">$50</button>
         <button class="dn-chip" onclick="donateChip(this,100)">$100</button>
+        <button class="dn-chip" onclick="donateChip(this,1000)">$1,000</button>
       </div>
-      <div style="display:flex;align-items:center;gap:8px;border:1px solid rgba(200,150,62,.3);border-radius:6px;padding:2px 12px;background:rgba(255,255,255,.04)">
-        <span style="font-size:17px;color:var(--gd)">$</span>
-        <input id="donate-amt" type="number" min="1" step="1" inputmode="decimal" placeholder="Other amount" oninput="donateClearChips()" style="flex:1;border:none;background:transparent;color:var(--cr);font-size:15px;padding:9px 0;outline:none">
+      <div style="display:flex;align-items:center;gap:8px;border:1px solid rgba(120,78,30,.4);border-radius:6px;padding:2px 12px;background:rgba(255,255,255,.55)">
+        <span style="font-size:17px;color:#5A3A16">$</span>
+        <input id="donate-amt" type="number" min="1" step="1" inputmode="decimal" placeholder="Other amount" oninput="donateClearChips()" style="flex:1;min-width:0;border:none;background:transparent;color:#3E2610;font-size:15px;padding:9px 0;outline:none">
       </div>
-      <button onclick="submitDonate()" style="width:100%;margin-top:14px;padding:12px;background:var(--gd);color:var(--br);border:none;border-radius:6px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Donate</button>
+      <button class="film-support" onclick="submitDonate()" style="width:100%;margin-top:14px;padding:12px;border:none;border-radius:6px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Donate</button>
     </div>
     <div id="donate-thanks" style="display:none;padding:26px 20px 30px;text-align:center">
       <div style="font-size:34px;margin-bottom:8px">🎬</div>
-      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;font-style:italic;color:var(--cr);margin-bottom:8px">Thank you!</div>
-      <div style="font-size:13px;color:rgba(247,241,232,.65);line-height:1.5">Your <b style="color:var(--gd)" id="donate-amt-shown">$0</b> gift helps bring <span id="donate-film-2">The Tradition</span> to the screen.</div>
-      <button onclick="C('ov-donate')" style="margin-top:18px;padding:9px 22px;background:transparent;border:1px solid rgba(200,150,62,.4);color:var(--gd);border-radius:6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Done</button>
+      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;font-style:italic;color:#3E2610;margin-bottom:8px">Thank you!</div>
+      <div style="font-size:13px;color:#6B4A22;line-height:1.5">Your <b style="color:#5A3A16" id="donate-amt-shown">$0</b> gift helps bring <span id="donate-film-2">The Tradition</span> to the screen.</div>
+      <button onclick="C('ov-donate')" style="margin-top:18px;padding:9px 22px;background:transparent;border:1px solid rgba(120,78,30,.5);color:#5A3A16;border-radius:6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Done</button>
     </div>
   </div>
 </div>
@@ -2815,19 +2828,28 @@ function filmNotify(btn){
 }
 function filmShare(){
   var name=currentFilm||'The Tradition';
-  var msg='Watch the trailer for “'+name+'” on Orgena';
-  if(navigator.share){ try{ navigator.share({title:name,text:msg}); }catch(e){} }
-  else { showToast('Link copied — share “'+name+'”'); }
+  // Open the SAME share sheet used by content posts (platform options / message).
+  window._shareText='Watch the trailer for “'+name+'” on Orgena';
+  O('ov-share');
   if(navigator.vibrate){ try{navigator.vibrate(12);}catch(e){} }
 }
 // Support = donate to the film. Opens a $-amount sheet (real payment wired later).
-let filmDonateAmt=0;
+// FILM_GOAL_PCT is a PLACEHOLDER — swap for real funding data (drives the radial % dial).
+let FILM_GOAL_PCT=62;
+let filmDonateAmt=25; // $25 is the suggested minimum, pre-selected
+function renderDonatePie(){
+  var pie=document.getElementById('donate-pie'), pct=document.getElementById('donate-pie-pct');
+  var v=Math.max(0,Math.min(100,FILM_GOAL_PCT));
+  if(pie) pie.style.background='conic-gradient(#5A3A16 '+v+'%, rgba(120,78,30,.22) 0)';
+  if(pct) pct.textContent=v+'%';
+}
 function filmSupport(){
   var name=currentFilm||'The Tradition';
   setText('donate-film',name); setText('donate-film-2',name);
-  filmDonateAmt=0;
+  renderDonatePie();
+  filmDonateAmt=25;
   var amt=document.getElementById('donate-amt'); if(amt) amt.value='';
-  document.querySelectorAll('#donate-chips .dn-chip').forEach(function(b){b.classList.remove('on');});
+  document.querySelectorAll('#donate-chips .dn-chip').forEach(function(b){ b.classList.toggle('on', b.textContent.trim()==='$25'); });
   var body=document.getElementById('donate-body'), th=document.getElementById('donate-thanks');
   if(body) body.style.display='block'; if(th) th.style.display='none';
   O('ov-donate');
@@ -3443,8 +3465,9 @@ const coverCfg = {
   'Sweeter Than Candy': { gridBg:'#100C0B', discPos:'50% 30%',
     discImg:'images/sweeter_than_candy_cover_notext.jpeg',
     sqImg:'images/sweeter_than_candy_cover_notext_cropped.jpeg', sqPos:'50% 40%',
-    // Grid: crop the author line by SHORTENING the slot (crisp full-res downscale, no upscaling); title kept.
-    gridSlot:'0.79',
+    // Grid: shorten the slot to crop the author line (crisp full-res downscale); the 96% size gives the
+    // "Than" title a small right margin (and the man's ear a matching left margin) so nothing is flush/clipped.
+    gridSlot:'0.9', gridSize:'96%', gridPos:'50% 10%',
     // Grid: default full-cover framing (crisp full-res source, title not cropped) — no extra zoom.
     // White script, one word per line, BOTTOM-LEFT, printed flat (no floating shadow).
     sqTitle:'<div style="position:absolute;bottom:9px;left:11px;text-align:left;font-family:\'Snell Roundhand\',\'Apple Chancery\',\'Brush Script MT\',cursive;font-weight:400;font-style:normal;font-size:24px;line-height:1.02;color:#FFFFFF">Sweeter<br>Than<br>Candy</div>' },
@@ -3452,8 +3475,8 @@ const coverCfg = {
     // disc uses the family crop (no baked text) — only faces, no LOVE/HOME/FAMILY visible.
     discImg:'images/3_times_sweeter_cover_cropped.jpeg', discPos:'50% 38%',
     sqImg:'images/3_times_sweeter_cover_cropped.jpeg', sqPos:'50% 30%',
-    // Grid only: nudge so the bottom cuts cleanly in the gap below FAMILY, not through the letters.
-    gridPos:'50% 22%',
+    // Grid only: nudge DOWN so the top of the "Three" title shows, without cutting FAMILY at the bottom.
+    gridPos:'50% 12%',
     // Match the real cover: "Three Times Sweeter" script at the very TOP, and a much smaller/thinner
     // BLACK "LOVE HOME FAMILY" set LOWER (off the faces), one word per line.
     sqTitle:'<div style="position:absolute;top:6px;left:0;right:0;text-align:center;font-family:\'Snell Roundhand\',\'Apple Chancery\',\'Brush Script MT\',cursive;font-weight:400;font-size:18px;line-height:1;color:#FBF6EC;text-shadow:0 1px 3px rgba(0,0,0,.55)">Three Times Sweeter</div>'
@@ -3467,6 +3490,8 @@ const coverCfg = {
     sqTitle:'<div style="position:absolute;bottom:7px;left:5px;right:5px;text-align:center;font-family:\'Fredoka\',\'Baloo 2\',\'Varela Round\',\'Trebuchet MS\',sans-serif;font-weight:700;font-size:16px;line-height:1.02;color:#F2B21C;-webkit-text-stroke:0.6px #3A1E08;text-shadow:0 2px 3px rgba(0,0,0,.5)">Smothered Okra<br>&amp; Long-Grain Rice</div>' }
 };
 function coverCfgFor(name){ return coverCfg[bookKey(name)]||{}; }
+// Preload the disc/square cover crops so the round player disc shows the cover instantly (no numeral flash).
+(function preloadCoverArt(){ try{ Object.keys(coverCfg).forEach(function(k){ var c=coverCfg[k]; [c.discImg,c.sqImg].forEach(function(src){ if(src){ var i=new Image(); i.src=src; } }); }); }catch(e){} })();
 // Styled title overlay for a square audiobook cover (added on top of the zoomed image).
 function injectSquareTitle(el, html){
   var old=el.querySelector('.sp-title-ov'); if(old) old.remove();
@@ -3621,14 +3646,15 @@ function applyDiscArt(name,fallbackBg){
   var discSrc=cfg.discImg||(a&&a.img); // disc may use a dedicated (e.g. no-text) variant
   if(a){
     if(discSrc){
-      // Placeholder first (numeral on gradient), then swap to the filled cover once it loads.
-      disc.style.background=a.grad; disc.innerHTML=discNumHTML(a.num);
-      var im=new Image();
-      im.onload=function(){
+      var applyImg=function(){
         disc.style.background=a.discBg||'#2C1A0E';
         disc.innerHTML='<img src="'+discSrc+'" alt="" style="width:100%;height:100%;object-fit:cover;object-position:'+(cfg.discPos||'center')+';display:block">';
       };
-      im.src=discSrc; // on error, the numeral placeholder above simply remains
+      var im=new Image();
+      im.onload=applyImg;
+      im.src=discSrc; // on error, the numeral placeholder below simply remains
+      if(im.complete && im.naturalWidth){ applyImg(); }              // cached (preloaded) -> show cover instantly, no numeral flash
+      else { disc.style.background=a.grad; disc.innerHTML=discNumHTML(a.num); } // not cached yet -> numeral placeholder until it loads
     }
     else { disc.style.background=a.grad; disc.innerHTML=discNumHTML(a.num); }
   } else {
