@@ -373,6 +373,15 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .btn-buy,.mc-add,.exp-bk,.film-support{background:linear-gradient(150deg,#F7D488 0%,#EBBE70 46%,#D3A24A 100%)!important;color:#3A2408!important;box-shadow:0 1px 4px rgba(224,176,84,.28),inset 0 1px 0 rgba(255,249,229,.7),inset 0 -2px 4px rgba(150,100,28,.32);text-shadow:0 1px 0 rgba(255,247,224,.35);transition:box-shadow .15s,transform .1s}
 .btn-buy:hover,.mc-add:hover,.exp-bk:hover,.film-support:hover{box-shadow:0 2px 7px rgba(232,185,106,.34),inset 0 1px 0 rgba(255,249,229,.75),inset 0 -2px 4px rgba(150,100,28,.32)}
 .btn-buy:active,.mc-add:active,.exp-bk:active,.film-support:active{transform:translateY(1px);box-shadow:0 1px 6px rgba(200,150,62,.45),inset 0 1px 2px rgba(120,80,20,.35)}
+/* ── Pearlescent-gold prices: EVERY dollar amount uses the same champagne gold as the Buy Now buttons. */
+.price-gold,.mc-price,.exp-price,.fmt-price,.cart-item-price,#merch-total,#cart-total,#ticket-total{
+  color:#EBBE70;background:linear-gradient(150deg,#F7D488 0%,#FBEBBE 32%,#EBBE70 58%,#D3A24A 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+/* Primary action button in pearlescent gold (matches the Creations Buy Now / Book Now buttons). */
+.pbuy{background:linear-gradient(150deg,#F7D488 0%,#EBBE70 46%,#D3A24A 100%)!important;color:#3A2408!important;border:none!important;box-shadow:0 1px 4px rgba(224,176,84,.28),inset 0 1px 0 rgba(255,249,229,.7),inset 0 -2px 4px rgba(150,100,28,.32);text-shadow:0 1px 0 rgba(255,247,224,.35)}
+/* Secondary "Add to Cart": books/merch = gold outline; experiences = brown w/ white outline + white text. */
+.pcart{background:transparent!important;border:1px solid rgba(200,150,62,.5)!important;color:var(--gd)!important;-webkit-text-fill-color:currentColor}
+.pcart-exp{background:linear-gradient(135deg,#3B2010,#2C1A0E)!important;border:1px solid rgba(255,255,255,.75)!important;color:#fff!important;-webkit-text-fill-color:#fff}
 /* Section labels ("Seasonal Releases" / "Experiences"): hidden on first pass, shown on infinite-scroll repeats. */
 .sec-label{display:none}
 .cr-infinite .sec-label{display:block}
@@ -757,12 +766,12 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
           <button class="mc-add" onclick="event.stopPropagation();openMerchCardPur(this.closest('.mc').querySelector('.mc-name').textContent.trim())">Buy Now</button>
         </div>
       </div>
-            <div class="mc" onclick="openMerchDetail('OE Blanket','Collectibles','$45','🖼️','linear-gradient(135deg,#2C1A0E,var(--brl))')">
+            <div class="mc" onclick="openMerchDetail('OE Blanket','Collectibles','$50','🖼️','linear-gradient(135deg,#2C1A0E,var(--brl))')">
         <div class="mc-art" style="background:linear-gradient(135deg,#2C1A0E,var(--brl));cursor:pointer">🖼️</div>
         <div class="mc-info">
           <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1px">
             <div class="mc-name">OE Blanket</div>
-            <div class="mc-price">$45</div>
+            <div class="mc-price">$50</div>
           </div>
           <div class="mc-cat">Collectibles</div>
           <button class="mc-add" onclick="event.stopPropagation();openMerchCardPur(this.closest('.mc').querySelector('.mc-name').textContent.trim())">Buy Now</button>
@@ -797,7 +806,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
           <div style="font-size:11px;color:var(--cr);white-space:nowrap;margin-left:8px">Apr 8, 2027</div>
         </div>
         <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:5px">
-          <div class="exp-cat" style="margin-bottom:0">Live Reading &amp; Q&amp;A · Intimate</div>
+          <div class="exp-cat" style="margin-bottom:0">New Orleans</div>
           <div id="exp-countdown-1" style="font-size:10px;color:var(--gd);letter-spacing:.06em;white-space:nowrap"></div>
         </div>
         <div class="exp-desc">An intimate evening with Rhodesia — readings, Q&amp;A, and signed copies. Limited to 30 guests.</div>
@@ -817,7 +826,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
           <div style="font-size:11px;color:var(--cr);white-space:nowrap;margin-left:8px">Jul 4, 2027</div>
         </div>
         <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:5px">
-          <div class="exp-cat" style="margin-bottom:0">VIP Access · Full Day</div>
+          <div class="exp-cat" style="margin-bottom:0">New Orleans</div>
           <div id="exp-countdown-2" style="font-size:10px;color:var(--gd);letter-spacing:.06em;white-space:nowrap"></div>
         </div>
         <div class="exp-desc">Film screening, book signing, panel discussion, and an exclusive meet &amp; greet with Rhodesia Jackson.</div>
@@ -837,7 +846,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
           <div style="font-size:11px;color:var(--cr);white-space:nowrap;margin-left:8px">Aug 8, 2027</div>
         </div>
         <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:5px">
-          <div class="exp-cat" style="margin-bottom:0">Island Retreat · Weekend</div>
+          <div class="exp-cat" style="margin-bottom:0">Martha's Vineyard, MA</div>
           <div id="exp-countdown-3" style="font-size:10px;color:var(--gd);letter-spacing:.06em;white-space:nowrap"></div>
         </div>
         <div class="exp-desc">A seaside weekend retreat on Martha's Vineyard — sunrise readings, a private author dinner, and coastal community with Rhodesia Jackson.</div>
@@ -1221,9 +1230,8 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
         <span style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:rgba(247,241,232,.4)">Total</span>
         <span id="cart-total" style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--gd)">$0.00</span>
       </div>
-      <div style="display:flex;gap:8px">
-        <button class="pay-btn pay-apple" style="flex:1;padding:12px" onclick="completePur('Apple Pay');C('ov-cart')">🍎 Apple Pay</button>
-        <button class="pay-btn pay-card" style="flex:1;padding:12px" onclick="completePur('Card');C('ov-cart')">Buy Now</button>
+      <div style="display:flex;justify-content:center">
+        <button class="pay-btn pbuy" style="width:100%;padding:13px" onclick="completePur('Card');C('ov-cart')">Buy Now</button>
       </div>
     </div>
   </div>
@@ -1360,8 +1368,8 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <div style="padding:10px 18px 16px">
       <div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(247,241,232,.35);margin-bottom:10px">PURCHASE</div>
       <div style="display:flex;gap:8px;margin-bottom:8px">
-        <button class="pay-btn pay-card" style="flex:1;padding:12px;font-size:12px" onclick="addToCartFlow()">🛒 Add to Cart <span id="cart-price" style="opacity:.7"></span></button>
-        <button class="pay-btn pay-apple" style="flex:1;padding:12px;font-size:12px" onclick="buyNowFlow()">Buy Now <span id="apple-price" style="opacity:.7"></span></button>
+        <button class="pay-btn pbuy" style="flex:1;padding:12px;font-size:12px" onclick="buyNowFlow()">Buy Now <span id="apple-price" style="opacity:.7"></span></button>
+        <button class="pay-btn pcart" style="flex:1;padding:12px;font-size:12px" onclick="addToCartFlow()">🛒 Add to Cart <span id="cart-price" style="opacity:.7"></span></button>
       </div>
       <div id="buy-now-opts" style="display:none;flex-direction:column;gap:7px">
         <button class="pay-btn pay-apple" style="padding:11px" onclick="completePur('Apple Pay')">🍎 Apple Pay</button>
@@ -1657,7 +1665,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
   </div>
 </div>
 <!-- Merch Detail Popup -->
-<div class="ov" id="ov-merch" style="align-items:center;justify-content:center">
+<div class="ov ov-center" id="ov-merch" style="align-items:center;justify-content:center">
   <div class="ov-bg" onclick="C('ov-merch')"></div>
   <div class="tbox" style="z-index:2;width:340px">
     <div class="tv" id="merch-img" style="height:auto;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:64px;background:linear-gradient(135deg,#3B2010,#2C1A0E)">🧥</div>
@@ -1697,8 +1705,8 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <span id="merch-total" style="margin-left:auto;font-size:15px;font-weight:500;color:var(--gd)">$34</span>
     </div>
     <div class="ti-acts">
-      <button class="ti-close" onclick="addMerchToCart(currentMerchName,currentMerchPrice,'🛍');C('ov-merch')">🛒 Add to Cart</button>
-      <button class="ti-buy" onclick="C('ov-merch');setTimeout(()=>{addMerchToCart(currentMerchName,currentMerchPrice,'🛍');completePur('Apple Pay');},200)">Buy Now</button>
+      <button class="ti-buy pbuy" onclick="C('ov-merch');setTimeout(()=>{addMerchToCart(currentMerchName,currentMerchPrice,'🛍');completePur('Apple Pay');},200)">Buy Now</button>
+      <button class="ti-close pcart" onclick="addMerchToCart(currentMerchName,currentMerchPrice,'🛍');C('ov-merch')">🛒 Add to Cart</button>
     </div>
     </div><!-- end ch-panel-chapters -->
   </div>
@@ -3654,6 +3662,9 @@ const merchArt = {
   'OE Journal': {img:'images/OE%20Merch%20%7C%20Journal%20%7C%20Cocoa.jpeg', pos:'center 55%', dpos:'center 42%'},
   'OE Pen':     {img:'images/OE%20Merch%20%7C%20Pens%20%7C%20Cocoa.jpeg',     pos:'center 60%', dpos:'center'},
   'OE Sweets':  {img:'images/OE%20Merch%20%7C%20Sweets%20%7C%20Cocoa.jpeg',  pos:'center 76%', dpos:'center'},
+  // Blanket photo is square (1024x1024) -> cover fills both the grid tile and the square detail
+  // frame with the product centered and even margins, no side bars.
+  'OE Blanket': {img:'images/OE%20Merch%20%7C%20Blanket%20%7C%20Cocoa%20.jpg', pos:'center', dpos:'center'},
   'OE Tote':    {img:'images/oe_tote.jpeg',    pos:'center 55%'}
 };
 function getMerchArt(name){ return merchArt[(name||'').replace(/&amp;/g,'&').trim()]||null; }
@@ -3663,7 +3674,7 @@ const merchOptions = {
   'OE Journal': {label:'Sizes (in.)', values:['4.5 x 6','6 x 8','8.5 x 11'],   prices:[20,26,32]},
   'OE Tote':    {label:'Sizes (in.)', values:['14 x 16','24 x 17'],            prices:[25,40]},
   'OE Mug':     {label:'Sizes (oz)',  values:['14 oz.','20 oz.','40 oz.'],     prices:[20,25,35]},
-  'OE Blanket': {label:'Sizes (in.)', values:['4.5 x 6','6 x 8','8.5 x 11']},
+  'OE Blanket': {label:'Sizes (in.)', values:['Toddler Crib','Twin','Queen','King'], prices:[50,95,145,200]},
   'OE Sweets':  null
 };
 // OE Sweets is a flavor box of 4 (no colors/sizes) — flat price.
@@ -4007,7 +4018,7 @@ function openMerchCardPur(name){
   setText('apple-price',price);setText('cart-price',price);
   var sized=[];
   var needsSize=sized.some(function(s){return name.indexOf(s)>-1;});
-  var colored=['OE Tote','OE Mug','OE Blanket'];
+  var colored=['OE Tote','OE Mug'];
   var needsColor=colored.some(function(s){return name.indexOf(s)>-1;});
   var lbl=document.getElementById('pur-fmt-lbl');
   var fo=document.getElementById('fmt-opts');
@@ -4876,8 +4887,8 @@ const postTemplates = [
     </div>
     <div class="pstill" style="height:220px;background:linear-gradient(155deg,#3B2010,#1A0E05)">
       <div style="position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:12px">
-        <div style="background:linear-gradient(135deg,#4A2C18,#2C1A0E);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer" onclick="shopItem('OE Classic Tee')"><div style="font-size:28px">🧥</div><div style="font-size:10px;color:var(--cr);font-weight:500;cursor:pointer" onclick="event.stopPropagation();shopItem('OE Classic Tee')">OE Classic Tee</div><div style="font-size:11px;color:var(--gd)">$34</div></div>
-        <div style="background:linear-gradient(135deg,#3B2010,#5C3D28);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px"><div style="font-size:28px">📓</div><div style="font-size:10px;color:var(--cr);font-weight:500;cursor:pointer" onclick="event.stopPropagation();shopItem('OE Journal')">Orgena Journal</div><div style="font-size:11px;color:var(--gd)">$28</div></div>
+        <div style="background:linear-gradient(135deg,#4A2C18,#2C1A0E);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer" onclick="shopItem('OE Classic Tee')"><div style="font-size:28px">🧥</div><div style="font-size:10px;color:var(--cr);font-weight:500;cursor:pointer" onclick="event.stopPropagation();shopItem('OE Classic Tee')">OE Classic Tee</div><div class="price-gold" style="font-size:11px;color:var(--gd)">$34</div></div>
+        <div style="background:linear-gradient(135deg,#3B2010,#5C3D28);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px"><div style="font-size:28px">📓</div><div style="font-size:10px;color:var(--cr);font-weight:500;cursor:pointer" onclick="event.stopPropagation();shopItem('OE Journal')">Orgena Journal</div><div class="price-gold" style="font-size:11px;color:var(--gd)">$28</div></div>
         
         <div style="background:linear-gradient(135deg,#C8963E,#4A2C18);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer" onclick="T('creations');setTimeout(()=>{const b=document.querySelector('.cr-fbar .fp:nth-child(3)');if(b)crFilter(b,'merch');},200)"><div style="font-size:22px">→</div><div style="font-size:10px;color:var(--br);font-weight:500">Shop All</div></div>
       </div>
@@ -5120,9 +5131,9 @@ function setupCreationsScroll(){
       <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gd);opacity:.7;margin-bottom:16px">Reserve Your Seat</div>
       <div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(247,241,232,.35);margin-bottom:8px">Ticket Type</div>
       <div id="ticket-types" style="display:flex;flex-direction:column;gap:7px;margin-bottom:14px">
-        <button onclick="selTicketType(this,'General',85)" style="text-align:left;padding:11px 13px;border-radius:6px;border:1px solid var(--gd);background:rgba(200,150,62,.08);color:var(--gd);cursor:pointer"><div style="display:flex;justify-content:space-between;align-items:center"><span onclick="event.stopPropagation();showTicketDesc('General Admission')" style="font-size:12px;font-weight:600;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(200,150,62,.35)">General Admission</span><span style="font-size:13px;font-weight:600">$85</span></div><div style="font-size:10px;color:rgba(247,241,232,.5);margin-top:3px">Reserved seating · welcome drink</div></button>
-        <button onclick="selTicketType(this,'VIP',150)" style="text-align:left;padding:11px 13px;border-radius:6px;border:1px solid rgba(200,150,62,.3);background:transparent;color:rgba(247,241,232,.5);cursor:pointer"><div style="display:flex;justify-content:space-between;align-items:center"><span onclick="event.stopPropagation();showTicketDesc('VIP ✦')" style="font-size:12px;font-weight:600;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(200,150,62,.35)">VIP ✦</span><span style="font-size:13px;font-weight:600">$150</span></div><div style="font-size:10px;color:rgba(247,241,232,.45);margin-top:3px">Front row · signed book · meet &amp; greet</div></button>
-        <button onclick="selTicketType(this,'Table',400)" style="text-align:left;padding:11px 13px;border-radius:6px;border:1px solid rgba(200,150,62,.3);background:transparent;color:rgba(247,241,232,.5);cursor:pointer"><div style="display:flex;justify-content:space-between;align-items:center"><span onclick="event.stopPropagation();showTicketDesc('Private Table')" style="font-size:12px;font-weight:600;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(200,150,62,.35)">Private Table</span><span style="font-size:13px;font-weight:600">$400</span></div><div style="font-size:10px;color:rgba(247,241,232,.45);margin-top:3px">Table for 4 · bottle service · priority</div></button>
+        <button onclick="selTicketType(this,'General',85)" style="text-align:left;padding:11px 13px;border-radius:6px;border:1px solid var(--gd);background:rgba(200,150,62,.08);color:var(--gd);cursor:pointer"><div style="display:flex;justify-content:space-between;align-items:center"><span onclick="event.stopPropagation();showTicketDesc('General Admission')" style="font-size:12px;font-weight:600;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(200,150,62,.35)">General Admission</span><span class="price-gold" style="font-size:13px;font-weight:600">$85</span></div><div style="font-size:10px;color:rgba(247,241,232,.5);margin-top:3px">Reserved seating · welcome drink</div></button>
+        <button onclick="selTicketType(this,'VIP',150)" style="text-align:left;padding:11px 13px;border-radius:6px;border:1px solid rgba(200,150,62,.3);background:transparent;color:rgba(247,241,232,.5);cursor:pointer"><div style="display:flex;justify-content:space-between;align-items:center"><span onclick="event.stopPropagation();showTicketDesc('VIP ✦')" style="font-size:12px;font-weight:600;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(200,150,62,.35)">VIP ✦</span><span class="price-gold" style="font-size:13px;font-weight:600">$150</span></div><div style="font-size:10px;color:rgba(247,241,232,.45);margin-top:3px">Front row · signed book · meet &amp; greet</div></button>
+        <button onclick="selTicketType(this,'Table',400)" style="text-align:left;padding:11px 13px;border-radius:6px;border:1px solid rgba(200,150,62,.3);background:transparent;color:rgba(247,241,232,.5);cursor:pointer"><div style="display:flex;justify-content:space-between;align-items:center"><span onclick="event.stopPropagation();showTicketDesc('Private Table')" style="font-size:12px;font-weight:600;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(200,150,62,.35)">Private Table</span><span class="price-gold" style="font-size:13px;font-weight:600">$400</span></div><div style="font-size:10px;color:rgba(247,241,232,.45);margin-top:3px">Table for 4 · bottle service · priority</div></button>
       </div>
       <div style="font-size:10px;color:var(--gd);opacity:.6;margin-bottom:14px" id="ticket-avail">🎟 32 of 120 seats remaining</div>
       <div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(247,241,232,.35);margin-bottom:10px">Number of Tickets</div>
@@ -5133,8 +5144,8 @@ function setupCreationsScroll(){
         <div style="margin-left:auto;text-align:right"><div style="font-size:10px;color:rgba(247,241,232,.35);text-transform:uppercase;letter-spacing:.08em">Total</div><div id="ticket-total" style="font-size:22px;font-weight:500;color:var(--gd)">$85</div></div>
       </div>
       <div style="display:flex;gap:8px">
-        <button class="pay-btn pay-card" style="flex:1;padding:12px" onclick="addExpToCart();C('ov-exp-tickets')">🛒 Add to Cart</button>
-        <button class="pay-btn pay-apple" style="flex:1;padding:12px" onclick="completePur('Apple Pay');C('ov-exp-tickets')">Reserve Now</button>
+        <button class="pay-btn pbuy" style="flex:1;padding:12px" onclick="completePur('Apple Pay');C('ov-exp-tickets')">Reserve Now</button>
+        <button class="pay-btn pcart-exp" style="flex:1;padding:12px" onclick="addExpToCart();C('ov-exp-tickets')">🛒 Add to Cart</button>
       </div>
     </div>
   </div>
