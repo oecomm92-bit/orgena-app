@@ -27,7 +27,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 /* TOP NAV */
 .tn{flex-shrink:0;height:52px;background:rgba(13,8,4,.97);display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-bottom:1px solid rgba(200,150,62,.1);z-index:60}
 .tn-brand{display:flex;align-items:center;gap:7px}
-.bw{font-family:'Bebas Neue',sans-serif;font-size:22px;font-weight:400;letter-spacing:.18em;color:var(--gd);text-transform:uppercase}
+.bw{font-family:'Bebas Neue',sans-serif;font-size:22px;font-weight:400;letter-spacing:.18em;color:#EBBE70;text-transform:uppercase}
 .tn-right{display:flex;gap:6px;align-items:center}
 .ti{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:20px;border:1px solid rgba(200,150,62,.22);color:rgba(247,241,232,.6);cursor:pointer;font-size:13px;transition:all .15s;position:relative}
 .ti:hover{background:rgba(200,150,62,.1);border-color:rgba(200,150,62,.4);color:var(--gdl)}
@@ -370,13 +370,20 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .btn-tr svg{width:10px;height:10px;fill:currentColor}
 .btn-buy{background:var(--gd);color:var(--br);font-size:10px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;padding:6px 13px;border-radius:2px;cursor:pointer;border:none}
 /* Glazed, glowy light-gold for every Buy Now / Book Now / Support button (subtle sheen + halo). */
-.btn-buy,.mc-add,.exp-bk,.film-support{background:linear-gradient(150deg,#F7D488 0%,#EBBE70 46%,#D3A24A 100%)!important;color:#3A2408!important;box-shadow:0 2px 10px rgba(224,176,84,.5),inset 0 1px 0 rgba(255,249,229,.7),inset 0 -2px 4px rgba(150,100,28,.32);text-shadow:0 1px 0 rgba(255,247,224,.35);transition:box-shadow .15s,transform .1s}
-.btn-buy:hover,.mc-add:hover,.exp-bk:hover,.film-support:hover{box-shadow:0 3px 15px rgba(232,185,106,.6),inset 0 1px 0 rgba(255,249,229,.75),inset 0 -2px 4px rgba(150,100,28,.32)}
+.btn-buy,.mc-add,.exp-bk,.film-support{background:linear-gradient(150deg,#F7D488 0%,#EBBE70 46%,#D3A24A 100%)!important;color:#3A2408!important;box-shadow:0 1px 4px rgba(224,176,84,.28),inset 0 1px 0 rgba(255,249,229,.7),inset 0 -2px 4px rgba(150,100,28,.32);text-shadow:0 1px 0 rgba(255,247,224,.35);transition:box-shadow .15s,transform .1s}
+.btn-buy:hover,.mc-add:hover,.exp-bk:hover,.film-support:hover{box-shadow:0 2px 7px rgba(232,185,106,.34),inset 0 1px 0 rgba(255,249,229,.75),inset 0 -2px 4px rgba(150,100,28,.32)}
 .btn-buy:active,.mc-add:active,.exp-bk:active,.film-support:active{transform:translateY(1px);box-shadow:0 1px 6px rgba(200,150,62,.45),inset 0 1px 2px rgba(120,80,20,.35)}
 /* Section labels ("Seasonal Releases" / "Experiences"): hidden on first pass, shown on infinite-scroll repeats. */
 .sec-label{display:none}
 .cr-infinite .sec-label{display:block}
-#ov-share{z-index:1000}
+/* Share sheet must sit ABOVE the film player (z900) and donate (z1000), and escape the .sw overflow clip
+   so it fills the phone frame and docks at the true bottom. position:fixed traps to the scaled .phone. */
+#ov-share{position:fixed;inset:0;z-index:1300!important;align-items:flex-end}
+/* Repost / repost-confirm sheets must sit ABOVE the Explore post popup (z880) so they don't
+   open behind the playing video. */
+#ov-repost{z-index:1200}#ov-repost-confirm{z-index:1250}
+/* Hosted-event Info popup opens over the My Events panel (z850). */
+#ov-host-info{z-index:1400}
 .btn-rev{background:transparent;border:1px solid rgba(247,241,232,.1);color:rgba(247,241,232,.35);font-size:10px;letter-spacing:.05em;text-transform:uppercase;padding:6px 9px;border-radius:2px;cursor:pointer;margin-left:auto}
 /* MERCH */
 .merch-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:11px 13px}
@@ -776,7 +783,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <!-- Infinite scroll sentinel — no spinner, just load more cards seamlessly -->
     <div id="merch-sentinel" style="height:4px" data-cr="all merch"></div>
   </div>
-  <div data-cr="all experiences"><div class="sec-label" style="font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:rgba(247,241,232,.3);padding:14px 16px 7px">Experiences</div>
+  <div data-cr="all experiences" style="padding-top:11px"><div class="sec-label" style="font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:rgba(247,241,232,.3);padding:14px 16px 7px">Experiences</div>
     <!-- Experience 1 -->
     <div class="exp-card">
       <div class="exp-art" style="cursor:pointer;position:relative" onclick="openExpTrailer('OE French Quarter Fest Experience','Live Reading &amp; Q&amp;A')">
@@ -996,15 +1003,15 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <!-- SVG USA Map (pinch-zoom + pan enabled) -->
       <div id="map-gesture" style="position:relative;width:100%;padding-top:62.5%;touch-action:none;overflow:hidden">
         <svg id="us-map-svg" onclick="mapClick(event)" class="us-map" viewBox="0 0 960 600" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-label="US events map"><defs><radialGradient id="evGlow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#F5DFA8" stop-opacity=".9"/><stop offset="38%" stop-color="#E8B96A" stop-opacity=".45"/><stop offset="100%" stop-color="#C8963E" stop-opacity="0"/></radialGradient></defs><g class="us-states"><path d="M664.4,470.1L664.4,470.1L664.4,470.1ZM658.5,369.2L702.8,365.2L722.8,448.1L676.3,452.9L679.1,467.9L663,467.4Z"/><path d="M164.9,519L164.9,519L164.9,519ZM163.7,532.5L163.7,532.5L163.7,532.5ZM160.9,534L160.9,534L160.9,534ZM160.2,534.1L160.2,534.1L160.2,534.1ZM159.6,533.9L159.6,533.9L159.6,533.9ZM159.7,540.9L159.7,540.9L159.7,540.9ZM158.9,535.7L158.9,535.7L158.9,535.7ZM158.5,525.2L158.5,525.2L158.5,525.2ZM157.8,535.8L157.8,535.8L157.8,535.8ZM156.5,526.6L156.5,526.6L156.5,526.6ZM153.8,542.2L153.8,542.2L153.8,542.2ZM153.2,532.3L153.2,532.3L153.2,532.3ZM150.9,552.3L150.9,552.3L150.9,552.3ZM150.1,553.4L150.1,553.4L150.1,553.4ZM148.5,547.3L157.5,542.9L151.7,551.9ZM148.3,554.2L148.3,554.2L148.3,554.2ZM144.3,558.7L144.3,558.7L144.3,558.7ZM140.2,557L140.2,557L140.2,557ZM140.1,555.8L140.1,555.8L140.1,555.8ZM138,553.1L138,553.1L138,553.1ZM135.6,554.4L135.6,554.4L135.6,554.4ZM131.3,558L131.3,558L131.3,558ZM130.3,557.6L130.3,557.6L130.3,557.6ZM129,564.7L129,564.7L129,564.7ZM129.2,558.4L129.2,558.4L129.2,558.4ZM128.4,564.3L128.4,564.3L128.4,564.3ZM127.7,565.2L127.7,565.2L127.7,565.2ZM127.7,562.4L127.7,562.4L127.7,562.4ZM126.8,565.1L126.8,565.1L126.8,565.1ZM126.8,563.4L126.8,563.4L126.8,563.4ZM125.9,561.2L125.9,561.2L125.9,561.2ZM125.1,564.1L125.1,564.1L125.1,564.1ZM127.4,536.4L127.4,536.4L127.4,536.4ZM125,560.4L125,560.4L125,560.4ZM127,536.4L127,536.4L127,536.4ZM122.8,561L122.8,561L122.8,561ZM124.4,536.8L124.4,536.8L124.4,536.8ZM120.3,561.5L120.3,561.5L120.3,561.5ZM119.2,561.4L119.2,561.4L119.2,561.4ZM118.2,562L118.2,562L118.2,562ZM115.8,563.1L115.8,563.1L115.8,563.1ZM123.2,499.4L123.2,499.4L123.2,499.4ZM113.7,566.4L113.7,566.4L113.7,566.4ZM113.3,559L113.3,559L113.3,559ZM104.8,566.9L104.8,566.9L104.8,566.9ZM103.1,567.4L103.1,567.4L103.1,567.4ZM102,567.4L102,567.4L102,567.4ZM101.5,567.6L101.5,567.6L101.5,567.6ZM101.3,566L101.3,566L101.3,566ZM99.4,566.4L99.4,566.4L99.4,566.4ZM98.8,567.5L98.8,567.5L98.8,567.5ZM102.7,521.3L102.7,521.3L102.7,521.3ZM90.7,570.9L90.7,570.9L90.7,570.9ZM108.8,481.4L121,476.7L122.3,480.8L130.7,480.6L129,474.3L116.9,462.9L124.1,459.8L131.6,450.5L144.7,444.6L174.8,452.8L185.2,453.4L198.7,520.9L205.4,521.1L213.8,528.1L219.3,519.8L229.8,527.2L239.9,538.1L247.7,539.1L249,549.7L237.7,542.7L220.6,523.3L224.1,530.8L218.3,532.3L202.1,524.9L187.5,525.2L176.2,518.2L174.2,526.3L160.6,533.9L160.5,520.2L153.8,535.5L133.2,554.3L133,557L105.1,565.4L137,545.5L139.7,535.9L132.1,538.8L127.7,533.6L121.8,536.8L121,524.7L115.9,526.7L109.1,512.7L118.4,501.1L129.5,498.7L129.1,490.1L124.5,492.5L113,490.3ZM84.8,573L84.8,573L84.8,573ZM83.7,573.4L83.7,573.4L83.7,573.4ZM81.9,571.5L81.9,571.5L81.9,571.5ZM88.1,545.3L88.1,545.3L88.1,545.3ZM82,570.7L82,570.7L82,570.7ZM80.6,572.1L80.6,572.1L80.6,572.1ZM80.2,571.6L80.2,571.6L80.2,571.6ZM79.6,572.8L79.6,572.8L79.6,572.8ZM86.6,540.7L86.6,540.7L86.6,540.7ZM76.5,573L76.5,573L76.5,573ZM75.1,572.7L75.1,572.7L75.1,572.7ZM74.3,573.2L74.3,573.2L74.3,573.2ZM93.7,493.7L93.7,493.7L93.7,493.7ZM68.2,573L68.2,573L68.2,573ZM83.4,514.3L83.4,514.3L83.4,514.3ZM83.7,512.8L83.7,512.8L83.7,512.8ZM61.6,572.3L61.6,572.3L61.6,572.3ZM55.8,571.3L55.8,571.3L55.8,571.3ZM54.9,571.3L54.9,571.3L54.9,571.3ZM55.3,569.9L55.3,569.9L55.3,569.9ZM53.9,571.1L53.9,571.1L53.9,571.1ZM53,570.7L53,570.7L53,570.7ZM52.2,569.6L52.2,569.6L52.2,569.6ZM51.4,571.3L51.4,571.3L51.4,571.3ZM47.6,571.5L47.6,571.5L47.6,571.5ZM46.3,568.8L46.3,568.8L46.3,568.8ZM44.8,569.9L44.8,569.9L44.8,569.9ZM43,567.8L43,567.8L43,567.8ZM40.3,568.9L40.3,568.9L40.3,568.9ZM39.4,568.8L39.4,568.8L39.4,568.8ZM40,567.3L40,567.3L40,567.3ZM38.3,570L38.3,570L38.3,570ZM37.5,570.4L37.5,570.4L37.5,570.4ZM33.5,563.2L33.5,563.2L33.5,563.2ZM28.9,564L28.9,564L28.9,564ZM29.1,561.4L29.1,561.4L29.1,561.4ZM27.8,562L27.8,562L27.8,562ZM27.8,560.3L27.8,560.3L27.8,560.3ZM23.7,559.6L23.7,559.6L23.7,559.6ZM19.7,553.8L19.7,553.8L19.7,553.8ZM13.7,547.8L13.7,547.8L13.7,547.8ZM13.3,547.4L13.3,547.4L13.3,547.4ZM13,547.1L13,547.1L13,547.1ZM9.7,548.4L9.7,548.4L9.7,548.4ZM8,543.1L8,543.1L8,543.1ZM245.9,547.9L245.9,547.9L245.9,547.9ZM245.3,549.2L245.3,549.2L245.3,549.2ZM244.7,549.4L244.7,549.4L244.7,549.4ZM244.4,548.8L244.4,548.8L244.4,548.8ZM242.7,546.8L242.7,546.8L242.7,546.8ZM237.6,539.7L237.6,539.7L237.6,539.7ZM237.6,540.6L237.6,540.6L237.6,540.6ZM237,540L237,540L237,540ZM239.6,550.9L239.6,550.9L239.6,550.9ZM236.1,542.3L236.1,542.3L236.1,542.3ZM235.7,541.5L235.7,541.5L235.7,541.5ZM236.8,548.3L236.8,548.3L236.8,548.3ZM237.1,552.6L237.1,552.6L237.1,552.6ZM235,547.3L235,547.3L235,547.3ZM234.7,547.1L234.7,547.1L234.7,547.1ZM234.9,548.7L234.9,548.7L234.9,548.7ZM233.6,545.2L235.4,541.9L243.7,551.7ZM230.4,535.8L230.4,535.8L230.4,535.8ZM233.3,545.7L233.3,545.7L233.3,545.7ZM231.6,546.2L231.6,546.2L231.6,546.2ZM229.4,539.6L229.4,539.6L229.4,539.6ZM224,529.2L224,529.2L224,529.2ZM223.5,528.5L223.5,528.5L223.5,528.5ZM221.3,525.2L221.3,525.2L221.3,525.2ZM223.4,537.4L223.4,537.4L223.4,537.4ZM221.2,530.3L221.2,530.3L221.2,530.3ZM223,538.5L223,538.5L223,538.5ZM219.2,529.1L219.2,529.1L219.2,529.1ZM219.8,531.3L219.8,531.3L219.8,531.3ZM218.9,534.3L218.9,534.3L218.9,534.3ZM181.8,523.2L181.8,523.2L181.8,523.2ZM180.5,523.1L180.5,523.1L180.5,523.1ZM175.4,520.1L175.4,520.1L175.4,520.1ZM175,521.8L175,521.8L175,521.8ZM175.2,524.8L175.2,524.8L175.2,524.8ZM174,528.4L174,528.4L174,528.4ZM173.6,525L173.6,525L173.6,525ZM173,521.5L173,521.5L173,521.5Z"/><path d="M196.6,390.7L207.5,343.4L225.4,303.5L307.8,317.1L291.3,436.5L255.2,431.1Z"/><path d="M319.4,232.6L397.9,241.4L429.4,243.7L428,264.9L424.1,329L408.2,327.7L307.8,317.1Z"/><path d="M819.5,565L819.5,565L819.5,565ZM817.7,566.4L817.7,566.4L817.7,566.4ZM812.8,569.2L812.8,569.2L812.8,569.2ZM800,574.1L800,574.1L800,574.1ZM796.2,575.2L796.2,575.2L796.2,575.2ZM793.2,575.3L793.2,575.3L793.2,575.3ZM784.9,531.4L784.9,531.4L784.9,531.4ZM778.2,575.9L778.2,575.9L778.2,575.9ZM731.9,472.7L731.9,472.7L731.9,472.7ZM722.8,448.1L787.4,445.6L824.5,518.4L812.3,560.6L770.5,508.7L770.4,486.6L738.4,465.5L679.1,467.9L676.3,452.9Z"/><path d="M702.8,365.2L724.7,362.6L745.3,359.6L792.9,416.3L787.4,445.6L722.8,448.1Z"/><path d="M657.3,225.8L668.1,223.7L699.6,221.7L705.9,276.5L690.6,301.3L656.4,309.5L663.4,288.7Z"/><path d="M428,264.9L536,268L547.5,286.7L548,331.9L424.1,329Z"/><path d="M935.9,118.8L935.9,118.8L935.9,118.8ZM934.2,120L934.2,120L934.2,120ZM932.7,116.4L932.7,116.4L932.7,116.4ZM928.8,119.9L928.8,119.9L928.8,119.9ZM930.1,128L930.1,128L930.1,128ZM928.1,122.9L928.1,122.9L928.1,122.9ZM926.9,120.2L926.9,120.2L926.9,120.2ZM908.4,151.7L890.4,107.3L904.4,56.3L926.6,58.3L952,100.2Z"/><path d="M924.6,185.8L924.6,185.8L924.6,185.8ZM916,187.2L916,187.2L916,187.2ZM872,168L884.1,165.4L907.7,156L910.8,185.4L908.7,182L908.1,181.4L897.8,177.6L872.1,183.1Z"/><path d="M507.7,77.8L616.3,95.8L582.8,124.7L572.7,166L597.8,191.8L518,193.6L516.6,142.1Z"/><path d="M851.6,240.7L852.2,239.4L853.1,236.6L857,201.8L870.2,213.3L870,214L867.8,218L851.8,241.2Z"/><path d="M865.7,318.2L865.7,318.2L865.7,318.2ZM864.8,337.3L864.8,337.3L864.8,337.3ZM764.5,322.7L860.6,305.9L866.5,325.8L827.1,371.2L779.8,351.3L745.3,359.6L724.7,362.6Z"/><path d="M412.2,73.1L507.7,77.8L516.6,142.1L406.9,136.9Z"/><path d="M408.2,327.7L424.1,329L548,331.9L548.1,342.5L551.3,403.4L504.7,401.5L456,382.5L457.7,341.3L407.3,338.3Z"/><path d="M765.1,206.4L775.6,198.3L843.9,190.7L857,201.8L853.1,236.6L847.6,239.6L789.4,251L769.7,234.5Z"/><path d="M405,156.9L406.9,136.9L516.6,142.1L518,193.6L518,215.1L486.6,203.8L401.5,199Z"/><path d="M407.3,338.3L457.7,341.3L456,382.5L504.7,401.5L551.3,403.4L559.1,405.1L559.1,405.1L559.4,416.4L564.6,486.8L498.3,536.9L498.6,568L465.6,554.8L424.8,482.5L393.5,497.2L369.1,481.4L337.2,432.6L399.2,433.7Z"/><path d="M405,156.9L401.5,199L397.9,241.4L319.4,232.6L288.2,228L291.6,207L299.8,155.2L301.5,144.1Z"/><path d="M872.1,183.1L897.8,177.6L900.5,192L874.8,205.8Z"/><path d="M528.7,255.6L597.9,258.3L639.5,328.2L635.5,338.9L634.3,339L633.4,339L630.9,349.8L623.2,339.7L548.1,342.5L548,331.9L547.5,286.7L536,268Z"/><path d="M743.7,286.2L769.7,234.5L789.4,251L818.8,254.2L784.1,299.7L756.7,303.4Z"/><path d="M597.9,258.3L607.7,212.4L651.6,209.6L657.3,225.8L663.4,288.7L656.4,309.5L639.5,328.2Z"/><path d="M307.8,317.1L408.2,327.7L407.3,338.3L399.2,433.7L337.2,432.6L291.3,436.5Z"/><path d="M548.1,342.5L623.2,339.7L630.9,349.8L622.5,371.8L609.9,414.9L559.4,416.4L559.1,405.1L559.1,405.1L551.3,403.4Z"/><path d="M133.4,360.2L133.4,360.2L133.4,360.2ZM131.1,369.4L131.1,369.4L131.1,369.4ZM125.8,358L125.8,358L125.8,358ZM122.2,345.4L122.2,345.4L122.2,345.4ZM115.8,360.2L115.8,360.2L115.8,360.2ZM114.3,342.3L114.3,342.3L114.3,342.3ZM108.4,342.4L108.4,342.4L108.4,342.4ZM105.2,340.8L105.2,340.8L105.2,340.8ZM91.9,160.8L155.1,178.7L155.1,178.7L139.1,240.4L207.5,343.4L196.6,390.7L154.2,385.7L137.3,348.9L107,332.2L80.3,225Z"/><path d="M851.6,240.7L851.8,241.2L851.6,240.7ZM847.6,239.6L853.1,236.6L852.2,239.4L865.1,263.4Z"/><path d="M830,260.4L831.8,263.1L830,260.4Z"/><path d="M345.8,555.8L345.8,555.8L345.8,555.8ZM332.9,531L332.9,531L332.9,531ZM332.9,539.2L332.9,539.2L332.9,539.2ZM325.7,531.4L325.7,531.4L325.7,531.4ZM320.8,527.2L320.8,527.2L320.8,527.2ZM301.7,517.2L301.7,517.2L301.7,517.2ZM272,507.5L272,507.5L272,507.5ZM262.8,511.2L262.8,511.2L262.8,511.2Z"/><path d="M518,193.6L597.8,191.8L607.7,212.4L597.9,258.3L528.7,255.6L518,215.1Z"/><path d="M639.5,328.2L656.4,309.5L690.6,301.3L705.9,276.5L743.7,286.2L756.7,303.4L731.2,327.1L635.5,338.9ZM634.3,339L633.4,339L634.3,339Z"/><path d="M852.2,277.1L851.4,277.3L852.2,277.1ZM849.9,273.9L849.9,273.9L849.9,273.9ZM842.2,261.4L842.2,261.4L842.2,261.4ZM789.4,251L847.6,239.6L865.1,263.4L864,272.9L857.5,276L831.1,266.7L831.8,263.1L830,260.4L818.8,254.2Z"/><path d="M691.5,133.7L691.5,133.7L691.5,133.7ZM680.9,136.8L680.9,136.8L680.9,136.8ZM678.9,135.9L678.9,135.9L678.9,135.9ZM677.9,140.9L677.9,140.9L677.9,140.9ZM676.5,138.1L676.5,138.1L676.5,138.1ZM674.5,144.6L674.5,144.6L674.5,144.6ZM672.4,151.2L672.4,151.2L672.4,151.2ZM671.4,154.1L671.4,154.1L671.4,154.1ZM662.2,142.1L662.2,142.1L662.2,142.1ZM668.1,223.7L670.6,160.9L689.9,135.5L709.8,142.2L732.6,189.2L720.5,218.3L699.6,221.7ZM621.1,97.9L621.1,97.9L621.1,97.9ZM606.2,126.5L637.1,105.5L650.2,124.1L685,115.3L707.3,130.7L657,137.9L649.9,154.3L645.7,149.5L645.7,149.5L607.2,127L607.2,127Z"/><path d="M661.2,470.8L661.2,470.8L661.2,470.8ZM656.4,470.5L656.4,470.5L656.4,470.5ZM652.5,471.4L652.5,471.4L652.5,471.4ZM649.4,471.2L649.4,471.2L649.4,471.2ZM609.9,414.9L622.5,371.8L658.5,369.2L663,467.4L642.8,472.9L637.6,455.8L603.6,457.8Z"/><path d="M245.9,48.3L412.2,73.1L406.9,136.9L405,156.9L301.5,144.1L299.8,155.2L270.8,150.7L260,102.3L243.6,81.5Z"/><path d="M886,114.8L890.4,107.3L908.4,151.7L907.7,156L884.1,165.4Z"/><path d="M898.2,194L898.2,194L898.2,194ZM897.4,197.7L897.4,197.7L897.4,197.7ZM895.8,196.2L895.8,196.2L895.8,196.2ZM870,214L867.8,218L870,214ZM820.3,155.1L820.3,155.1L820.3,155.1ZM819,155L819,155L819,155ZM775.6,198.3L782.5,175.7L814.3,169.4L837.9,126.6L859.4,121.6L872,168L872.1,183.1L874.8,205.8L870.2,213.3L857,201.8L843.9,190.7Z"/><path d="M732,219.5L732,219.5L732,219.5ZM730.2,218.8L730.2,218.8L730.2,218.8ZM699.6,221.7L720.5,218.3L765.1,206.4L769.7,234.5L743.7,286.2L705.9,276.5Z"/><path d="M127.6,77.3L141.5,97.1L220.3,107.2L200.1,189.4L155.1,178.7L155.1,178.7L155.1,178.7L91.9,160.8L122.1,77.7Z"/><path d="M630.9,349.8L633.4,339L634.3,339L635.5,338.9L731.2,327.1L764.5,322.7L724.7,362.6L702.8,365.2L658.5,369.2L622.5,371.8Z"/><path d="M245.6,199.1L291.6,207L288.2,228L319.4,232.6L307.8,317.1L225.4,303.5Z"/><path d="M852.7,279.3L852.7,279.3L852.7,279.3ZM857.5,276L864,272.9L857.5,276ZM852.2,277.1L851.4,277.3L852.2,277.1ZM756.7,303.4L784.1,299.7L818.8,254.2L830,260.4L831.8,263.1L831.1,266.7L860.6,305.9L764.5,322.7L731.2,327.1Z"/><path d="M148.3,59.3L148.3,59.3L148.3,59.3ZM153.5,34.9L153.5,34.9L153.5,34.9ZM153.6,30.9L153.6,30.9L153.6,30.9ZM152.5,33.8L152.5,33.8L152.5,33.8ZM150,40.9L150,40.9L150,40.9ZM150.5,28.7L150.5,28.7L150.5,28.7ZM148.7,30.2L148.7,30.2L148.7,30.2ZM150.2,24.1L150.2,24.1L150.2,24.1ZM146.3,31.7L146.3,31.7L146.3,31.7ZM146.4,29.8L146.4,29.8L146.4,29.8ZM232.4,45.4L220.3,107.2L141.5,97.1L127.6,77.3L125.4,29.9L156.2,46.9L154.7,25.4Z"/><path d="M658.8,148.1L658.8,148.1L658.8,148.1ZM652.9,151.9L652.9,151.9L652.9,151.9ZM604.9,117.4L604.9,117.4L604.9,117.4ZM604.2,120.1L604.2,120.1L604.2,120.1ZM602.3,119.1L602.3,119.1L602.3,119.1ZM600.9,121L600.9,121L600.9,121ZM601,118.4L601,118.4L601,118.4ZM600.4,117.2L600.4,117.2L600.4,117.2ZM600.5,122.2L600.5,122.2L600.5,122.2ZM597.5,118.1L597.5,118.1L597.5,118.1ZM582.8,124.7L606.2,126.5L607.2,127L607.2,127L645.7,149.5L645.7,149.5L649.9,154.3L651.6,209.6L607.7,212.4L597.8,191.8L572.7,166Z"/><path d="M401.5,199L486.6,203.8L518,215.1L528.7,255.6L536,268L428,264.9L429.4,243.7L397.9,241.4Z"/><path d="M745.3,359.6L779.8,351.3L827.1,371.2L792.9,416.3Z"/><path d="M220.3,107.2L232.4,45.4L245.9,48.3L243.6,81.5L260,102.3L270.8,150.7L299.8,155.2L291.6,207L245.6,199.1L200.1,189.4Z"/><path d="M155.1,178.7L155.1,178.7L200.1,189.4L245.6,199.1L225.4,303.5L207.5,343.4L139.1,240.4Z"/><path d="M859.4,121.6L886,114.8L884.1,165.4L872,168Z"/><path d="M654.7,474.7L654.7,474.7L654.7,474.7ZM646.3,475.2L646.3,475.2L646.3,475.2ZM641.9,486.6L641.9,486.6L641.9,486.6ZM628.7,496.5L628.7,496.5L628.7,496.5ZM625.3,497L625.3,497L625.3,497ZM621.9,498L621.9,498L621.9,498ZM598,487.8L598,487.8L598,487.8ZM559.4,416.4L609.9,414.9L603.6,457.8L637.6,455.8L642.8,472.9L620.7,498.3L600.2,482.6L564.6,486.8Z"/><path d="M908.7,182L910.8,185.4L908.7,182ZM906.2,183L906.2,183L906.2,183ZM906.8,187.3L906.8,187.3L906.8,187.3ZM905.2,194.3L905.2,194.3L905.2,194.3ZM900.5,192L897.8,177.6L908.1,181.4Z"/></g><g class="ev-markers"><g class="ev-marker" data-city="New Orleans, LA" onclick="showCityPopup('New Orleans, LA')"><circle class="ev-halo" cx="633.2" cy="478.4" r="44" fill="url(#evGlow)"/><circle cx="633.2" cy="478.4" r="13" fill="none" stroke="#C8963E" stroke-opacity=".5" stroke-width="1.2" vector-effect="non-scaling-stroke"/><circle cx="633.2" cy="478.4" r="6.5" fill="#F5DFA8"/></g><g class="ev-marker" data-city="Atlanta, GA" onclick="showCityPopup('Atlanta, GA')"><circle class="ev-halo" cx="726.8" cy="388.9" r="44" fill="url(#evGlow)"/><circle cx="726.8" cy="388.9" r="13" fill="none" stroke="#C8963E" stroke-opacity=".5" stroke-width="1.2" vector-effect="non-scaling-stroke"/><circle cx="726.8" cy="388.9" r="6.5" fill="#F5DFA8"/></g><g class="ev-marker" data-city="Houston, TX" onclick="showCityPopup('Houston, TX')"><circle class="ev-halo" cx="536.5" cy="485.7" r="44" fill="url(#evGlow)"/><circle cx="536.5" cy="485.7" r="13" fill="none" stroke="#C8963E" stroke-opacity=".5" stroke-width="1.2" vector-effect="non-scaling-stroke"/><circle cx="536.5" cy="485.7" r="6.5" fill="#F5DFA8"/></g><g class="ev-marker" data-city="Chicago, IL" onclick="showCityPopup('Chicago, IL')"><circle class="ev-halo" cx="655.4" cy="222.4" r="44" fill="url(#evGlow)"/><circle cx="655.4" cy="222.4" r="13" fill="none" stroke="#C8963E" stroke-opacity=".5" stroke-width="1.2" vector-effect="non-scaling-stroke"/><circle cx="655.4" cy="222.4" r="6.5" fill="#F5DFA8"/></g><g class="ev-marker" data-city="New York, NY" onclick="showCityPopup('New York, NY')"><circle class="ev-halo" cx="870.7" cy="212.7" r="44" fill="url(#evGlow)"/><circle cx="870.7" cy="212.7" r="13" fill="none" stroke="#C8963E" stroke-opacity=".5" stroke-width="1.2" vector-effect="non-scaling-stroke"/><circle cx="870.7" cy="212.7" r="6.5" fill="#F5DFA8"/></g><g class="ev-marker" data-city="Los Angeles, CA" onclick="showCityPopup('Los Angeles, CA')"><circle class="ev-halo" cx="142.4" cy="349.8" r="44" fill="url(#evGlow)"/><circle cx="142.4" cy="349.8" r="13" fill="none" stroke="#C8963E" stroke-opacity=".5" stroke-width="1.2" vector-effect="non-scaling-stroke"/><circle cx="142.4" cy="349.8" r="6.5" fill="#F5DFA8"/></g><g class="ev-marker" data-city="Washington, DC" onclick="showCityPopup('Washington, DC')"><circle class="ev-halo" cx="831.4" cy="260.7" r="44" fill="url(#evGlow)"/><circle cx="831.4" cy="260.7" r="13" fill="none" stroke="#C8963E" stroke-opacity=".5" stroke-width="1.2" vector-effect="non-scaling-stroke"/><circle cx="831.4" cy="260.7" r="6.5" fill="#F5DFA8"/></g></g></svg>
-        <!-- City popup -->
-        <div id="city-popup" style="display:none;position:absolute;bottom:10px;left:50%;transform:translateX(-50%);width:88%;background:rgba(20,10,4,.95);border:1px solid rgba(200,150,62,.3);border-radius:10px;padding:13px 14px;z-index:10">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-            <div style="display:flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" width="12" height="12" fill="#C8963E"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg><span id="popup-city" style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gd)">New Orleans, LA</span></div>
-            <span onclick="document.getElementById('city-popup').style.display='none'" style="color:rgba(247,241,232,.35);cursor:pointer;font-size:16px;line-height:1">✕</span>
-          </div>
-          <div id="popup-events" style="display:flex;flex-direction:column;gap:6px"></div>
-        </div>
       </div>
+    </div>
+    <!-- City popup — rendered BELOW the map (not as an overlay) so it never covers the orbs. -->
+    <div id="city-popup" style="display:none;margin:10px 13px 0;background:rgba(20,10,4,.95);border:1px solid rgba(200,150,62,.3);border-radius:10px;padding:13px 14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" width="12" height="12" fill="#C8963E"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg><span id="popup-city" style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gd)">New Orleans, LA</span></div>
+        <span onclick="document.getElementById('city-popup').style.display='none'" style="color:rgba(247,241,232,.35);cursor:pointer;font-size:16px;line-height:1">✕</span>
+      </div>
+      <div id="popup-events" style="display:flex;flex-direction:column;gap:6px"></div>
     </div>
     <!-- All upcoming events list -->
     <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 13px 6px">
@@ -1772,7 +1779,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <canvas id="exp-tv-cv" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
       <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:2">
         <div id="exp-trailer-title" style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;font-style:italic;color:var(--cr);text-align:center;padding:0 20px;text-shadow:0 1px 6px rgba(0,0,0,.6)"></div>
-        <button id="exp-tv-play" onclick="toggleExpTrailer(event)" style="margin-top:8px;width:48px;height:48px;border-radius:50%;background:rgba(200,150,62,.9);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--br);font-size:18px">⏸</button>
+        <button id="exp-tv-play" onclick="toggleExpTrailer(event)" style="margin-top:8px;width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg viewBox="0 0 24 24" width="20" height="20" style="fill:#fff;margin-left:3px"><path d="M8 5v14l11-7z"/></svg></button>
       </div>
     </div>
     <div class="ti-info">
@@ -1782,6 +1789,26 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <div class="ti-acts">
       <button class="ti-close" onclick="C('ov-exp-trailer')">Close</button>
       <button class="ti-buy" onclick="C('ov-exp-trailer');setTimeout(function(){openExpTickets(currentExpName||'Experience',currentExpPrice||85);},200)">Book Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hosted-event Info popup (light gold) -->
+<div class="ov ov-center" id="ov-host-info">
+  <div class="ov-bg" onclick="C('ov-host-info')"></div>
+  <div style="position:relative;z-index:2;width:86%;max-width:330px;background:linear-gradient(180deg,#F4E1AC 0%,#E9CD86 52%,#D9B360 100%);border-radius:16px;overflow:hidden;border:1px solid rgba(120,78,30,.4);box-shadow:0 20px 50px rgba(0,0,0,.5)">
+    <div style="height:4px;background:linear-gradient(to right,#B5842E,#5A3A16,#B5842E)"></div>
+    <div style="position:relative;padding:18px 18px 20px">
+      <span onclick="C('ov-host-info')" style="position:absolute;right:14px;top:12px;color:#6B4A22;cursor:pointer;font-size:20px;line-height:1">&times;</span>
+      <div id="host-info-title" style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;font-style:italic;color:#3E2610;padding-right:22px"></div>
+      <div id="host-info-meta" style="font-size:11px;color:#6B4A22;margin-top:3px"></div>
+      <div style="display:flex;gap:8px;align-items:flex-start;margin-top:13px;padding:10px 12px;background:rgba(255,255,255,.34);border-radius:10px;border:1px solid rgba(120,78,30,.25)">
+        <svg viewBox="0 0 24 24" width="16" height="16" style="fill:#5A3A16;flex-shrink:0;margin-top:1px"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        <div style="font-size:12px;color:#3E2610;line-height:1.4">We’ve emailed you next steps to finalize your event.</div>
+      </div>
+      <div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#5A3A16;margin:16px 0 9px;border-bottom:1px solid rgba(90,58,22,.28);padding-bottom:7px">Who’s going · <span id="host-info-count"></span></div>
+      <div id="host-info-rsvps" style="display:flex;flex-direction:column;gap:9px"></div>
+      <button onclick="cancelHostedEvent()" style="width:100%;margin-top:18px;padding:11px;background:transparent;border:1px solid rgba(120,40,20,.5);border-radius:8px;color:#7A2A16;font-size:12px;font-weight:600;letter-spacing:.05em;cursor:pointer">Cancel this event</button>
     </div>
   </div>
 </div>
@@ -1797,6 +1824,18 @@ function fitPhone(){
 window.addEventListener('resize', fitPhone);
 window.addEventListener('load', fitPhone);
 fitPhone();
+// Contain any body-level overlays within the phone frame: move every top-level .ov into
+// .phone so its position:absolute/inset:0 fills the 390×844 mock (not the desktop window),
+// exactly like the film player is trapped to .phone. Runs once the whole DOM is parsed so
+// overlays declared later in the document are included too.
+(function(){
+  function containOverlays(){
+    var ph=document.getElementById('phone'); if(!ph) return;
+    document.querySelectorAll('body > .ov').forEach(function(o){ ph.appendChild(o); });
+  }
+  if(document.readyState==='loading') window.addEventListener('DOMContentLoaded', containOverlays);
+  else containOverlays();
+})();
 function shopItem(name){
   T('creations');
   setTimeout(function(){
@@ -1908,11 +1947,13 @@ function openMsgCenter(){
   if(hs && hs.scrollTo){ hs.scrollTo({top:0}); }
   if(typeof showToast==='function') showToast('All conversations');
 }
+var EXP_PLAY_SVG='<svg viewBox="0 0 24 24" width="20" height="20" style="fill:#fff;margin-left:3px"><path d="M8 5v14l11-7z"/></svg>';
+var EXP_PAUSE_SVG='<svg viewBox="0 0 24 24" width="20" height="20" style="fill:#fff"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>';
 function toggleExpTrailer(e){
   if(e) e.stopPropagation();
   var btn=document.getElementById('exp-tv-play');
   window.expTrailerPlaying = !window.expTrailerPlaying;
-  if(btn) btn.textContent = window.expTrailerPlaying ? '⏸' : '▶';
+  if(btn) btn.innerHTML = window.expTrailerPlaying ? EXP_PAUSE_SVG : EXP_PLAY_SVG;
 }
 var currentTicketType='General';
 
@@ -2116,6 +2157,7 @@ var purchasedExperiences={}; // name -> true once a ticket is purchased (drives 
 // Seed: the user already attended these past events (History), and RSVP'd one upcoming (Upcoming).
 ['Holiday Readers Social','Winter Book Circle','Spring Author Brunch','Pecan Candy Book Club'].forEach(function(n){ rsvpedEvents[n]=true; });
 var eventRatings={}; // name -> {stars:1-5, comment:'', mode:'text'|'voice'}
+var hostedEvents=[]; // events the user submitted with "Host" checked -> shown in My Events
 // An event's address/details are gated: community events unlock on RSVP, experiences unlock on purchase.
 function evUnlocked(ev){ if(!ev) return false; return ev.kind==='experience' ? !!purchasedExperiences[ev.name] : !!rsvpedEvents[ev.name]; }
 function findExperience(name){ var c=evClean(name); return EVENTS.filter(function(e){return e.kind==='experience'&&e.name===c;})[0]||null; }
@@ -2412,6 +2454,10 @@ function renderMyEvents(){
   html+=sectionHead('Upcoming', upcoming.length);
   html+= upcoming.length ? upcoming.map(function(e){ return myEvRow(e,false); }).join('')
     : '<div style="font-size:12px;color:rgba(62,38,16,.65);padding:6px 2px 14px;font-style:italic">No upcoming events yet — RSVP to an event and it\'ll show here.</div>';
+  if(hostedEvents.length){
+    html+=sectionHead('Hosting', hostedEvents.length);
+    html+= hostedEvents.map(function(e,i){ return myEvHostRow(e,i); }).join('');
+  }
   html+=sectionHead('History', history.length);
   html+= history.length ? history.map(function(e){ return myEvRow(e,true); }).join('')
     : '<div style="font-size:12px;color:rgba(62,38,16,.65);padding:6px 2px;font-style:italic">No past events yet.</div>';
@@ -2444,6 +2490,42 @@ function myEvRow(ev,isHistory){
     + '</div>' + rateBlock + '</div>';
 }
 function myEvDetails(name){ var ev=findEvent(name); if(!ev) return; openEvPopup(ev.name, ev.city, ev.date, ev.desc); }
+// Hosted-event row (My Events "Hosting" section) + its light-gold Info popup.
+function myEvHostRow(ev,idx){
+  return '<div style="padding:11px 2px;border-bottom:1px solid rgba(90,58,22,.2)">'
+    + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">'
+    +   '<div style="flex:1;min-width:0">'
+    +     '<div onclick="openHostInfo('+idx+')" style="font-size:14px;font-weight:700;color:#3E2610;cursor:pointer">'+ev.name+' <span style="font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:#4A2C12;border:1px solid rgba(74,44,20,.5);border-radius:8px;padding:1px 5px;vertical-align:middle">★ Hosting</span></div>'
+    +     '<div style="font-size:11px;color:rgba(58,34,14,.75);margin-top:2px">'+ev.city+' · '+ev.when+'</div>'
+    +   '</div>'
+    +   '<button onclick="openHostInfo('+idx+')" style="flex-shrink:0;padding:5px 11px;background:rgba(255,255,255,.28);border:1px solid rgba(74,44,20,.45);border-radius:16px;color:#4A2C12;font-size:10px;cursor:pointer">Info</button>'
+    + '</div></div>';
+}
+function openHostInfo(idx){
+  var ev=hostedEvents[idx]; if(!ev) return;
+  window._hostInfoIdx=idx;
+  setText('host-info-title', ev.name);
+  setText('host-info-meta', ev.city+' · '+ev.when);
+  var rs=ev.rsvps||[];
+  setText('host-info-count', rs.length+' going');
+  var wrap=document.getElementById('host-info-rsvps');
+  if(wrap){
+    wrap.innerHTML = rs.length ? rs.map(function(un){
+      var i=un.charAt(0).toUpperCase();
+      return '<div style="display:flex;align-items:center;gap:9px">'
+       +'<div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#B5842E,#5A3A16);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#F4E1AC">'+i+'</div>'
+       +'<div style="font-size:12px;color:#3E2610">'+un+'</div>'
+       +'<span style="margin-left:auto;font-size:10px;color:#3E6A2A">● Going</span></div>';
+    }).join('') : '<div style="font-size:12px;color:rgba(62,38,16,.6);font-style:italic">No RSVPs yet — share your event to invite the community.</div>';
+  }
+  O('ov-host-info');
+}
+function cancelHostedEvent(){
+  if(window._hostInfoIdx!=null && hostedEvents[window._hostInfoIdx]){ hostedEvents.splice(window._hostInfoIdx,1); window._hostInfoIdx=null; }
+  C('ov-host-info');
+  showToast('Event canceled — we’ve let RSVPs know.');
+  renderMyEvents();
+}
 
 // ── Rating (stars + optional typed or voice comment) ──
 window._rateEv=null; window._rateStars=0; window._rateMode='text';
@@ -2549,9 +2631,12 @@ function initMapGestures(){
     ty=Math.min(0,Math.max(h-h*scale,ty));
   }
   function d2(a,b){return Math.hypot(a.x-b.x,a.y-b.y);}
+  // NOTE: do NOT setPointerCapture on pointerdown — a captured pointer redirects the follow-up
+  // click to #map-gesture, so orb taps (showCityPopup) and empty-map taps (mapClick) never fire.
+  // Capture only once a real drag/pinch is detected, so a plain tap reaches the SVG/orbs.
+  function capture(id){ try{ wrap.setPointerCapture(+id); }catch(_){} }
   wrap.addEventListener('pointerdown',function(e){
     if(e.target.closest('#city-popup')) return;
-    try{ wrap.setPointerCapture(e.pointerId); }catch(_){}
     pointers[e.pointerId]={x:e.clientX,y:e.clientY}; moved=false;
     var ids=Object.keys(pointers);
     if(ids.length===1){ down={x:e.clientX,y:e.clientY,tx:tx,ty:ty}; }
@@ -2564,6 +2649,7 @@ function initMapGestures(){
     var rect=wrap.getBoundingClientRect();
     if(ids.length>=2){
       e.preventDefault();
+      if(!moved){ ids.forEach(capture); }
       var d=d2(p[0],p[1]); if(!startDist){startDist=d;return;}
       var ns=Math.max(minScale,Math.min(maxScale,startScale*(d/startDist)));
       var mx=((p[0].x+p[1].x)/2)-rect.left, my=((p[0].y+p[1].y)/2)-rect.top;
@@ -2571,7 +2657,7 @@ function initMapGestures(){
       scale=ns; moved=true; clamp(); apply();
     } else if(ids.length===1 && down){
       var dx=e.clientX-down.x, dy=e.clientY-down.y;
-      if(Math.abs(dx)+Math.abs(dy)>4){ moved=true; e.preventDefault(); tx=down.tx+dx; ty=down.ty+dy; clamp(); apply(); }
+      if(Math.abs(dx)+Math.abs(dy)>4){ if(!moved){ capture(e.pointerId); } moved=true; e.preventDefault(); tx=down.tx+dx; ty=down.ty+dy; clamp(); apply(); }
     }
   });
   function up(e){ if(pointers[e.pointerId]) delete pointers[e.pointerId]; if(Object.keys(pointers).length<2) startDist=0; if(!Object.keys(pointers).length) down=null; }
@@ -2969,8 +3055,8 @@ function openCommPost(p){
   var a0=p.av.charAt(0);
   inner.innerHTML =
     '<div style="position:relative;flex:1;min-height:0;background:'+p.bg+';overflow:hidden">'
+    +  '<canvas id="cp-media-cv" style="position:absolute;inset:0;width:100%;height:100%"></canvas>'
     +  '<div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.5),transparent 22%,transparent 60%,rgba(0,0,0,.66))"></div>'
-    +  '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:1"><div style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.35)"><svg viewBox="0 0 24 24" width="20" height="20" style="fill:#fff;margin-left:3px"><path d="M8 5v14l11-7z"/></svg></div></div>'
     +  '<div style="position:absolute;top:10px;left:12px;right:10px;display:flex;align-items:center;gap:9px;z-index:4">'
     +    '<div onclick="closeCommPost();openStory(\''+a0+'\',\''+p.av+'\',\''+p.bg+'\',\'#2C1A0E\')" style="width:34px;height:34px;border-radius:50%;background:'+p.bg+';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;cursor:pointer;box-shadow:0 0 0 2px var(--gd)">'+a0+'</div>'
     +    '<div onclick="goPublicProfile(\''+p.av+'\')" style="font-size:13px;font-weight:600;color:#fff;cursor:pointer;text-shadow:0 1px 3px rgba(0,0,0,.6)">'+p.av+'</div>'
@@ -2987,14 +3073,18 @@ function openCommPost(p){
     + '</div>'
     + '<div onclick="closeCommPost();commToggle(\'events\')" style="flex-shrink:0;display:flex;align-items:center;gap:9px;padding:12px 14px;background:#1A0E06;border-top:1px solid rgba(200,150,62,.18);cursor:pointer">'
     +   '<svg viewBox="0 0 24 24" width="16" height="16" style="fill:var(--gd);flex-shrink:0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>'
-    +   '<div style="flex:1;font-size:12px;color:var(--cr)">See events this community is attending</div>'
+    +   '<div style="flex:1;font-size:12px;color:var(--cr)">See events near you</div>'
     +   '<span style="color:var(--gd);font-size:15px">→</span>'
     + '</div>';
   bg.style.display = 'flex';
+  window._cpQuote = p.q;   // remembered so Save uses the real post text
+  // Video-type Explore post: autoplay the placeholder media in view, just like the Home feed.
+  setTimeout(function(){ try{ dAsmr('cp-media-cv', true); }catch(e){} }, 30);
 }
 function closeCommPost(){
   var bg = document.getElementById('comm-post-popup');
   if(bg) bg.style.display = 'none';
+  if(typeof aS!=='undefined' && aS['cp-media-cv']){ cancelAnimationFrame(aS['cp-media-cv']); aS['cp-media-cv']=null; }
   closeCommComments();
 }
 function initCommGrid(){
@@ -3254,17 +3344,31 @@ function spFilter(btn,cat){
 }
 
 function tFollow(btn){btn.classList.contains('following')?(btn.textContent='+ Follow',btn.classList.remove('following')):(btn.textContent='Following ✓',btn.classList.add('following'));}
-function tLike(btn){btn.classList.toggle('liked');}
+function tLike(btn){
+  var on = btn.classList.toggle('liked');
+  // Feed buttons (.pab) get their liked color from CSS; the Explore-popup rail buttons are
+  // plain <button>s, so drive their SVG fill directly here or the heart never changes.
+  if(!btn.classList.contains('pab')){
+    var svg = btn.querySelector('svg');
+    if(svg){ svg.style.fill = on ? 'var(--gd)' : 'rgba(255,255,255,.95)'; }
+  }
+}
 function tSave(btn){
   btn.classList.toggle('saved');
   const isSaved = btn.classList.contains('saved');
   const svg = btn.querySelector('svg');
-  if(svg){ svg.style.fill = isSaved ? 'var(--gd)' : 'none'; }
+  const isPab = btn.classList.contains('pab');
+  if(svg){ svg.style.fill = isSaved ? 'var(--gd)' : (isPab?'none':'rgba(255,255,255,.95)'); }
+  // The Explore-popup bookmark <path> carries its own fill="#fff" attribute, which overrides the
+  // inherited SVG fill — so recolor the path directly for the popup rail button.
+  if(!isPab && svg){ var pth=svg.querySelector('path'); if(pth) pth.setAttribute('fill', isSaved?'#C8963E':'#fff'); }
   btn.style.color = isSaved ? 'var(--gd)' : '';
   if(isSaved){
     const post = btn.closest('.post,.cs-post');
     const cap = post ? post.querySelector('.pcap, .asmr-q') : null;
-    const txt = cap ? cap.textContent.trim().substring(0,60)+'...' : 'Saved post';
+    const quote = (typeof window._cpQuote==='string' && window._cpQuote) ? window._cpQuote : '';
+    const src = cap ? cap.textContent.trim() : quote;
+    const txt = src ? src.substring(0,60)+'...' : 'Saved post';
     if(typeof savedPosts!=='undefined'){ savedPosts.push({title:txt, meta:'Saved from feed \u00B7 just now', icon:'\uD83D\uDCCC'}); refreshSavedTab(); }
     showToast('\u2713 Saved to your profile');
   } else { showToast('Removed from saved'); }
@@ -3760,6 +3864,20 @@ function submitEventForm(){
   var email=((document.getElementById('evform-email')||{}).value||'').trim();
   if(!name||!email){ showToast('Please add your name and email.'); return; }
   var nm=document.getElementById('evform-thanks-name'); if(nm) nm.textContent=', '+name.split(/\s+/)[0];
+  // "Host" checked -> the submission becomes a hosted event in My Events (Hosting section).
+  var hostCb=document.getElementById('evform-host');
+  if(hostCb && hostCb.checked){
+    var first=name.split(/\s+/)[0];
+    var city=((document.getElementById('evform-city')||{}).value||'').trim();
+    var state=((document.getElementById('evform-state')||{}).value||'').trim();
+    var season=((document.getElementById('evform-season')||{}).value||'').trim();
+    var locFlex=(document.getElementById('evform-loc-flexible')||{}).checked;
+    var dateFlex=(document.getElementById('evform-flexible')||{}).checked;
+    var loc = locFlex ? 'Location flexible' : ([city,state].filter(Boolean).join(', ') || 'Location TBD');
+    var fmtMonth=function(v){ var m=/^(\d{4})-(\d{2})$/.exec(v); if(!m) return v; var mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m[2]-1]; return mo?(mo+' '+m[1]):v; };
+    var when = dateFlex ? 'Date flexible' : (season ? fmtMonth(season) : 'Date TBD');
+    hostedEvents.push({ name: first+'’s Orgena Gathering', city: loc, when: when, host: first, rsvps: ['marlena_k','n_boudreaux','soulful_mia'] });
+  }
   var f=document.getElementById('evform-fields'), t=document.getElementById('evform-thanks');
   if(f) f.style.display='none'; if(t) t.style.display='block';
   haptic(15);
@@ -4303,7 +4421,7 @@ function openExpTrailer(name,sub){
   currentExpName=name;
   setText('exp-trailer-title',name);
   setText('exp-trailer-sub',sub);
-  window.expTrailerPlaying=true;var pb=document.getElementById('exp-tv-play');if(pb)pb.textContent='⏸';O('ov-exp-trailer');
+  window.expTrailerPlaying=true;var pb=document.getElementById('exp-tv-play');if(pb)pb.innerHTML=EXP_PAUSE_SVG;O('ov-exp-trailer');
   setTimeout(()=>playTrailerWave('exp-tv-cv'),200);
 }
 function openExpTickets(name,price){
