@@ -387,6 +387,9 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 /* Share sheet must sit ABOVE the film player (z900) and donate (z1000), and escape the .sw overflow clip
    so it fills the phone frame and docks at the true bottom. position:fixed traps to the scaled .phone. */
 #ov-share{position:fixed;inset:0;z-index:1300!important;align-items:flex-end}
+/* "Others" share submenu sits ABOVE the main share sheet. */
+#ov-share-others{position:fixed;inset:0;z-index:1360!important;align-items:flex-end}
+#ov-share-others .hs{height:auto}
 /* Repost / repost-confirm sheets must sit ABOVE the Explore post popup (z880) so they don't
    open behind the playing video. */
 #ov-repost{z-index:1200}#ov-repost-confirm{z-index:1250}
@@ -415,7 +418,14 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .exp-bk{padding:7px 16px;background:var(--gd);color:var(--br);font-size:10px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;border:none;border-radius:3px;cursor:pointer}
 /* SOUL PLAYER SCREEN */
 .sp-sc{background:var(--blk)}
-.sp-hdr{padding:16px 16px 11px;background:linear-gradient(160deg,var(--br),var(--blk));border-bottom:1px solid rgba(200,150,62,.1)}
+.sp-hdr{position:relative;overflow:hidden;padding:16px 16px 11px;background:linear-gradient(160deg,var(--br),var(--blk));border-bottom:1px solid rgba(200,150,62,.1)}
+/* A slow, soothing ombre wave sweeps right->left every ~3.6s with quiet still gaps (sunrise/sunset). */
+.sp-wave{position:absolute;top:0;bottom:0;left:0;width:62%;pointer-events:none;z-index:0;
+  background:linear-gradient(90deg,transparent 0%,rgba(232,185,106,.10) 28%,rgba(245,223,168,.20) 50%,rgba(200,150,62,.10) 72%,transparent 100%);
+  transform:translateX(185%);animation:spwave 3.6s ease-in-out infinite}
+.sp-hdr>.sp-hr{position:relative;z-index:1}
+@keyframes spwave{0%{transform:translateX(185%)}12%{transform:translateX(185%)}60%{transform:translateX(-185%)}100%{transform:translateX(-185%)}}
+@media (prefers-reduced-motion:reduce){.sp-wave{animation:none;opacity:0}}
 .sp-hr{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
 .sp-title{font-family:'Playfair Display',serif;font-size:21px;font-weight:900;font-style:italic;color:var(--cr)}
 .sp-sub{font-size:9px;letter-spacing:.19em;text-transform:uppercase;color:var(--gd);opacity:.7}
@@ -875,8 +885,8 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 <!-- SOUL PLAYER -->
 <div class="sc sp-sc" id="s-player">
   <div class="sp-hdr">
+    <div class="sp-wave" aria-hidden="true"></div>
     <div class="sp-hr"><div><div class="sp-sub">Digital Media</div><div class="sp-title">Soul Player</div></div>
-      <svg width="24" height="22" viewBox="0 0 120 110" fill="none"><text x="2" y="76" font-family="serif" font-size="72" font-weight="900" fill="rgba(200,150,62,.6)">O</text><text x="42" y="76" font-family="serif" font-size="72" font-weight="900" fill="rgba(200,150,62,.6)">E</text><line x1="88" y1="8" x2="88" y2="88" stroke="rgba(200,150,62,.5)" stroke-width="1.8"/><ellipse cx="100" cy="38" rx="5" ry="3.5" fill="rgba(200,150,62,.6)"/><path d="M97 65 Q104 70 111 65" stroke="rgba(200,150,62,.6)" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg>
     </div>
   </div>
   <!-- Filter bar as a direct child of the scroll container so it STICKS on scroll (like Home/Creations) -->
@@ -1195,6 +1205,8 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <span style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(247,241,232,.35)">Recent</span>
       <span onclick="goNotifCenter()" style="font-size:10px;color:var(--gd);cursor:pointer;letter-spacing:.08em;text-transform:uppercase;text-decoration:underline">Notification Center →</span>
     </div>
+    <!-- Auto-generated 48-hour event reminders are injected here by generateEventReminders(). -->
+    <div id="notif-auto"></div>
     <div class="notif-item" style="background:rgba(200,150,62,.04)" onclick="notifNav('reflection',null,this)">
       <div style="width:8px;height:8px;border-radius:50%;background:var(--gd);flex-shrink:0;margin-top:4px"></div>
       <div class="notif-av" style="background:linear-gradient(135deg,#5C3D28,#C8963E)">PJ</div>
@@ -1304,7 +1316,19 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <div class="sh-opt" onclick="shareTo('instagram')"><div class="sh-ico" style="background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);border:none;font-size:0;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></div><div class="sh-lbl">Instagram</div></div>
       <div class="sh-opt" onclick="shareTo('tiktok')"><div class="sh-ico" style="background:#000;border-color:#333;font-size:0;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.36 6.36 0 00-.79-.05A6.34 6.34 0 003.15 15.3a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.22 8.22 0 004.8 1.54V6.78a4.85 4.85 0 01-1.03-.09z"/></svg></div><div class="sh-lbl">TikTok</div></div>
       <div class="sh-opt" onclick="shareTo('facebook')"><div class="sh-ico" style="background:#1877F2;border:none;font-size:0;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></div><div class="sh-lbl">Facebook</div></div>
-      <div class="sh-opt" onclick="shareTo('reddit')"><div class="sh-ico" style="background:#FF4500;border:none;font-size:0;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg></div><div class="sh-lbl">Reddit</div></div>
+      <div class="sh-opt" onclick="openShareOthers()"><div class="sh-ico" style="background:rgba(200,150,62,.14);border:1px solid rgba(200,150,62,.4);display:flex;align-items:center;justify-content:center;color:var(--gd);font-size:20px;letter-spacing:1px;line-height:1;padding-bottom:6px">···</div><div class="sh-lbl">Others</div></div>
+    </div>
+  </div>
+</div>
+<!-- Share: "Others" submenu (Reddit / Twitter (X) / Substack) -->
+<div class="ov" id="ov-share-others" style="align-items:flex-end">
+  <div class="ov-bg" onclick="C('ov-share-others')"></div>
+  <div class="hs" id="share-others-hs">
+    <div class="sh"></div><div class="sh-t">Share to…</div>
+    <div class="share-grid">
+      <div class="sh-opt" onclick="shareOther('reddit')"><div class="sh-ico" style="background:#FF4500;border:none;font-size:0;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg></div><div class="sh-lbl">Reddit</div></div>
+      <div class="sh-opt" onclick="shareOther('twitter')"><div class="sh-ico" style="background:#000;border-color:#333;font-size:0;display:flex;align-items:center;justify-content:center"><svg width="19" height="19" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div><div class="sh-lbl">Twitter (X)</div></div>
+      <div class="sh-opt" onclick="shareOther('substack')"><div class="sh-ico" style="background:#FF6719;border:none;font-size:0;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812H22.54V24l-10.52-5.855L1.46 24V10.812zM22.539 0H1.46v2.836h21.08V0z"/></svg></div><div class="sh-lbl">Substack</div></div>
     </div>
   </div>
 </div>
@@ -2270,9 +2294,43 @@ function openAttendees(){
   var header='<div style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(200,150,62,.6);padding:2px 0 6px;position:sticky;top:0;background:#1A0E06">'+ev.going+' people going</div>';
   att.innerHTML = header + names.map(function(n){
     var initials=n.replace(/[^a-z]/gi,'').substring(0,2).toUpperCase();
-    return '<div style="display:flex;align-items:center;gap:9px;padding:5px 0"><div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#5C3D28,#C8963E);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--br);flex-shrink:0">'+initials+'</div><span style="font-size:12px;color:var(--cr)">'+n+'</span></div>';
+    var safe=n.replace(/'/g,"\\'");
+    // Every attendee (all events) is tappable -> opens their profile with a back-to-Events control.
+    return '<div onclick="openAttendeeProfile(\''+safe+'\')" style="display:flex;align-items:center;gap:9px;padding:5px 0;cursor:pointer"><div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#5C3D28,#C8963E);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--br);flex-shrink:0">'+initials+'</div><span style="font-size:12px;color:var(--cr)">'+n+'</span><span style="margin-left:auto;color:rgba(200,150,62,.5);font-size:13px">›</span></div>';
   }).join('');
   att.style.display='block'; att.scrollTop=0;
+}
+// Open an attendee's profile from any event popup, remembering to offer a way back to Events.
+function openAttendeeProfile(name){
+  window._profileFromEvents=true;
+  closeEvPopup();
+  goPublicProfile(name);
+}
+function backToEvents(){
+  window._profileFromEvents=false;
+  T('community');
+  setTimeout(function(){ if(typeof commToggle==='function') commToggle('events'); }, 60);
+}
+// ── Auto 48-hour in-app event reminders ──
+// For every upcoming event, an in-app notification is generated 48h before its start time.
+// In production a backend fires it exactly 2 days prior (and a real phone push); here the app
+// computes the in-app version. This prototype's events are far off, so if none are inside the
+// 48h window yet we still surface the soonest upcoming event's reminder so it's demonstrable.
+function generateEventReminders(){
+  var host=document.getElementById('notif-auto'); if(!host || typeof EVENTS==='undefined') return;
+  var now=Date.now(), WIN=48*3600*1000;
+  var ups=EVENTS.filter(function(e){ return parseEvDate(e) && !evIsPast(e); })
+    .sort(function(a,b){ return parseEvDate(a)-parseEvDate(b); });
+  var due=ups.filter(function(e){ return (parseEvDate(e).getTime()-now)<=WIN; });
+  if(!due.length && ups.length) due=[ups[0]]; // prototype preview of the next event's 48h reminder
+  host.innerHTML=due.map(function(e){
+    var days=evDaysAway(e); var when=(days==null||days<=0)?'today':('in '+days+' day'+(days===1?'':'s'));
+    var safe=(e.name||'').replace(/'/g,"\\'");
+    return '<div class="notif-item" style="background:rgba(200,150,62,.04)" onclick="C(\'ov-notif\');T(\'community\');setTimeout(function(){if(typeof commToggle===\'function\')commToggle(\'events\');openEvPopup(\''+safe+'\');},130)">'
+      +'<div style="width:8px;height:8px;border-radius:50%;background:var(--gd);flex-shrink:0;margin-top:4px"></div>'
+      +'<div class="notif-av" style="background:linear-gradient(135deg,#5C3D28,#C8963E);display:flex;align-items:center;justify-content:center">⏰</div>'
+      +'<div style="flex:1"><div class="notif-txt"><b>'+e.name+'</b> is '+when+' — '+(e.date||'')+(e.city?' · '+e.city:'')+'. Get ready!</div><div class="notif-time">48-hour reminder</div></div></div>';
+  }).join('');
 }
 function rsvpThenShowAttendees(){
   var ev=window.curEv; if(!ev) return;
@@ -2379,25 +2437,29 @@ function showCityPopup(city){
   cityEl.textContent = city;
   evEl.innerHTML = '';
   // The map shows UPCOMING community events only — past events → History; experiences live in Creations.
-  var list = EVENTS.filter(function(e){ return e.city===city && !evIsPast(e) && e.kind!=='experience'; });
+  // The popup shows ONLY the single soonest upcoming event (the list below still shows all of them).
+  var list = EVENTS.filter(function(e){ return e.city===city && !evIsPast(e) && e.kind!=='experience'; })
+    .sort(function(a,b){ return parseEvDate(a)-parseEvDate(b); });
   if(!list.length){ popup.style.display='none'; return; }
-  list.forEach(function(ev){
-    var row = document.createElement('div');
-    row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid rgba(200,150,62,.08)';
-    var info=document.createElement('div'); info.style.cssText='flex:1;min-width:0';
-    var title=document.createElement('div'); title.textContent=ev.name;
-    title.style.cssText='font-size:13px;font-weight:500;color:var(--cr);cursor:pointer;text-decoration:underline;text-decoration-color:rgba(200,150,62,.3)';
-    // Tapping the title opens the SAME event description popup as the list.
-    title.onclick=function(){ setDisp('city-popup','none'); openEvPopup(ev.name, ev.city, ev.date, ev.desc); };
-    var meta=document.createElement('div'); meta.textContent=ev.date;
-    meta.style.cssText='font-size:10px;color:rgba(247,241,232,.4);margin-top:2px';
-    info.appendChild(title); info.appendChild(meta);
-    var btn=document.createElement('button'); btn.textContent = rsvpedEvents[ev.name]?'✓ Going':'RSVP';
-    btn.style.cssText='flex-shrink:0;padding:6px 13px;border-radius:20px;border:1px solid rgba(200,150,62,.35);background:'+(rsvpedEvents[ev.name]?'var(--gd)':'transparent')+';color:'+(rsvpedEvents[ev.name]?'var(--br)':'var(--gd)')+';font-size:10px;font-weight:500;cursor:pointer';
-    btn.onclick=function(){ rsvpedEvents[ev.name]=!rsvpedEvents[ev.name]; haptic(18); tRsvp(btn); };
-    row.appendChild(info); row.appendChild(btn);
-    evEl.appendChild(row);
-  });
+  var ev = list[0];
+  var days = evDaysAway(ev);
+  var away = (days==null) ? '' : (days<=0 ? ' · today' : ' · '+days+' day'+(days===1?'':'s')+' away');
+  var row = document.createElement('div');
+  row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0';
+  var info=document.createElement('div'); info.style.cssText='flex:1;min-width:0';
+  var kicker=document.createElement('div'); kicker.textContent='Next event';
+  kicker.style.cssText='font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:rgba(200,150,62,.55);margin-bottom:3px';
+  var title=document.createElement('div'); title.textContent=ev.name;
+  title.style.cssText='font-size:13px;font-weight:500;color:var(--cr);cursor:pointer;text-decoration:underline;text-decoration-color:rgba(200,150,62,.3)';
+  title.onclick=function(){ setDisp('city-popup','none'); openEvPopup(ev.name, ev.city, ev.date, ev.desc); };
+  var meta=document.createElement('div'); meta.textContent=(ev.date||'')+away;
+  meta.style.cssText='font-size:10px;color:rgba(247,241,232,.4);margin-top:2px';
+  info.appendChild(kicker); info.appendChild(title); info.appendChild(meta);
+  var btn=document.createElement('button'); btn.textContent = rsvpedEvents[ev.name]?'✓ Going':'RSVP';
+  btn.style.cssText='flex-shrink:0;padding:6px 13px;border-radius:20px;border:1px solid rgba(200,150,62,.35);background:'+(rsvpedEvents[ev.name]?'var(--gd)':'transparent')+';color:'+(rsvpedEvents[ev.name]?'var(--br)':'var(--gd)')+';font-size:10px;font-weight:500;cursor:pointer';
+  btn.onclick=function(){ rsvpedEvents[ev.name]=!rsvpedEvents[ev.name]; haptic(18); tRsvp(btn); };
+  row.appendChild(info); row.appendChild(btn);
+  evEl.appendChild(row);
   popup.style.display='block';
 }
 
@@ -2444,6 +2506,8 @@ function parseEvDate(ev){
   return new Date(+s.substr(0,4),+s.substr(4,2)-1,+s.substr(6,2),+s.substr(9,2)||0,+s.substr(11,2)||0);
 }
 function evIsPast(ev){ var d=parseEvDate(ev); return d? d.getTime() < Date.now() : false; }
+// Whole days from now until the event's start (null if undated, <=0 if today/past).
+function evDaysAway(ev){ var d=parseEvDate(ev); if(!d) return null; return Math.ceil((d.getTime()-Date.now())/86400000); }
 function evWhen(ev){ return (ev.date||'')+(ev.tz?' '+ev.tz:''); }
 function starRow(n,size){ var s=''; for(var i=1;i<=5;i++){ s+='<span style="color:'+(i<=n?'#E8B96A':'rgba(247,241,232,.2)')+';font-size:'+(size||13)+'px">★</span>'; } return s; }
 
@@ -2928,7 +2992,7 @@ function filmShare(){
 // Support = donate to the film. Opens a $-amount sheet (real payment wired later).
 // FILM_GOAL_PCT is a PLACEHOLDER — swap for real funding data (drives the radial % dial).
 let FILM_GOAL_PCT=62;
-let filmDonateAmt=25; // $25 is the suggested minimum, pre-selected
+let filmDonateAmt=100; // $100 is the suggested minimum, pre-selected
 function renderDonatePie(){
   var pie=document.getElementById('donate-pie'), pct=document.getElementById('donate-pie-pct');
   var v=Math.max(0,Math.min(100,FILM_GOAL_PCT));
@@ -2939,9 +3003,9 @@ function filmSupport(){
   var name=currentFilm||'The Tradition';
   setText('donate-film',name); setText('donate-film-2',name);
   renderDonatePie();
-  filmDonateAmt=25;
+  filmDonateAmt=100;
   var amt=document.getElementById('donate-amt'); if(amt) amt.value='';
-  document.querySelectorAll('#donate-chips .dn-chip').forEach(function(b){ b.classList.toggle('on', b.textContent.trim()==='$25'); });
+  document.querySelectorAll('#donate-chips .dn-chip').forEach(function(b){ b.classList.toggle('on', b.textContent.trim()==='$100'); });
   var body=document.getElementById('donate-body'), th=document.getElementById('donate-thanks');
   if(body) body.style.display='block'; if(th) th.style.display='none';
   O('ov-donate');
@@ -3147,6 +3211,7 @@ function O(id){
   if(typeof closeAllCmtMenus==='function') closeAllCmtMenus();
   // Opening the Messages inbox always lands on the conversation list, never the stuck composer.
   if(id==='ov-msgs'){ var nb=document.getElementById('new-msg-box'); if(nb) nb.style.display='none'; var nr=document.getElementById('new-msg-results'); if(nr) nr.innerHTML=''; }
+  if(id==='ov-notif' && typeof generateEventReminders==='function'){ generateEventReminders(); }
   el.style.cssText='';
   el.classList.add('show');
   var hs=el.querySelector('.hs');
@@ -4468,6 +4533,12 @@ function shareTo(platform){
   else if(platform==='twitter'){ url='https://twitter.com/intent/tweet?text='+encodeURIComponent(full)+'&url='+encodeURIComponent(link); }
   else if(platform==='text'){ url='sms:?&body='+encodeURIComponent(full+' '+link); }
   else if(platform==='copy'){ copyShareText(link); if(typeof showToast==='function') showToast('✓ Link copied'); C('ov-share'); return; }
+  else if(platform==='substack'){
+    // No web compose with pre-fill — copy the caption so it's one paste away.
+    copyShareText(full+' '+link);
+    if(typeof showToast==='function') showToast('✓ Copied — paste into your Substack post');
+    url='https://substack.com/';
+  }
   else if(platform==='instagram' || platform==='tiktok'){
     // These have no web compose with pre-fill — copy the caption so it's one paste away.
     copyShareText(full);
@@ -4477,6 +4548,9 @@ function shareTo(platform){
   if(url) window.open(url,'_blank');
   C('ov-share');
 }
+// "Others" submenu: opens the Reddit / Twitter (X) / Substack sheet above the main share sheet.
+function openShareOthers(){ O('ov-share-others'); }
+function shareOther(platform){ C('ov-share-others'); shareTo(platform); }
 function addBookmark(){
   const track=document.getElementById('np-track').textContent;
   const time=document.getElementById('np-times')?document.querySelector('.np-times span').textContent:'--:--';
@@ -4635,7 +4709,10 @@ function goPublicProfile(name){
     var banner=document.getElementById('pr-public-banner');
     if(banner){
       banner.style.display='block';
-      banner.innerHTML='<div style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gd);margin-bottom:5px;padding:10px 16px 0">Viewing @'+name+'</div>';
+      var backLink=window._profileFromEvents
+        ? '<span onclick="backToEvents()" style="color:var(--gd);cursor:pointer;font-size:11px;text-transform:none;letter-spacing:0">‹ Back to Events</span>'
+        : '';
+      banner.innerHTML='<div style="display:flex;align-items:center;gap:10px;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gd);margin-bottom:5px;padding:10px 16px 0">'+backLink+'<span>Viewing @'+name+'</span></div>';
     }
     var nm=document.querySelector('#s-profile .pr-name');
     var hd=document.querySelector('#s-profile .pr-handle');
@@ -4651,6 +4728,8 @@ function goPublicProfile(name){
 // Reset the profile screen back to the logged-in user's own profile.
 function showMyProfile(){
   window._viewingProfile = null;
+  window._profileFromEvents = false;
+  var pb=document.getElementById('pr-public-banner'); if(pb){ pb.style.display='none'; pb.innerHTML=''; }
   setDisp('pr-view-toggle','flex');
   if(typeof setPrView==='function') setPrView('private');
   var nm=document.querySelector('#s-profile .pr-name');
