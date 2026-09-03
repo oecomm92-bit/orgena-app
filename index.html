@@ -222,7 +222,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .rev-date{font-size:9px;color:rgba(247,241,232,.25);margin-top:4px}
 /* TRAILER */
 #ov-trailer{align-items:center;justify-content:center}
-.tbox{width:338px;background:var(--br);border-radius:10px;overflow:hidden;border:1px solid rgba(200,150,62,.2);z-index:2}
+.tbox{width:338px;background:#140A04;border-radius:10px;overflow:hidden;border:1px solid rgba(200,150,62,.2);z-index:2}
 .tv{width:100%;height:205px;position:relative;overflow:hidden}
 .tv canvas{position:absolute;inset:0;width:100%;height:100%}
 .ti-info{padding:13px 15px}
@@ -373,10 +373,9 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .btn-buy,.mc-add,.exp-bk,.film-support{background:linear-gradient(150deg,#F7D488 0%,#EBBE70 46%,#D3A24A 100%)!important;color:#3A2408!important;box-shadow:0 1px 4px rgba(224,176,84,.28),inset 0 1px 0 rgba(255,249,229,.7),inset 0 -2px 4px rgba(150,100,28,.32);text-shadow:0 1px 0 rgba(255,247,224,.35);transition:box-shadow .15s,transform .1s}
 .btn-buy:hover,.mc-add:hover,.exp-bk:hover,.film-support:hover{box-shadow:0 2px 7px rgba(232,185,106,.34),inset 0 1px 0 rgba(255,249,229,.75),inset 0 -2px 4px rgba(150,100,28,.32)}
 .btn-buy:active,.mc-add:active,.exp-bk:active,.film-support:active{transform:translateY(1px);box-shadow:0 1px 6px rgba(200,150,62,.45),inset 0 1px 2px rgba(120,80,20,.35)}
-/* ── Pearlescent-gold prices: EVERY dollar amount uses the same champagne gold as the Buy Now buttons. */
+/* ── Pearlescent-gold prices: EVERY dollar amount is ONE solid, uniform light gold (no gradient). */
 .price-gold,.mc-price,.exp-price,.fmt-price,.cart-item-price,#merch-total,#cart-total,#ticket-total{
-  color:#EBBE70;background:linear-gradient(150deg,#F7D488 0%,#FBEBBE 32%,#EBBE70 58%,#D3A24A 100%);
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  color:#EBBE70!important;-webkit-text-fill-color:#EBBE70!important;background:none!important;background-clip:border-box!important}
 /* Primary action button in pearlescent gold (matches the Creations Buy Now / Book Now buttons). */
 .pbuy{background:linear-gradient(150deg,#F7D488 0%,#EBBE70 46%,#D3A24A 100%)!important;color:#3A2408!important;border:none!important;box-shadow:0 1px 4px rgba(224,176,84,.28),inset 0 1px 0 rgba(255,249,229,.7),inset 0 -2px 4px rgba(150,100,28,.32);text-shadow:0 1px 0 rgba(255,247,224,.35)}
 /* Secondary "Add to Cart": books/merch = gold outline; experiences = brown w/ white outline + white text. */
@@ -806,7 +805,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
           <div style="font-size:11px;color:var(--cr);white-space:nowrap;margin-left:8px">Apr 8, 2027</div>
         </div>
         <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:5px">
-          <div class="exp-cat" style="margin-bottom:0">New Orleans</div>
+          <div class="exp-cat" style="margin-bottom:0">New Orleans, LA</div>
           <div id="exp-countdown-1" style="font-size:10px;color:var(--gd);letter-spacing:.06em;white-space:nowrap"></div>
         </div>
         <div class="exp-desc">An intimate evening with Rhodesia — readings, Q&amp;A, and signed copies. Limited to 30 guests.</div>
@@ -826,7 +825,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
           <div style="font-size:11px;color:var(--cr);white-space:nowrap;margin-left:8px">Jul 4, 2027</div>
         </div>
         <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:5px">
-          <div class="exp-cat" style="margin-bottom:0">New Orleans</div>
+          <div class="exp-cat" style="margin-bottom:0">New Orleans, LA</div>
           <div id="exp-countdown-2" style="font-size:10px;color:var(--gd);letter-spacing:.06em;white-space:nowrap"></div>
         </div>
         <div class="exp-desc">Film screening, book signing, panel discussion, and an exclusive meet &amp; greet with Rhodesia Jackson.</div>
@@ -1368,8 +1367,8 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <div style="padding:10px 18px 16px">
       <div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(247,241,232,.35);margin-bottom:10px">PURCHASE</div>
       <div style="display:flex;gap:8px;margin-bottom:8px">
-        <button class="pay-btn pbuy" style="flex:1;padding:12px;font-size:12px" onclick="buyNowFlow()">Buy Now <span id="apple-price" style="opacity:.7"></span></button>
-        <button class="pay-btn pcart" style="flex:1;padding:12px;font-size:12px" onclick="addToCartFlow()">🛒 Add to Cart <span id="cart-price" style="opacity:.7"></span></button>
+        <button class="pay-btn pbuy" style="flex:1;padding:12px;font-size:12px;white-space:nowrap" onclick="buyNowFlow()">Buy Now</button>
+        <button class="pay-btn pcart" style="flex:1;padding:12px;font-size:12px;white-space:nowrap" onclick="addToCartFlow()">🛒 Add to Cart <span id="cart-price" style="opacity:.7"></span></button>
       </div>
       <div id="buy-now-opts" style="display:none;flex-direction:column;gap:7px">
         <button class="pay-btn pay-apple" style="padding:11px" onclick="completePur('Apple Pay')">🍎 Apple Pay</button>
@@ -1795,8 +1794,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <div class="ti-sub">Tap play to see what awaits</div>
     </div>
     <div class="ti-acts">
-      <button class="ti-close" onclick="C('ov-exp-trailer')">Close</button>
-      <button class="ti-buy" onclick="C('ov-exp-trailer');setTimeout(function(){openExpTickets(currentExpName||'Experience',currentExpPrice||85);},200)">Book Now</button>
+      <button class="ti-buy pbuy" onclick="C('ov-exp-trailer');setTimeout(function(){openExpTickets(currentExpName||'Experience',currentExpPrice||85);},200)">Book Now</button>
     </div>
   </div>
 </div>
@@ -3439,6 +3437,7 @@ const amazonURLs={
   'Smothered Okra &amp; Long-Grain Rice':'https://www.amazon.com/stores/Rhodesia-Jackson/author/B001KC4E2W',
 };
 const fmtData={book:[{n:'Paperback',p:'$14.99'},{n:'Hardcover',p:'$20.99'},{n:'Kindle / eBook',p:'$9.99'},{n:'Audiobook',p:'$9.99'}],audiobook:[{n:'Audio Download',p:'$18.99'}],merch:[{n:'Standard',p:''}],experience:[{n:'General Admission',p:'$120'},{n:'VIP Package',p:'$195'}]};
+var FMT_QBTN='width:24px;height:24px;border-radius:50%;border:1px solid rgba(200,150,62,.35);background:transparent;color:var(--gd);font-size:15px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;flex-shrink:0';
 function openPur(title,series,type){
   window._pendingAudiobook=null; // generic book/merch purchase, not a Soul Player audiobook
   window.curPur={name:title,type:type||'book',price:0,fmt:'',size:'',color:''};
@@ -3446,18 +3445,58 @@ function openPur(title,series,type){
   const fmts=fmtData[type]||fmtData.book;
   setDisp('pur-fmt-lbl',(type==='merch')?'none':'block');const bno=document.getElementById('buy-now-opts');if(bno)bno.style.display='none';
   const fo=document.getElementById('fmt-opts');fo.innerHTML='';
-  fmts.forEach((f,i)=>{const d=document.createElement('div');d.className='fmt-opt'+(i===0?' sel':'');
-    d.innerHTML=`<span class="fmt-name">${f.n}</span><span class="fmt-price">${f.p}</span><div class="fmt-chk">${i===0?'✓':''}</div>`;
-    d.onclick=function(){
-      fo.querySelectorAll('.fmt-opt').forEach(function(x){x.classList.remove('sel');var c=x.querySelector('.fmt-chk');if(c)c.textContent='';});
-      d.classList.add('sel');d.querySelector('.fmt-chk').textContent='✓';
-      window.curPur.fmt=f.n; window.curPur.price=parseFloat((f.p||'0').replace('$',''));
-      setText('apple-price',f.p);setText('cart-price',f.p);
-    };
-    fo.appendChild(d);
-  });
-  if(fmts[0].p){setText('apple-price',fmts[0].p);setText('cart-price',fmts[0].p);window.curPur.fmt=fmts[0].n;window.curPur.price=parseFloat((fmts[0].p||'0').replace('$',''));}
+  // Books & Audio: each format has its OWN quantity so people can add multiples / mix formats.
+  var multiQty=(type==='book'||type==='audiobook'||!type);
+  if(multiQty){
+    window.fmtQty={};
+    fmts.forEach(function(f,i){
+      window.fmtQty[f.n]=(i===0?1:0);
+      var d=document.createElement('div'); d.className='fmt-opt'+(i===0?' sel':'');
+      d.innerHTML='<span class="fmt-name">'+f.n+'</span>'
+        +'<span class="fmt-price" style="margin-left:8px">'+f.p+'</span>'
+        +'<div style="display:flex;align-items:center;gap:9px;margin-left:auto">'
+        +  '<button class="fmt-q" data-f="'+f.n+'" data-d="-1" style="'+FMT_QBTN+'">−</button>'
+        +  '<span class="fmt-qn" data-f="'+f.n+'" style="min-width:14px;text-align:center;font-size:13px;color:var(--cr)">'+window.fmtQty[f.n]+'</span>'
+        +  '<button class="fmt-q" data-f="'+f.n+'" data-d="1" style="'+FMT_QBTN+'">+</button>'
+        +'</div>';
+      fo.appendChild(d);
+    });
+    fo.querySelectorAll('.fmt-q').forEach(function(btn){
+      btn.onclick=function(e){ e.stopPropagation(); purFmtStep(btn.getAttribute('data-f'), parseInt(btn.getAttribute('data-d'),10)); };
+    });
+    purUpdateSubtotal();
+  } else {
+    fmts.forEach((f,i)=>{const d=document.createElement('div');d.className='fmt-opt'+(i===0?' sel':'');
+      d.innerHTML=`<span class="fmt-name">${f.n}</span><span class="fmt-price">${f.p}</span><div class="fmt-chk">${i===0?'✓':''}</div>`;
+      d.onclick=function(){
+        fo.querySelectorAll('.fmt-opt').forEach(function(x){x.classList.remove('sel');var c=x.querySelector('.fmt-chk');if(c)c.textContent='';});
+        d.classList.add('sel');d.querySelector('.fmt-chk').textContent='✓';
+        window.curPur.fmt=f.n; window.curPur.price=parseFloat((f.p||'0').replace('$',''));
+        setText('cart-price',f.p);
+      };
+      fo.appendChild(d);
+    });
+    if(fmts[0].p){setText('cart-price',fmts[0].p);window.curPur.fmt=fmts[0].n;window.curPur.price=parseFloat((fmts[0].p||'0').replace('$',''));}
+  }
   O('ov-pur');
+}
+// Per-format quantity stepper (Books & Audio purchase popup).
+function purFmtStep(fmt,delta){
+  if(!window.fmtQty) return;
+  window.fmtQty[fmt]=Math.max(0,Math.min(20,(window.fmtQty[fmt]||0)+delta));
+  var fo=document.getElementById('fmt-opts'); if(!fo) return;
+  fo.querySelectorAll('.fmt-qn').forEach(function(s){
+    if(s.getAttribute('data-f')===fmt){ s.textContent=window.fmtQty[fmt]; var row=s.closest('.fmt-opt'); if(row) row.classList.toggle('sel', window.fmtQty[fmt]>0); }
+  });
+  purUpdateSubtotal();
+  if(typeof haptic==='function') haptic(8);
+}
+function purUpdateSubtotal(){
+  if(!window.fmtQty||!window.curPur) return;
+  var fmts=fmtData[window.curPur.type]||fmtData.book;
+  var total=0, count=0;
+  fmts.forEach(function(f){ var q=window.fmtQty[f.n]||0; var pnum=parseFloat((f.p||'0').replace(/[^0-9.]/g,''))||0; total+=q*pnum; count+=q; });
+  setText('cart-price', count? '$'+total.toFixed(2) : '');
 }
 function completePur(m){
   // Was this purchase initiated straight from the ticket sheet ("Reserve Now")?
@@ -3664,7 +3703,7 @@ const merchArt = {
   'OE Sweets':  {img:'images/OE%20Merch%20%7C%20Sweets%20%7C%20Cocoa.jpeg',  pos:'center 76%', dpos:'center'},
   // Blanket photo is square (1024x1024) -> cover fills both the grid tile and the square detail
   // frame with the product centered and even margins, no side bars.
-  'OE Blanket': {img:'images/OE%20Merch%20%7C%20Blanket%20%7C%20Cocoa%20.jpg', pos:'center', dpos:'center'},
+  'OE Blanket': {img:'images/OE%20Merch%20%7C%20Blanket%20%7C%20Cocoa%20.jpg', fit:'contain', dfit:'contain', pos:'center', dpos:'center', bg:'#140A04'},
   'OE Tote':    {img:'images/oe_tote.jpeg',    pos:'center 55%'}
 };
 function getMerchArt(name){ return merchArt[(name||'').replace(/&amp;/g,'&').trim()]||null; }
@@ -3987,6 +4026,21 @@ function toggleASMRSound(btn){
 }
 function addToCartFlow(){
   var p=window.curPur||{name:'Item',type:'book',price:0};
+  // Books & Audio: add each format that has a quantity > 0 as its own cart line.
+  if((p.type==='book'||p.type==='audiobook'||!p.type) && window.fmtQty){
+    var fmts=fmtData[p.type]||fmtData.book, added=0;
+    fmts.forEach(function(f){
+      var q=window.fmtQty[f.n]||0; if(q<=0) return;
+      var pnum=parseFloat((f.p||'0').replace(/[^0-9.]/g,''))||0;
+      var isAudio=/audio/i.test(f.n);
+      if(typeof cartItems!=='undefined'){ cartItems.push({name:p.name, price:pnum, icon:isAudio?'🎧':'📖', qty:q, type:isAudio?'audio':'book', detail:f.n}); }
+      added+=q;
+    });
+    if(!added){ if(typeof showToast==='function') showToast('Choose a quantity first'); return; }
+    updateCartDot(); C('ov-pur');
+    if(typeof showToast==='function') showToast('✓ Added to cart');
+    return;
+  }
   var type, icon, detail='';
   if(p.type==='merch'){ type='merch'; icon='🛍'; detail=[p.size,p.color].filter(Boolean).join(' · '); }
   else if(p.type==='audiobook'){ type='audio'; icon='🎧'; detail=(p.fmt&&!/^audio$/i.test(p.fmt))?p.fmt:''; }
