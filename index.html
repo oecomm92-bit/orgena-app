@@ -1832,7 +1832,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <canvas id="exp-tv-cv" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
       <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:2">
         <div id="exp-trailer-title" style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;font-style:italic;color:var(--cr);text-align:center;padding:0 20px;text-shadow:0 1px 6px rgba(0,0,0,.6)"></div>
-        <button id="exp-tv-play" onclick="toggleExpTrailer(event)" style="margin-top:8px;width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg viewBox="0 0 24 24" width="20" height="20" style="fill:#3A2408;margin-left:3px"><path d="M8 5v14l11-7z"/></svg></button>
+        <button id="exp-tv-play" onclick="toggleExpTrailer(event)" style="margin-top:8px;width:56px;height:56px;border-radius:50%;background:rgba(58,36,8,.22);border:1.5px solid #3A2408;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg viewBox="0 0 24 24" width="20" height="20" style="fill:#3A2408;margin-left:3px"><path d="M8 5v14l11-7z"/></svg></button>
       </div>
     </div>
     <div class="ti-info">
@@ -3857,7 +3857,12 @@ const merchArt = {
   // Grid tile fills (cover) so the blanket is large; detail stays contain (square->square = no crop).
   // Source will be re-cropped later; for now cover only trims the plain top/bottom margins.
   'OE Blanket': {img:'images/OE%20Merch%20%7C%20Blanket%20%7C%20Cocoa%20.jpg', fit:'cover', dfit:'contain', pos:'center', dpos:'center', bg:'#140A04'},
-  'OE Tote':    {img:'images/OE%20Merch%20%7C%20Tote%20%7C%20Cocoa%20.jpeg', pos:'center', dpos:'center'}
+  'OE Tote':    {img:'images/OE%20Merch%20%7C%20Tote%20%7C%20Cocoa%20.jpeg', pos:'center', dpos:'center'},
+  // OE Mug has a TWO-image gallery: primary cover (.png, actually 4196x4032) + a variations shot.
+  // `imgs` (2+) enables the in-popup right/left arrow gallery; grid tile + first detail image use imgs[0].
+  'OE Mug':     {img:'images/OE%20Merch%20%7C%20Travel%20Mug%20%7C%20Cocoa.png',
+                 imgs:['images/OE%20Merch%20%7C%20Travel%20Mug%20%7C%20Cocoa.png','images/OE%20Merch%20%7C%20Travel%20Mug%20%7C%20Cocoa_%20variations.jpeg'],
+                 pos:'center', dpos:'center', bg:'#140A04'}
 };
 function getMerchArt(name){ return merchArt[(name||'').replace(/&amp;/g,'&').trim()]||null; }
 // Per-item detail-popup options. label = group heading; values = choices. null/absent = hide the group.
@@ -4350,22 +4355,63 @@ function openMerchDetail(name,cat,price,icon,bg){
   setText('merch-total', isSweets?('$'+SWEETS_PRICE):price);
   const img=document.getElementById('merch-img');
   var a=getMerchArt(name);
+  // Two-image gallery only when this item declares imgs[] (currently OE Mug); others stay single.
+  window._merchImgs = (a && a.imgs && a.imgs.length>1) ? a.imgs.slice() : null;
+  window._merchImgIdx = 0;
+  img.style.position='relative';
   if(a){
     // Show the product photo (same single source + framing as the grid tile).
-    img.style.backgroundColor=a.bg||'#2C1A0E'; img.style.backgroundImage='url("'+a.img+'")';
+    img.style.backgroundColor=a.bg||'#2C1A0E'; img.style.backgroundImage='url("'+(a.imgs?a.imgs[0]:a.img)+'")';
     img.style.backgroundSize=a.dfit||a.fit||'cover'; img.style.backgroundPosition=a.dpos||a.pos||'center'; img.style.backgroundRepeat='no-repeat';
     img.textContent=''; img.dataset.photo='1';
   } else {
     img.style.backgroundImage='none'; img.style.background=bg; img.textContent=icon; img.dataset.photo='';
   }
+  setMerchGallery();
   O('ov-merch');
 }
-// Bouclé-knit texture: base tone crosshatched with the second tone (two diagonals) to read as knit nubs.
+// Build the in-popup image gallery controls (subtle arrows + dots) — only when 2+ images exist.
+function setMerchGallery(){
+  var img=document.getElementById('merch-img'); if(!img) return;
+  var old=document.getElementById('merch-gallery'); if(old) old.remove();
+  var imgs=window._merchImgs; if(!imgs || imgs.length<2) return;
+  var idx=window._merchImgIdx||0;
+  var wrap=document.createElement('div'); wrap.id='merch-gallery';
+  wrap.style.cssText='position:absolute;inset:0;pointer-events:none';
+  function arrow(dir,side){
+    var b=document.createElement('button');
+    b.setAttribute('onclick','merchGalleryNav('+dir+')');
+    b.setAttribute('aria-label',dir>0?'Next image':'Previous image');
+    b.style.cssText='pointer-events:auto;position:absolute;top:50%;'+side+':9px;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;background:rgba(20,10,4,.5);border:1px solid rgba(200,150,62,.45);color:var(--gd);display:flex;align-items:center;justify-content:center;cursor:pointer';
+    b.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="'+(dir>0?'M9 6l6 6-6 6':'M15 6l-6 6 6 6')+'"/></svg>';
+    return b;
+  }
+  if(idx<imgs.length-1) wrap.appendChild(arrow(1,'right'));
+  if(idx>0) wrap.appendChild(arrow(-1,'left'));
+  var dots=document.createElement('div');
+  dots.style.cssText='position:absolute;bottom:8px;left:0;right:0;display:flex;gap:5px;justify-content:center;pointer-events:none';
+  imgs.forEach(function(_,i){ var d=document.createElement('span'); d.style.cssText='width:5px;height:5px;border-radius:50%;background:'+(i===idx?'var(--gd)':'rgba(247,241,232,.35)'); dots.appendChild(d); });
+  wrap.appendChild(dots);
+  img.appendChild(wrap);
+}
+function merchGalleryNav(dir){
+  var imgs=window._merchImgs; if(!imgs) return;
+  window._merchImgIdx=Math.max(0,Math.min(imgs.length-1,(window._merchImgIdx||0)+dir));
+  var img=document.getElementById('merch-img');
+  if(img) img.style.backgroundImage='url("'+imgs[window._merchImgIdx]+'")';
+  setMerchGallery();
+  if(typeof haptic==='function') haptic(8);
+}
+// Tweed bouclé: the base tone `a` DOMINATES; small sparse `b` flecks + a subtle dark speckle give
+// the knit nub texture without washing the color out (color-forward, not a white grid).
 function boucleCss(a,b){
   return 'background-color:'+a+';background-image:'
-    +'repeating-linear-gradient(45deg,'+b+' 0,'+b+' 1.5px,transparent 1.5px,transparent 4px),'
-    +'repeating-linear-gradient(-45deg,'+b+' 0,'+b+' 1px,transparent 1px,transparent 4px),'
-    +'radial-gradient(rgba(255,255,255,.18) 0.5px,transparent 0.6px);background-size:auto,auto,5px 5px';
+    +'radial-gradient('+b+' 19%,transparent 21%),'
+    +'radial-gradient('+b+' 15%,transparent 17%),'
+    +'radial-gradient(rgba(0,0,0,.22) 17%,transparent 19%),'
+    +'radial-gradient(rgba(255,255,255,.10) 13%,transparent 15%)'
+    +';background-size:5px 5px,7px 7px,6px 6px,4px 4px'
+    +';background-position:0 0,3px 4px,2px 1px,1px 3px';
 }
 // Per-item color swatches. Stripes are single downward diagonals (135deg), all the same direction.
 var merchSwatches={
@@ -4388,10 +4434,16 @@ var merchSwatches={
     {n:'Black',s:'background:linear-gradient(135deg,#1a1a1a 0 47%,#F4F1EA 47% 55%,#1a1a1a 55% 100%)'}
   ],
   'OE Blanket':[
-    {n:'Taupe',s:boucleCss('#B7A98E','#EFE7D6')},
-    {n:'Silver',s:boucleCss('#9A9A9A','#E6E6E6')},
-    {n:'Black',s:boucleCss('#2A2A2A','#E8E8E8')},
+    {n:'Taupe',s:boucleCss('#A08D6C','#EFE7D6')},
+    {n:'Silver',s:boucleCss('#888C92','#E6E8EA')},
+    {n:'Black',s:boucleCss('#1C1C1C','#E8E8E8')},
     {n:'Brown',s:boucleCss('#5A3A22','#EFE7D6')}
+  ],
+  'OE Mug':[
+    {n:'Silver chrome',s:'background:linear-gradient(135deg,#F1F2F4 0%,#C7CACF 34%,#8E9298 60%,#E2E5E9 100%)'},
+    {n:'Ivory taupe',s:'background:linear-gradient(135deg,#EEE5D3,#D6C9B0)'},
+    {n:'Chrome brown',s:'background:linear-gradient(135deg,#8C6C4E 0%,#4A2E1A 46%,#3A2410 62%,#7C5838 100%)'},
+    {n:'Black',s:'background:#141414'}
   ]
 };
 var MERCH_SWATCH_DEFAULT=[
