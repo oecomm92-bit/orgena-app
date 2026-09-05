@@ -228,6 +228,9 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .tbox{width:338px;background:#140A04;border-radius:10px;overflow:hidden;border:1px solid rgba(200,150,62,.2);z-index:2}
 .tv{width:100%;height:205px;position:relative;overflow:hidden}
 .tv canvas{position:absolute;inset:0;width:100%;height:100%}
+/* Experience Watch Preview: video reads ~60% / text ~40% (with the moved description). */
+#ov-exp-trailer .tv{height:210px}
+#ov-exp-trailer .ti-sub{line-height:1.45;margin-top:3px}
 .ti-info{padding:13px 15px}
 .ti-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;font-style:italic;color:var(--cr);margin-bottom:2px}
 .ti-sub{font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;color:rgba(247,241,232,.45)}
@@ -696,6 +699,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <button class="fp" onclick="crFilter(this,'experiences')">Experiences</button>
   </div>
   <div data-cr="all books audiobooks">
+    <div class="sec-label" style="font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:rgba(247,241,232,.3);padding:14px 16px 7px">Books &amp; Audio</div>
     <div class="bk-card"><div class="bk-inn"><div class="bk-cv" onclick="showBookDescFromEl(this)"><div class="bk-cv-art" data-book="Pecan Candy &amp; Huck-A-Bucks" style="background:linear-gradient(155deg,#5C3D28,#2C1A0E,#7A4E35)"><div class="cv-n">I</div><div class="cv-t">Pecan Candy &amp; Huck-A-Bucks</div><div class="cv-a">Rhodesia Jackson</div></div></div><div class="bk-info"><div class="bk-series">The Candy Trilogy · Book I</div><div class="bk-name" onclick="showBookDescFromEl(this)">Pecan Candy &amp; Huck-A-Bucks</div><div class="bk-desc">Two New Orleanians from different sides of the fence find love while making groceries on Orleans Avenue.</div><div class="bk-stars" onclick="O('ov-rev')"><span class="stars">★★★★★</span><span class="star-ct">248 reviews ›</span></div><div class="bk-acts"><button class="btn-tr" onclick="O('ov-trailer');setTrailer('Pecan Candy','Candy Trilogy · Book I')"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Trailer</button><button class="btn-buy" onclick="openPur('Pecan Candy &amp; Huck-A-Bucks','The Candy Trilogy · Book I','book')">Buy Now</button></div></div></div></div>
     <div class="bk-card"><div class="bk-inn"><div class="bk-cv" onclick="showBookDescFromEl(this)"><div class="bk-cv-art" data-book="Sweeter Than Candy" style="background:linear-gradient(155deg,#3B2010,#7A4E35,#2C1A0E)"><div class="cv-n">II</div><div class="cv-t">Sweeter Than Candy</div><div class="cv-a">Rhodesia Jackson</div></div></div><div class="bk-info"><div class="bk-series">The Candy Trilogy · Book II</div><div class="bk-name" onclick="showBookDescFromEl(this)">Sweeter Than Candy</div><div class="bk-desc">Peggy and Clint go deeper — a soulful journey learning the real requirements of Love, Home, and Family.</div><div class="bk-stars" onclick="O('ov-rev')"><span class="stars">★★★★★</span><span class="star-ct">193 reviews ›</span></div><div class="bk-acts"><button class="btn-tr" onclick="O('ov-trailer');setTrailer('Sweeter Than Candy','Candy Trilogy · Book II')"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Trailer</button><button class="btn-buy" onclick="openPur('Sweeter Than Candy','The Candy Trilogy · Book II','book')">Buy Now</button></div></div></div></div>
     <div class="bk-card"><div class="bk-inn"><div class="bk-cv" onclick="showBookDescFromEl(this)"><div class="bk-cv-art" data-book="Three Times Sweeter" style="background:linear-gradient(155deg,#2C1A0E,#4A2C18,#3B2010)"><div class="cv-n">III</div><div class="cv-t">Three Times Sweeter</div><div class="cv-a">Rhodesia Jackson</div></div></div><div class="bk-info"><div class="bk-series">The Candy Trilogy · Book III</div><div class="bk-name" onclick="showBookDescFromEl(this)">Three Times Sweeter</div><div class="bk-desc">The trilogy's unforgettable conclusion — Love, Home &amp; Family tested and triumphant.</div><div class="bk-stars" onclick="O('ov-rev')"><span class="stars">★★★★★</span><span class="star-ct">167 reviews ›</span></div><div class="bk-acts"><button class="btn-tr" onclick="O('ov-trailer');setTrailer('Three Times Sweeter','Candy Trilogy · Book III')"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Trailer</button><button class="btn-buy" onclick="openPur('Three Times Sweeter','The Candy Trilogy · Book III','book')">Buy Now</button></div></div></div></div>
@@ -806,7 +810,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
   <div data-cr="all experiences" style="padding-top:11px"><div class="sec-label" style="font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:rgba(247,241,232,.3);padding:14px 16px 7px">Experiences</div>
     <!-- Experience 1 -->
     <div class="exp-card">
-      <div class="exp-art" style="cursor:pointer;position:relative" onclick="openExpTrailer('OE French Quarter Fest Experience','Live Reading &amp; Q&amp;A')">
+      <div class="exp-art" style="cursor:pointer;position:relative" onclick="openExpTrailer('OE French Quarter Fest Experience','An intimate evening with Rhodesia — readings, Q&amp;A, and signed copies. Limited to 30 guests.')">
         <div style="position:absolute;inset:0;background:linear-gradient(135deg,#0D0804,#3A2214);display:flex;align-items:center;justify-content:center">
           <div style="text-align:center"><div style="font-size:32px">🎭</div><div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--gd);margin-top:4px">▶ Watch Preview</div></div>
         </div>
@@ -820,13 +824,12 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
           <div class="exp-cat" style="margin-bottom:0">New Orleans, LA</div>
           <div id="exp-countdown-1" style="font-size:10px;color:var(--gd);letter-spacing:.06em;white-space:nowrap"></div>
         </div>
-        <div class="exp-desc">An intimate evening with Rhodesia — readings, Q&amp;A, and signed copies. Limited to 30 guests.</div>
-        <div class="exp-btm"><button class="exp-bk" onclick="openExpTickets('OE French Quarter Fest Experience',85)">Book Now</button></div>
+        <div class="exp-btm" style="margin-top:10px"><button class="exp-bk" onclick="openExpTickets('OE French Quarter Fest Experience',85)">Book Now</button></div>
       </div>
     </div>
     <!-- Experience 2 -->
     <div class="exp-card">
-      <div class="exp-art" style="cursor:pointer;position:relative" onclick="openExpTrailer('OE Essence Experience','VIP Live Event')">
+      <div class="exp-art" style="cursor:pointer;position:relative" onclick="openExpTrailer('OE Essence Experience','Film screening, book signing, panel discussion, and an exclusive meet &amp; greet with Rhodesia Jackson.')">
         <div style="position:absolute;inset:0;background:linear-gradient(135deg,#0D0804,#3A2214);display:flex;align-items:center;justify-content:center">
           <div style="text-align:center"><div style="font-size:32px">🎟️</div><div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--gd);margin-top:4px">▶ Watch Preview</div></div>
         </div>
@@ -840,13 +843,12 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
           <div class="exp-cat" style="margin-bottom:0">New Orleans, LA</div>
           <div id="exp-countdown-2" style="font-size:10px;color:var(--gd);letter-spacing:.06em;white-space:nowrap"></div>
         </div>
-        <div class="exp-desc">Film screening, book signing, panel discussion, and an exclusive meet &amp; greet with Rhodesia Jackson.</div>
-        <div class="exp-btm"><button class="exp-bk" onclick="openExpTickets('OE Essence Experience',120)">Book Now</button></div>
+        <div class="exp-btm" style="margin-top:10px"><button class="exp-bk" onclick="openExpTickets('OE Essence Experience',120)">Book Now</button></div>
       </div>
     </div>
     <!-- Experience 3 -->
     <div class="exp-card">
-      <div class="exp-art" style="cursor:pointer;position:relative" onclick="openExpTrailer('OE Martha\'s Vineyard Experience','Island Retreat')">
+      <div class="exp-art" style="cursor:pointer;position:relative" onclick="openExpTrailer('OE Martha\'s Vineyard Experience','A seaside weekend retreat on Martha\'s Vineyard — sunrise readings, a private author dinner, and coastal community with Rhodesia Jackson.')">
         <div style="position:absolute;inset:0;background:linear-gradient(135deg,#0D0804,#3A2214);display:flex;align-items:center;justify-content:center">
           <div style="text-align:center"><div style="font-size:32px">🏝️</div><div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--gd);margin-top:4px">▶ Watch Preview</div></div>
         </div>
@@ -860,8 +862,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
           <div class="exp-cat" style="margin-bottom:0">Martha's Vineyard, MA</div>
           <div id="exp-countdown-3" style="font-size:10px;color:var(--gd);letter-spacing:.06em;white-space:nowrap"></div>
         </div>
-        <div class="exp-desc">A seaside weekend retreat on Martha's Vineyard — sunrise readings, a private author dinner, and coastal community with Rhodesia Jackson.</div>
-        <div class="exp-btm"><button class="exp-bk" onclick="openExpTickets('OE Martha\'s Vineyard Experience',175)">Book Now</button></div>
+        <div class="exp-btm" style="margin-top:10px"><button class="exp-bk" onclick="openExpTickets('OE Martha\'s Vineyard Experience',175)">Book Now</button></div>
       </div>
     </div>
   </div>
@@ -878,7 +879,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       </div>
       <div style="display:flex;gap:8px;padding:11px 13px 13px">
         <button onclick="toggleNotifyMe(this)" style="flex:1;padding:10px;background:var(--gd);color:var(--br);border:none;border-radius:3px;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">🔔 Notify Me</button>
-        <button onclick="openFilm('The Tradition','Film · In Production')" style="flex:1;padding:10px;background:transparent;color:rgba(247,241,232,.5);border:1px solid rgba(247,241,232,.1);border-radius:3px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Watch Teaser</button>
+        <button onclick="window._shareText='The Tradition — a film in production. ✦ Orgena';O('ov-share')" style="flex:1;padding:10px;background:transparent;color:rgba(247,241,232,.5);border:1px solid rgba(247,241,232,.1);border-radius:3px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Share</button>
       </div>
     </div>
   </div>
@@ -1585,16 +1586,17 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <div class="np-artist" id="np-artist">Audiobook · Book I</div>
     <div id="np-chapter" style="display:none;margin-top:4px;font-size:10px;letter-spacing:.06em;color:rgba(200,150,62,.7)"></div>
   </div>
-  <div id="np-voice-sec" style="padding:0 20px;margin-bottom:12px">
+  <div id="np-voice-sec" style="padding:0 20px;margin-bottom:12px;position:relative">
     <div onclick="toggleVoiceWheel()" style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:5px 0">
       <span style="font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:rgba(247,241,232,.32);white-space:nowrap">Voice</span>
       <span id="voice-current" style="font-size:11px;color:var(--gd);font-weight:500">Celebrity</span>
       <span id="voice-caret" style="margin-left:auto;color:rgba(200,150,62,.5);font-size:13px;line-height:1;transition:transform .2s">⌄</span>
     </div>
-    <div id="voice-wheel-wrap" style="display:none;position:relative;height:90px;width:172px;margin-top:6px">
+    <!-- Floating popover: overlays the player (position:absolute) so it never shoves the layout. -->
+    <div id="voice-wheel-wrap" style="display:none;position:absolute;top:34px;left:20px;z-index:30;height:90px;width:172px;background:#140C05;border:1px solid rgba(200,150,62,.28);border-radius:12px;box-shadow:0 16px 44px rgba(0,0,0,.62);padding:0 12px">
       <div style="position:absolute;left:0;right:0;top:31px;height:28px;border:1px solid rgba(200,150,62,.35);border-radius:8px;background:rgba(200,150,62,.06);pointer-events:none;z-index:1"></div>
-      <div style="position:absolute;left:0;right:0;top:0;height:30px;background:linear-gradient(to bottom,#0D0804,transparent);z-index:2;pointer-events:none"></div>
-      <div style="position:absolute;left:0;right:0;bottom:0;height:30px;background:linear-gradient(to top,#0D0804,transparent);z-index:2;pointer-events:none"></div>
+      <div style="position:absolute;left:0;right:0;top:0;height:30px;background:linear-gradient(to bottom,#140C05,transparent);z-index:2;pointer-events:none;border-radius:12px 12px 0 0"></div>
+      <div style="position:absolute;left:0;right:0;bottom:0;height:30px;background:linear-gradient(to top,#140C05,transparent);z-index:2;pointer-events:none;border-radius:0 0 12px 12px"></div>
       <div id="voice-wheel" onscroll="onVoiceScroll()" style="height:100%;overflow-x:hidden;overflow-y:auto;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;padding:31px 0;scrollbar-width:none;text-align:center">
         <div class="v-vitem" onclick="pickVoice(0)">Local (US)</div>
         <div class="v-vitem on" onclick="pickVoice(1)">Celebrity</div>
@@ -1842,13 +1844,13 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <div class="tv" style="position:relative;overflow:hidden">
       <canvas id="exp-tv-cv" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
       <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:2">
-        <div id="exp-trailer-title" style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;font-style:italic;color:var(--cr);text-align:center;padding:0 20px;text-shadow:0 1px 6px rgba(0,0,0,.6)"></div>
+        <!-- No text overlaid on the video (item 7): the event name lives at the bottom only. -->
         <button id="exp-tv-play" onclick="toggleExpTrailer(event)" style="margin-top:8px;width:56px;height:56px;border-radius:50%;background:rgba(58,36,8,.22);border:1.5px solid #3A2408;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg viewBox="0 0 24 24" width="20" height="20" style="fill:#3A2408;margin-left:3px"><path d="M8 5v14l11-7z"/></svg></button>
       </div>
     </div>
     <div class="ti-info">
       <div class="ti-title" id="exp-trailer-sub">Experience Preview</div>
-      <div class="ti-sub">Tap play to see what awaits</div>
+      <div class="ti-sub" id="exp-trailer-desc">Tap play to see what awaits</div>
     </div>
     <div class="ti-acts">
       <button class="ti-buy pbuy" onclick="C('ov-exp-trailer');setTimeout(function(){openExpTickets(currentExpName||'Experience',currentExpPrice||85);},200)">Book Now</button>
@@ -2040,11 +2042,34 @@ function crSetMode(mode){
     if(vpanel) vpanel.style.display='flex';
     if(canvas) canvas.style.display='none';
     startVoiceTimer();
+    startVoiceWave();
   } else {
     if(vpanel) vpanel.style.display='none';
     if(canvas) canvas.style.display='';
     stopVoiceTimer();
+    stopVoiceWave();
   }
+}
+// Animated record-mode waveform: drive each bar with a lively, center-weighted random
+// height so it reads as "capturing your voice" (prototype behavior — real mic capture is
+// limited on iOS Safari / static hosting).
+function startVoiceWave(){
+  stopVoiceWave();
+  var bars=document.querySelectorAll('#cr-wave span'); if(!bars.length) return;
+  var n=bars.length;
+  bars.forEach(function(b){ b.style.animation='none'; b.style.transition='transform .12s ease'; });
+  window._crWave=setInterval(function(){
+    for(var i=0;i<n;i++){
+      var center=1-Math.abs(i-(n-1)/2)/((n-1)/2);   // taller in the middle
+      var h=0.2 + (0.25+0.75*center)*Math.random();
+      bars[i].style.transform='scaleY('+h.toFixed(3)+')';
+    }
+  },120);
+}
+function stopVoiceWave(){
+  if(window._crWave){ clearInterval(window._crWave); window._crWave=null; }
+  var bars=document.querySelectorAll('#cr-wave span');
+  bars.forEach(function(b){ b.style.animation=''; b.style.transform=''; });
 }
 function startVoiceTimer(){
   stopVoiceTimer();
@@ -2429,6 +2454,8 @@ function commToggle(mode){
     if(exploreFilters) exploreFilters.style.display = 'flex';
     if(togExplore){ togExplore.style.background='var(--gd)'; togExplore.style.color='var(--br)'; }
     if(togEvents){ togEvents.style.background='transparent'; togEvents.style.color='#FFFFFF'; }
+    // Explore just became visible — top the grid up now that it has real layout.
+    if(typeof commGridTopUp==='function') setTimeout(commGridTopUp,60);
   }
 }
 
@@ -3246,13 +3273,34 @@ function closeCommPost(){
   if(typeof aS!=='undefined' && aS['cp-media-cv']){ cancelAnimationFrame(aS['cp-media-cv']); aS['cp-media-cv']=null; }
   closeCommComments();
 }
+// Keep filling the Explore grid until the sentinel is pushed well below the viewport. The grid
+// is short (few source posts), so a plain "load once per intersect" observer stalls with the
+// sentinel permanently in view — this tops up so scroll always reveals more clickable, playable
+// video cells (every appended cell is wired via loadCommGrid's cell.onclick).
+function commGridTopUp(){
+  var sc=document.getElementById('s-community'), sen=document.getElementById('comm-sentinel'), grid=document.getElementById('comm-grid');
+  if(!sc||!sen||!grid) return;
+  // Only measure/fill when the grid is actually laid out (visible). Filling while hidden gives
+  // zero-height rects and over-fills the DOM — seed a single batch instead and top up on open.
+  if(!grid.offsetParent || sc.clientHeight===0){ if(!grid.children.length) loadCommGrid(null); return; }
+  var guard=0;
+  do{
+    var n=grid.children.length;
+    loadCommGrid(null);
+    if(grid.children.length===n) break;                 // nothing added → stop
+    var r=sen.getBoundingClientRect(), sr=sc.getBoundingClientRect();
+    if(r.top > sr.bottom + 340) break;                  // sentinel now beyond the observer margin
+  } while(++guard<30);
+}
 function initCommGrid(){
-  loadCommGrid(null);
+  commGridTopUp();
   const sentinel=document.getElementById('comm-sentinel');
   if(!sentinel) return;
-  new IntersectionObserver(entries=>{
-    if(entries[0].isIntersecting) loadCommGrid(null);
-  },{threshold:0.1}).observe(sentinel);
+  if(window._commObs) window._commObs.disconnect();
+  window._commObs=new IntersectionObserver(function(entries){
+    if(entries[0].isIntersecting) commGridTopUp();
+  },{root:document.getElementById('s-community'),rootMargin:'300px',threshold:0});
+  window._commObs.observe(sentinel);
 }
 
 // ── SETTINGS TOGGLE ──
@@ -4553,7 +4601,11 @@ function centerVoice(i,smooth){
   var target=c.offsetTop + c.offsetHeight/2 - wheel.clientHeight/2;
   wheel.scrollTo({top:target,behavior:smooth?'smooth':'auto'});
 }
-function pickVoice(i){ setVoiceIdx(i); centerVoice(i,true); }
+function pickVoice(i){ setVoiceIdx(i); centerVoice(i,true); setTimeout(closeVoiceWheel,260); }
+function closeVoiceWheel(){
+  var w=document.getElementById('voice-wheel-wrap'); if(w) w.style.display='none';
+  var caret=document.getElementById('voice-caret'); if(caret) caret.style.transform='';
+}
 function onVoiceScroll(){
   var wheel=document.getElementById('voice-wheel');if(!wheel)return;
   var items=wheel.querySelectorAll('.v-vitem');
@@ -4801,10 +4853,11 @@ function addBookmark(){
   const time=document.getElementById('np-times')?document.querySelector('.np-times span').textContent:'--:--';
   alert('Bookmarked "'+track+'" at '+time);
 }
-function openExpTrailer(name,sub){
+function openExpTrailer(name,desc){
   currentExpName=name;
-  setText('exp-trailer-title',name);
-  setText('exp-trailer-sub',sub);
+  // Event NAME at the bottom (no text over the video); description sits below it (moved from the card).
+  setText('exp-trailer-sub',name);
+  setText('exp-trailer-desc',desc||'Tap play to see what awaits');
   window.expTrailerPlaying=true;var pb=document.getElementById('exp-tv-play');if(pb)pb.innerHTML=EXP_PAUSE_SVG;O('ov-exp-trailer');
   setTimeout(()=>playTrailerWave('exp-tv-cv'),200);
 }
@@ -5515,7 +5568,7 @@ function setupCreationsScroll(){
   var ctx=cv.getContext('2d');
   var reduce=window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
   var W=0,H=0,dpr=Math.min(window.devicePixelRatio||1,2);
-  var LINES=18, STEP=5;             // line count + x sampling (kept light; denser for full-height cover)
+  var STEP=5;                       // x sampling (kept light); line count is derived per-frame from height
   var PERIOD=7000;                  // one crest sweep + calm gap — half-speed, slow & soothing
   var raf=0, running=false, last=0;
 
@@ -5566,9 +5619,14 @@ function setupCreationsScroll(){
     var swell=0.28+1.15*gate;                         // localized energy strength
     var baseB=0.05+0.05*gate;                         // faint ambient glow that breathes
 
-    // Overshoot top & bottom so the ripple reaches both edges (no empty margin above/below).
-    var padY=-3, span=H-padY*2, gap=span/(LINES-1);
-    var baseAmp=Math.max(1.6, span*0.045), swellAmp=Math.max(4, span*0.16);
+    // Amplitude is keyed off the BANNER height. The field is drawn TALLER than the banner
+    // and overshoots both edges by the full ripple amplitude, so lifting/rippling never
+    // exposes bare banner beneath the stripes — extra lines above/below fill the gap.
+    var baseAmp=Math.max(1.4, H*0.04), swellAmp=Math.max(3.5, H*0.14);
+    var over=baseAmp+swellAmp+7;                       // vertical overshoot past each edge
+    var top=-over, coverSpan=H+over*2;
+    var gap=2.4;                                       // dense spacing (~half of the old field)
+    var N=Math.max(2,Math.round(coverSpan/gap));       // line count fills the taller field
 
     // Precompute the shared brown→gold gradient from the crest energy across x.
     var grad=ctx.createLinearGradient(0,0,W,0), STOPS=20;
@@ -5577,8 +5635,9 @@ function setupCreationsScroll(){
       grad.addColorStop(xn,'rgb('+c[0]+','+c[1]+','+c[2]+')');
     }
 
-    for(var i=0;i<LINES;i++){
-      var y0=padY+i*gap, ph=i*0.20;
+    ctx.strokeStyle=grad; ctx.lineWidth=0.5;           // stripes only — thin, no node accents
+    for(var i=0;i<N;i++){
+      var y0=top+i*gap, ph=i*0.09;
       ctx.beginPath();
       for(var x=0;x<=W;x+=STEP){
         var xn2=x/W;
@@ -5589,27 +5648,8 @@ function setupCreationsScroll(){
         var y=y0 + u*(baseAmp + swellAmp*e);
         if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
       }
-      ctx.strokeStyle=grad;
-      ctx.globalAlpha=0.32+0.045*i/LINES + 0.30*gate; // nearer lines a touch stronger; whole field lifts on the pulse
-      ctx.lineWidth=0.75;                              // a touch skinnier
+      ctx.globalAlpha=0.30+0.05*(i/N) + 0.30*gate;     // whole field lifts on the pulse
       ctx.stroke();
-    }
-    ctx.globalAlpha=1;
-
-    // Subtle gold node accents that only surface near the crest (kept sparse + refined).
-    for(var li=1;li<LINES;li+=3){
-      var yy0=padY+li*gap, php=li*0.20;
-      for(var xx=0;xx<=W;xx+=STEP*4){
-        var xnn=xx/W, en=energy(xnn,cx,swell,now);
-        if(en<0.5) continue;
-        var uu=Math.sin(xnn*6.0 + T*0.9 + php)*0.55
-              +Math.sin(xnn*11.0 - T*0.6 + php*1.7)*0.30
-              +Math.sin(xnn*3.0 + T*0.5)*0.15;
-        var yn=yy0 + uu*(baseAmp+swellAmp*en);
-        ctx.globalAlpha=Math.min(0.5, en*0.32);
-        ctx.fillStyle='rgb(245,223,168)';
-        ctx.beginPath(); ctx.arc(xx,yn,1,0,6.283); ctx.fill();
-      }
     }
     ctx.globalAlpha=1;
   }
