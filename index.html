@@ -422,18 +422,12 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 /* SOUL PLAYER SCREEN */
 .sp-sc{background:var(--blk)}
 .sp-hdr{position:relative;overflow:hidden;padding:16px 16px 11px;background:linear-gradient(160deg,var(--br),var(--blk));border-bottom:1px solid rgba(200,150,62,.1)}
-/* A long, slow, natural warm-ombre wave that cascades LEFT->RIGHT like an ocean current (~12s).
-   Two layers: a broad soft sunrise band + a fine warm striation for texture (not a flat color).
-   Fades in on entry / out on exit so the loop reset is invisible. */
-.sp-wave{position:absolute;top:0;bottom:0;left:0;width:72%;pointer-events:none;z-index:0;
-  background:
-    linear-gradient(92deg,transparent 0%,rgba(214,140,90,.05) 16%,rgba(232,185,106,.13) 39%,rgba(250,229,182,.21) 52%,rgba(226,176,100,.12) 66%,rgba(200,150,62,.05) 85%,transparent 100%),
-    repeating-linear-gradient(92deg,rgba(250,229,182,.05) 0,rgba(250,229,182,0) 3px,transparent 6px,rgba(210,150,95,.038) 9px,transparent 13px);
-  background-repeat:no-repeat,repeat;
-  transform:translateX(-165%);animation:spwave 12s ease-in-out infinite;will-change:transform}
+/* Premium canvas line-field: many thin brown/gold contour lines that undulate together into a
+   connected rippling wave surface, with a gold crest that sweeps every ~3.5s trailing a fading
+   wake. Rendered per-frame in JS (see spWaveField), IntersectionObserver-gated for performance,
+   and respecting prefers-reduced-motion (static frame). */
+.sp-wave-cv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;display:block}
 .sp-hdr>.sp-hr{position:relative;z-index:1}
-@keyframes spwave{0%{transform:translateX(-165%);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateX(165%);opacity:0}}
-@media (prefers-reduced-motion:reduce){.sp-wave{animation:none;opacity:0}}
 .sp-hr{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
 .sp-title{font-family:'Playfair Display',serif;font-size:21px;font-weight:900;font-style:italic;color:var(--cr)}
 .sp-sub{font-size:9px;letter-spacing:.19em;text-transform:uppercase;color:var(--gd);opacity:.7}
@@ -893,7 +887,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 <!-- SOUL PLAYER -->
 <div class="sc sp-sc" id="s-player">
   <div class="sp-hdr">
-    <div class="sp-wave" aria-hidden="true"></div>
+    <canvas class="sp-wave-cv" id="sp-wave-cv" aria-hidden="true"></canvas>
     <div class="sp-hr"><div><div class="sp-sub">Digital Media</div><div class="sp-title">Soul Player</div></div>
     </div>
   </div>
@@ -5505,6 +5499,139 @@ function setupCreationsScroll(){
   }, {rootMargin:'250px', threshold:0});
   obs.observe(sentinel);
 }
+
+/* ============================================================================
+   Soul Player banner — premium brown/gold wave line-field (canvas).
+   A dense set of thin horizontal contour lines share one undulating surface
+   (per-line phase offsets make crests lean/travel through the stack). A gold
+   "crest" envelope sweeps left→right roughly every 3.5s with calm gaps between,
+   swelling the surface and brightening it to gold, and dragging a fading wake
+   of echo lobes behind it. Dark OE browns at rest, warm tan/gold at the crest.
+   RAF is gated by an IntersectionObserver (only runs while the banner is on
+   screen) and paused when the tab is hidden; prefers-reduced-motion draws one
+   tasteful static frame instead. ============================================ */
+(function spWaveField(){
+  var cv=document.getElementById('sp-wave-cv'); if(!cv||!cv.getContext) return;
+  var ctx=cv.getContext('2d');
+  var reduce=window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var W=0,H=0,dpr=Math.min(window.devicePixelRatio||1,2);
+  var LINES=14, STEP=5;             // line count + x sampling (kept light)
+  var PERIOD=3500;                  // one crest sweep + calm gap (~3.5s pacing)
+  var raf=0, running=false, last=0;
+
+  // Brown→gold ramp used along the crest. b in [0,1]: 0 = deep brown, 1 = warm gold.
+  function mix(b){
+    b=b<0?0:b>1?1:b; var e=Math.pow(b,0.78);
+    var r=Math.round(44 +(245-44)*e);
+    var g=Math.round(25 +(224-25)*e);
+    var bl=Math.round(13 +(170-13)*e);
+    return [r,g,bl];
+  }
+  function resize(){
+    W=cv.offsetWidth||300; H=cv.offsetHeight||64;
+    cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  // Localised wave energy at normalized x (0..1): a crest lobe + trailing wake echoes.
+  function energy(xn, cx, swell, tms){
+    var sig=0.085;
+    function lobe(c){ var d=xn-c; return Math.exp(-(d*d)/(2*sig*sig)); }
+    var e=lobe(cx);
+    var wgap=0.14;
+    for(var k=1;k<=4;k++){
+      // wake echoes fade behind the crest and shimmer (vibrational pulse)
+      var vib=0.72+0.28*Math.sin(tms*0.011 - k*1.1);
+      e += lobe(cx - wgap*k) * Math.pow(0.6,k) * vib;
+    }
+    return e*swell;
+  }
+  function frame(now){
+    if(!running) return;
+    if(now-last<32){ raf=requestAnimationFrame(frame); return; } // ~30fps cap
+    last=now;
+    draw(now);
+    raf=requestAnimationFrame(frame);
+  }
+  function draw(now){
+    if(!W||!H) resize();
+    ctx.clearRect(0,0,W,H);
+    var T=now/1000;
+    // Crest cycle: travel across ~62% of the period, then a calm gap. Eased so the
+    // swell rises and falls smoothly — a pulse every ~3.5s with quiet moments between.
+    var cyc=(now%PERIOD)/PERIOD;
+    var act=0.62, sweep=cyc<act?cyc/act:1;
+    var ease=sweep*sweep*(3-2*sweep);                 // smoothstep
+    var cx=-0.18+ease*1.4;                            // crest center travels off both edges
+    var gate=cyc<act?Math.sin(Math.PI*sweep):0;       // strongest mid-sweep, calm at ends
+    var swell=0.28+1.15*gate;                         // localized energy strength
+    var baseB=0.05+0.05*gate;                         // faint ambient glow that breathes
+
+    var padY=6, span=H-padY*2, gap=span/(LINES-1);
+    var baseAmp=Math.max(1.6, span*0.045), swellAmp=Math.max(4, span*0.16);
+
+    // Precompute the shared brown→gold gradient from the crest energy across x.
+    var grad=ctx.createLinearGradient(0,0,W,0), STOPS=20;
+    for(var s=0;s<=STOPS;s++){
+      var xn=s/STOPS, b=baseB+energy(xn,cx,swell,now), c=mix(b);
+      grad.addColorStop(xn,'rgb('+c[0]+','+c[1]+','+c[2]+')');
+    }
+
+    for(var i=0;i<LINES;i++){
+      var y0=padY+i*gap, ph=i*0.20;
+      ctx.beginPath();
+      for(var x=0;x<=W;x+=STEP){
+        var xn2=x/W;
+        var u=Math.sin(xn2*6.0 + T*0.9 + ph)*0.55
+             +Math.sin(xn2*11.0 - T*0.6 + ph*1.7)*0.30
+             +Math.sin(xn2*3.0 + T*0.5)*0.15;
+        var e=energy(xn2,cx,swell,now);
+        var y=y0 + u*(baseAmp + swellAmp*e);
+        if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      }
+      ctx.strokeStyle=grad;
+      ctx.globalAlpha=0.32+0.045*i/LINES + 0.30*gate; // nearer lines a touch stronger; whole field lifts on the pulse
+      ctx.lineWidth=1;
+      ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+
+    // Subtle gold node accents that only surface near the crest (kept sparse + refined).
+    for(var li=1;li<LINES;li+=3){
+      var yy0=padY+li*gap, php=li*0.20;
+      for(var xx=0;xx<=W;xx+=STEP*4){
+        var xnn=xx/W, en=energy(xnn,cx,swell,now);
+        if(en<0.5) continue;
+        var uu=Math.sin(xnn*6.0 + T*0.9 + php)*0.55
+              +Math.sin(xnn*11.0 - T*0.6 + php*1.7)*0.30
+              +Math.sin(xnn*3.0 + T*0.5)*0.15;
+        var yn=yy0 + uu*(baseAmp+swellAmp*en);
+        ctx.globalAlpha=Math.min(0.5, en*0.32);
+        ctx.fillStyle='rgb(245,223,168)';
+        ctx.beginPath(); ctx.arc(xx,yn,1,0,6.283); ctx.fill();
+      }
+    }
+    ctx.globalAlpha=1;
+  }
+  function start(){ if(running||reduce) return; running=true; last=0; raf=requestAnimationFrame(frame); }
+  function stop(){ running=false; if(raf) cancelAnimationFrame(raf); raf=0; }
+
+  window.addEventListener('resize', function(){ dpr=Math.min(window.devicePixelRatio||1,2); resize(); if(reduce) draw(1400); });
+  document.addEventListener('visibilitychange', function(){ if(document.hidden) stop(); else if(isVisible()) start(); });
+
+  var io=null;
+  function isVisible(){ return cv.offsetParent!==null; }
+  function boot(){
+    resize();
+    if(reduce){ draw(1400); return; }           // static tasteful frame
+    if('IntersectionObserver' in window){
+      io=new IntersectionObserver(function(es){
+        es.forEach(function(en){ if(en.isIntersecting && !document.hidden) start(); else stop(); });
+      },{threshold:0.01});
+      io.observe(cv);
+    } else { start(); }
+  }
+  if(document.readyState==='loading') window.addEventListener('DOMContentLoaded', boot); else boot();
+})();
 
 </script>
 <!-- Experience Tickets Overlay -->
