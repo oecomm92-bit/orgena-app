@@ -124,8 +124,9 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .ov-center{align-items:center !important;justify-content:center !important}
 .sh{width:38px;height:4px;background:rgba(200,150,62,.2);border-radius:2px;margin:11px auto 13px}
 .sh-t{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;font-style:italic;color:var(--cr);padding:0 18px 11px;border-bottom:1px solid rgba(200,150,62,.1)}
-.ntab{flex:1;max-width:150px;padding:8px 10px;border-radius:20px;border:1px solid rgba(200,150,62,.3);background:transparent;color:rgba(247,241,232,.55);font-size:12px;font-weight:500;letter-spacing:.04em;cursor:pointer;transition:all .2s}
-.ntab.on{background:var(--gd);color:var(--br);border-color:var(--gd)}
+.ntab-seg{display:inline-flex;border:1px solid rgba(200,150,62,.3);border-radius:20px;overflow:hidden;background:rgba(200,150,62,.05)}
+.ntab{padding:8px 22px;border:none;background:transparent;color:rgba(247,241,232,.55);font-size:12px;font-weight:500;letter-spacing:.04em;cursor:pointer;transition:all .2s}
+.ntab.on{background:var(--gd);color:var(--br)}
 /* AI SEARCH */
 #ov-srch{z-index:600}
 #ov-srch .hs{height:52%}
@@ -749,12 +750,12 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
           <button class="mc-add" onclick="event.stopPropagation();openMerchCardPur(this.closest('.mc').querySelector('.mc-name').textContent.trim())">Buy Now</button>
         </div>
       </div>
-      <div class="mc" onclick="openMerchDetail('OE Pen','Stationery','$44','✒️','linear-gradient(135deg,#1A0E05,#3B2010)')">
+      <div class="mc" onclick="openMerchDetail('OE Pen','Stationery','$25','✒️','linear-gradient(135deg,#1A0E05,#3B2010)')">
         <div class="mc-art" style="background:linear-gradient(135deg,#1A0E05,#3B2010);cursor:pointer">✒️</div>
         <div class="mc-info">
           <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1px">
             <div class="mc-name">OE Pen</div>
-            <div class="mc-price">$44</div>
+            <div class="mc-price">$25</div>
           </div>
           <div class="mc-cat">Stationery</div>
           <button class="mc-add" onclick="event.stopPropagation();openMerchCardPur(this.closest('.mc').querySelector('.mc-name').textContent.trim())">Buy Now</button>
@@ -1207,15 +1208,17 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
   <div class="ov-bg" onclick="C('ov-notif')"></div>
   <div class="hs" id="notif-hs">
     <div class="sh"></div>
-    <!-- Notifications / Messages toggle (messages are a form of notification). -->
-    <div style="display:flex;gap:8px;justify-content:center;padding:0 18px 11px">
-      <button id="ntab-notif" class="ntab on" onclick="notifTab('notif')">Notifications</button>
-      <button id="ntab-msgs" class="ntab" onclick="notifTab('msgs')">Messages</button>
+    <!-- Notifications / Messages toggle — a single joined segmented control (two segments, one toggle). -->
+    <div style="display:flex;justify-content:center;padding:0 18px 12px">
+      <div class="ntab-seg">
+        <button id="ntab-notif" class="ntab on" onclick="notifTab('notif')">Notifications</button>
+        <button id="ntab-msgs" class="ntab" onclick="notifTab('msgs')">Messages</button>
+      </div>
     </div>
     <div id="notif-seg">
     <div style="display:flex;align-items:center;justify-content:space-between;padding:0 18px 10px;border-bottom:1px solid rgba(200,150,62,.08)">
+      <span style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(247,241,232,.35)">Recent</span>
       <span onclick="markAllRead()" style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--gd);cursor:pointer">Mark all read</span>
-      <span onclick="goNotifCenter()" style="font-size:10px;color:var(--gd);cursor:pointer;letter-spacing:.08em;text-transform:uppercase;text-decoration:underline">Notification Center →</span>
     </div>
     <!-- Auto-generated 48-hour event reminders are injected here by generateEventReminders(). -->
     <div id="notif-auto"></div>
@@ -1229,20 +1232,20 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <div class="notif-av" style="background:linear-gradient(135deg,#C8963E,#4A2C18)">OE</div>
       <div style="flex:1"><div class="notif-txt"><b>rhodesia_official</b> dropped an Author Exclusive in Soul Player</div><div class="notif-time">5h ago</div></div>
     </div>
-    <div class="notif-item" onclick="notifNav('reward',null,this)">
-      <div style="width:8px;height:8px;border-radius:50%;background:transparent;flex-shrink:0;margin-top:4px"></div>
-      <div class="notif-av" style="background:var(--gd)">🏆</div>
-      <div style="flex:1"><div class="notif-txt"><b>Rewards:</b> You earned 50 pts! 380 pts to Pecan Sweet tier</div><div class="notif-time" style="color:rgba(247,241,232,.18)">1d ago · read</div></div>
+    <div style="display:flex;justify-content:center;padding:12px 18px 4px">
+      <span onclick="goNotifCenter()" style="font-size:11px;color:var(--gd);cursor:pointer;letter-spacing:.06em">See more →</span>
     </div>
     </div><!-- end notif-seg -->
     <!-- Messages segment: the user's message threads (messages are a form of notification). -->
     <div id="msgs-seg" style="display:none">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:0 18px 10px;border-bottom:1px solid rgba(200,150,62,.08)">
+      <div style="display:flex;align-items:center;justify-content:flex-start;padding:0 18px 10px;border-bottom:1px solid rgba(200,150,62,.08)">
         <span style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(247,241,232,.35)">Recent chats</span>
-        <span onclick="C('ov-notif');O('ov-msgs')" style="font-size:10px;color:var(--gd);cursor:pointer;letter-spacing:.08em;text-transform:uppercase;text-decoration:underline">Open Messages →</span>
       </div>
       <div class="msg-item" onclick="C('ov-notif');openConvo('peggy_lavizzo_nola','Did you read chapter 18 yet? 🌿')"><div class="msg-av" style="background:linear-gradient(135deg,#5C3D28,#C8963E)">PJ</div><div class="msg-info"><div class="msg-un">peggy_lavizzo_nola</div><div class="msg-pre">Did you read chapter 18 yet? 🌿</div></div><div class="msg-time">2h</div></div>
       <div class="msg-item" onclick="C('ov-notif');openConvo('marlena_k','That grocery scene gets me every time')"><div class="msg-av" style="background:linear-gradient(135deg,#C8963E,#4A2C18)">MK</div><div class="msg-info"><div class="msg-un">marlena_k</div><div class="msg-pre">That grocery scene gets me every time</div></div><div class="msg-time">5h</div></div>
+      <div style="display:flex;justify-content:center;padding:12px 18px 4px">
+        <span onclick="C('ov-notif');O('ov-msgs')" style="font-size:11px;color:var(--gd);cursor:pointer;letter-spacing:.06em">See more →</span>
+      </div>
     </div>
   </div>
 </div>
@@ -1748,6 +1751,20 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <span id="merch-qty" style="font-size:16px;font-weight:500;color:var(--cr)">1</span>
       <button onclick="adjMerchQty(1)" style="width:28px;height:28px;border-radius:50%;border:1px solid rgba(200,150,62,.3);background:transparent;color:var(--gd);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1">+</button>
       <span id="merch-total" style="margin-left:auto;font-size:15px;font-weight:500;color:var(--gd)">$34</span>
+    </div>
+    <!-- Ink add-on (OE Pen only) — a small optional extra with its own quantity, added to the total/cart -->
+    <div id="merch-ink-block" style="display:none;padding:0 15px 12px">
+      <div style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(247,241,232,.35);margin-bottom:7px">Ink Add-on</div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px" id="merch-ink-opts">
+        <button onclick="selInk(this,'Ballpoint ink',10)" data-price="10" style="padding:5px 11px;border-radius:4px;border:1px solid var(--gd);background:rgba(200,150,62,.08);color:var(--gd);font-size:11px;cursor:pointer">Ballpoint ink · $10</button>
+        <button onclick="selInk(this,'Fountain ink',20)" data-price="20" style="padding:5px 11px;border-radius:4px;border:1px solid rgba(200,150,62,.3);background:transparent;color:rgba(247,241,232,.6);font-size:11px;cursor:pointer">Fountain ink · $20</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(247,241,232,.35)">Qty</div>
+        <button onclick="adjInkQty(-1)" style="width:26px;height:26px;border-radius:50%;border:1px solid rgba(200,150,62,.3);background:transparent;color:var(--gd);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1">−</button>
+        <span id="merch-ink-qty" style="font-size:15px;font-weight:500;color:var(--cr)">0</span>
+        <button onclick="adjInkQty(1)" style="width:26px;height:26px;border-radius:50%;border:1px solid rgba(200,150,62,.3);background:transparent;color:var(--gd);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1">+</button>
+      </div>
     </div>
     <div class="ti-acts">
       <button class="ti-buy pbuy" onclick="C('ov-merch');setTimeout(()=>{addMerchToCart(currentMerchName,currentMerchPrice,'🛍');completePur('Apple Pay');},200)">Buy Now</button>
@@ -2484,10 +2501,15 @@ function showCityPopup(city){
   info.appendChild(kicker); info.appendChild(title); info.appendChild(meta);
   var btn=document.createElement('button');
   if(isExp){
-    btn.textContent='Book';
-    btn.className='pbuy';
-    btn.style.cssText='flex-shrink:0;padding:6px 15px;border-radius:20px;font-size:10px;font-weight:600;cursor:pointer';
-    btn.onclick=function(){ setDisp('city-popup','none'); bookExpFromList(ev.name); };
+    if(purchasedExperiences[ev.name]){
+      btn.textContent='✓ Booked'; btn.disabled=true;
+      btn.style.cssText='flex-shrink:0;padding:6px 15px;border-radius:20px;border:1px solid rgba(200,150,62,.5);background:transparent;color:var(--gd);font-size:10px;font-weight:600;cursor:default';
+    } else {
+      btn.textContent='Book';
+      btn.className='pbuy';
+      btn.style.cssText='flex-shrink:0;padding:6px 15px;border-radius:20px;font-size:10px;font-weight:600;cursor:pointer';
+      btn.onclick=function(){ setDisp('city-popup','none'); bookExpFromList(ev.name); };
+    }
   } else {
     btn.textContent = rsvpedEvents[ev.name]?'✓ Going':'RSVP';
     btn.style.cssText='flex-shrink:0;padding:6px 13px;border-radius:20px;border:1px solid rgba(200,150,62,.35);background:'+(rsvpedEvents[ev.name]?'var(--gd)':'transparent')+';color:'+(rsvpedEvents[ev.name]?'var(--br)':'var(--gd)')+';font-size:10px;font-weight:500;cursor:pointer';
@@ -2544,8 +2566,11 @@ function evListRow(e){
   // Paid experiences require purchase -> a gold "Book" button that opens the SAME ticket popup
   //   IN PLACE (no navigation). Tapping the name also books (details stay gated until purchased).
   var nameClick = isExp ? "bookExpFromList('"+safe+"')" : "openEvPopup('"+safe+"')";
+  var booked = isExp && purchasedExperiences[e.name];
   var btn = isExp
-    ? '<button class="ev-rsvp ev-book pbuy" onclick="bookExpFromList(\''+safe+'\')">Book</button>'
+    ? (booked
+        ? '<button class="ev-rsvp" style="background:transparent;color:var(--gd);border-color:rgba(200,150,62,.5);cursor:default" disabled>✓ Booked</button>'
+        : '<button class="ev-rsvp ev-book pbuy" onclick="bookExpFromList(\''+safe+'\')">Book</button>')
     : '<button class="ev-rsvp" onclick="tRsvp(this)">RSVP</button>';
   return '<div class="ev-row" data-city="'+(e.city||'')+'"'+(isExp?' data-exp="1"':'')+'>'
     +'<div class="ev-ico" onclick="flashOrbFromEl(this)" style="cursor:pointer">'+EV_PIN_SVG+'</div>'
@@ -3686,6 +3711,8 @@ function linkExperiencePurchase(expSheetOpen){
     for(var i=cartItems.length-1;i>=0;i--){ if(cartItems[i] && cartItems[i].type==='experience') cartItems.splice(i,1); }
     if(typeof updateCartDot==='function') updateCartDot();
   }
+  // Refresh the Community events list so any newly-booked experience flips Book → Booked live.
+  if(linked && typeof renderEventsList==='function') renderEventsList();
   return linked;
 }
 
@@ -3867,10 +3894,10 @@ const merchArt = {
 function getMerchArt(name){ return merchArt[(name||'').replace(/&amp;/g,'&').trim()]||null; }
 // Per-item detail-popup options. label = group heading; values = choices. null/absent = hide the group.
 const merchOptions = {
-  'OE Pen':     {label:'Style',       values:['Fountain','Ball-point'],        prices:[44,25]},
+  'OE Pen':     {label:'Style',       values:['Ball-point','Fountain'],        prices:[25,44]},
   'OE Journal': {label:'Sizes (in.)', values:['4.5 x 6','6 x 8','8.5 x 11'],   prices:[20,26,32]},
   'OE Tote':    {label:'Sizes (in.)', values:['14 x 16','24 x 17'],            prices:[25,40]},
-  'OE Mug':     {label:'Sizes (oz)',  values:['14 oz.','20 oz.','40 oz.'],     prices:[20,25,35]},
+  'OE Mug':     {label:'Sizes (oz)',  values:['14 oz.','20 oz.','40 oz.'],     prices:[30,45,60]},
   'OE Blanket': {label:'Sizes (in.)', values:['Toddler Crib','Twin','Queen','King'], prices:[50,95,145,200]},
   'OE Sweets':  null
 };
@@ -3900,7 +3927,7 @@ function renderMerchOptions(name){
   });
   currentMerchSize=opt.values[0];
   // Per-option pricing: the first option sets the starting price + total.
-  if(opt.prices){ currentMerchPrice=opt.prices[0]; setText('merch-total','$'+(currentMerchQty*currentMerchPrice)); }
+  if(opt.prices){ currentMerchPrice=opt.prices[0]; updateMerchTotal(); }
 }
 // ── OE Sweets flavor box (pick counts of the 4 flavors, total exactly 4) ──
 function sweetsTotal(){ var t=0; for(var k in sweetsPick) t+=sweetsPick[k]||0; return t; }
@@ -4285,6 +4312,10 @@ const cartItems = [];
 function addMerchToCart(name, unitPrice, icon){
   var detail=[currentMerchSize,currentMerchColor].filter(Boolean).join(' · ');
   cartItems.push({name, price:parseFloat((unitPrice||'34').toString().replace('$','')), icon: icon||'🛍', qty:(currentMerchQty||1), type:'merch', detail:detail});
+  // OE Pen ink add-on -> its own clearly-associated cart line (price × chosen quantity).
+  if(name==='OE Pen' && currentInkQty>0){
+    cartItems.push({name:'OE Pen — '+currentInkName, price:currentInkPrice, icon:'🖋', qty:currentInkQty, type:'merch', detail:'Ink add-on'});
+  }
   updateCartDot();
 }
 function updateCartDot(){
@@ -4352,7 +4383,13 @@ function openMerchDetail(name,cat,price,icon,bg){
   if(isSweets){ currentMerchPrice=SWEETS_PRICE; openSweetsFlavors(); }
   renderMerchOptions(name);
   setText('merch-qty','1');
-  setText('merch-total', isSweets?('$'+SWEETS_PRICE):price);
+  // Ink add-on: OE Pen only. Reset to none (Ballpoint highlighted, qty 0) each time the popup opens.
+  var isPen=(name==='OE Pen');
+  setDisp('merch-ink-block', isPen?'block':'none');
+  currentInkName='Ballpoint ink'; currentInkPrice=10; currentInkQty=0;
+  setText('merch-ink-qty','0');
+  document.querySelectorAll('#merch-ink-opts button').forEach(function(b,i){ var on=(i===0); b.style.borderColor=on?'var(--gd)':'rgba(200,150,62,.3)'; b.style.background=on?'rgba(200,150,62,.08)':'transparent'; b.style.color=on?'var(--gd)':'rgba(247,241,232,.6)'; });
+  if(isSweets){ setText('merch-total','$'+SWEETS_PRICE); } else { updateMerchTotal(); }
   const img=document.getElementById('merch-img');
   var a=getMerchArt(name);
   // Two-image gallery only when this item declares imgs[] (currently OE Mug); others stay single.
@@ -4477,12 +4514,27 @@ function selSize(el){
   el.style.borderColor='var(--gd)';el.style.background='rgba(200,150,62,.08)';el.style.color='var(--gd)';
   currentMerchSize=el.textContent.trim();
   // Per-option price: update the price + the qty total to match the chosen size/style.
-  if(el.dataset.price){ currentMerchPrice=parseInt(el.dataset.price,10); setText('merch-total','$'+(currentMerchQty*currentMerchPrice)); }
+  if(el.dataset.price){ currentMerchPrice=parseInt(el.dataset.price,10); updateMerchTotal(); }
 }
 function adjMerchQty(d){
   currentMerchQty=Math.max(1,Math.min(20,currentMerchQty+d));
   setText('merch-qty',currentMerchQty);
-  setText('merch-total','$'+(currentMerchQty*currentMerchPrice));
+  updateMerchTotal();
+}
+// Ink add-on state (OE Pen only). Total = qty*price + (ink qty*ink price).
+var currentInkName='Ballpoint ink', currentInkPrice=10, currentInkQty=0;
+function merchInkExtra(){ return (currentMerchName==='OE Pen' && currentInkQty>0) ? currentInkQty*currentInkPrice : 0; }
+function updateMerchTotal(){ setText('merch-total','$'+((currentMerchQty*currentMerchPrice)+merchInkExtra())); }
+function selInk(el,name,price){
+  currentInkName=name; currentInkPrice=price;
+  document.querySelectorAll('#merch-ink-opts button').forEach(function(b){ b.style.borderColor='rgba(200,150,62,.3)'; b.style.background='transparent'; b.style.color='rgba(247,241,232,.6)'; });
+  el.style.borderColor='var(--gd)'; el.style.background='rgba(200,150,62,.08)'; el.style.color='var(--gd)';
+  updateMerchTotal();
+}
+function adjInkQty(d){
+  currentInkQty=Math.max(0,Math.min(20,currentInkQty+d));
+  setText('merch-ink-qty',currentInkQty);
+  updateMerchTotal();
 }
 // Voice wheel
 let voiceIdx=1;
