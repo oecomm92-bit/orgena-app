@@ -5504,7 +5504,7 @@ function setupCreationsScroll(){
    Soul Player banner — premium brown/gold wave line-field (canvas).
    A dense set of thin horizontal contour lines share one undulating surface
    (per-line phase offsets make crests lean/travel through the stack). A gold
-   "crest" envelope sweeps left→right roughly every 3.5s with calm gaps between,
+   "crest" envelope sweeps left→right slowly (~7s cycle) with calm gaps between,
    swelling the surface and brightening it to gold, and dragging a fading wake
    of echo lobes behind it. Dark OE browns at rest, warm tan/gold at the crest.
    RAF is gated by an IntersectionObserver (only runs while the banner is on
@@ -5515,8 +5515,8 @@ function setupCreationsScroll(){
   var ctx=cv.getContext('2d');
   var reduce=window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
   var W=0,H=0,dpr=Math.min(window.devicePixelRatio||1,2);
-  var LINES=14, STEP=5;             // line count + x sampling (kept light)
-  var PERIOD=3500;                  // one crest sweep + calm gap (~3.5s pacing)
+  var LINES=18, STEP=5;             // line count + x sampling (kept light; denser for full-height cover)
+  var PERIOD=7000;                  // one crest sweep + calm gap — half-speed, slow & soothing
   var raf=0, running=false, last=0;
 
   // Brown→gold ramp used along the crest. b in [0,1]: 0 = deep brown, 1 = warm gold.
@@ -5540,7 +5540,7 @@ function setupCreationsScroll(){
     var wgap=0.14;
     for(var k=1;k<=4;k++){
       // wake echoes fade behind the crest and shimmer (vibrational pulse)
-      var vib=0.72+0.28*Math.sin(tms*0.011 - k*1.1);
+      var vib=0.72+0.28*Math.sin(tms*0.0055 - k*1.1);
       e += lobe(cx - wgap*k) * Math.pow(0.6,k) * vib;
     }
     return e*swell;
@@ -5557,7 +5557,7 @@ function setupCreationsScroll(){
     ctx.clearRect(0,0,W,H);
     var T=now/1000;
     // Crest cycle: travel across ~62% of the period, then a calm gap. Eased so the
-    // swell rises and falls smoothly — a pulse every ~3.5s with quiet moments between.
+    // swell rises and falls smoothly — a slow pulse (~7s) with quiet moments between.
     var cyc=(now%PERIOD)/PERIOD;
     var act=0.62, sweep=cyc<act?cyc/act:1;
     var ease=sweep*sweep*(3-2*sweep);                 // smoothstep
@@ -5566,7 +5566,8 @@ function setupCreationsScroll(){
     var swell=0.28+1.15*gate;                         // localized energy strength
     var baseB=0.05+0.05*gate;                         // faint ambient glow that breathes
 
-    var padY=6, span=H-padY*2, gap=span/(LINES-1);
+    // Overshoot top & bottom so the ripple reaches both edges (no empty margin above/below).
+    var padY=-3, span=H-padY*2, gap=span/(LINES-1);
     var baseAmp=Math.max(1.6, span*0.045), swellAmp=Math.max(4, span*0.16);
 
     // Precompute the shared brown→gold gradient from the crest energy across x.
@@ -5581,16 +5582,16 @@ function setupCreationsScroll(){
       ctx.beginPath();
       for(var x=0;x<=W;x+=STEP){
         var xn2=x/W;
-        var u=Math.sin(xn2*6.0 + T*0.9 + ph)*0.55
-             +Math.sin(xn2*11.0 - T*0.6 + ph*1.7)*0.30
-             +Math.sin(xn2*3.0 + T*0.5)*0.15;
+        var u=Math.sin(xn2*6.0 + T*0.45 + ph)*0.55
+             +Math.sin(xn2*11.0 - T*0.3 + ph*1.7)*0.30
+             +Math.sin(xn2*3.0 + T*0.25)*0.15;
         var e=energy(xn2,cx,swell,now);
         var y=y0 + u*(baseAmp + swellAmp*e);
         if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
       }
       ctx.strokeStyle=grad;
       ctx.globalAlpha=0.32+0.045*i/LINES + 0.30*gate; // nearer lines a touch stronger; whole field lifts on the pulse
-      ctx.lineWidth=1;
+      ctx.lineWidth=0.75;                              // a touch skinnier
       ctx.stroke();
     }
     ctx.globalAlpha=1;
