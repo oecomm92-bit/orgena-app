@@ -929,7 +929,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 <div class="sc comm-sc" id="s-community" style="background:var(--blk)">
   
   <!-- Explore post popup -->
-  <div id="comm-post-popup" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.72);z-index:880;align-items:center;justify-content:center" onclick="closeCommPost()">
+  <div id="comm-post-popup" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:880;align-items:center;justify-content:center" onclick="closeCommPost()">
     <div id="comm-post-inner" style="width:340px;height:80%;max-height:660px;background:#140A05;border-radius:16px;overflow:hidden;padding:0;position:relative;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.6)" onclick="event.stopPropagation()"></div>
   </div>
   <!-- Event description popup -->
@@ -1518,7 +1518,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
           <div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--br);background:var(--gd);padding:5px 13px;border-radius:20px;font-weight:600">● Voice Memo</div>
           <div class="cr-wave" id="cr-wave"><span style="animation-delay:0s"></span><span style="animation-delay:.08s"></span><span style="animation-delay:.16s"></span><span style="animation-delay:.24s"></span><span style="animation-delay:.32s"></span><span style="animation-delay:.4s"></span><span style="animation-delay:.48s"></span><span style="animation-delay:.56s"></span><span style="animation-delay:.64s"></span><span style="animation-delay:.72s"></span><span style="animation-delay:.6s"></span><span style="animation-delay:.5s"></span><span style="animation-delay:.4s"></span><span style="animation-delay:.3s"></span><span style="animation-delay:.2s"></span><span style="animation-delay:.1s"></span><span style="animation-delay:.18s"></span><span style="animation-delay:.28s"></span><span style="animation-delay:.38s"></span><span style="animation-delay:.14s"></span></div>
           <div id="cr-voice-timer" style="font-family:'DM Sans',sans-serif;font-size:15px;color:var(--gd);letter-spacing:.1em">0:00</div>
-          <div style="font-size:10px;color:rgba(247,241,232,.4);letter-spacing:.04em">Recording your voice reflection…</div>
+          <div id="cr-voice-status" style="font-size:10px;color:rgba(247,241,232,.4);letter-spacing:.04em">Tap the record button to start</div>
         </div>
         <div style="position:relative;text-align:center;padding-top:16px">
           <div id="cr-mode-hint" style="display:inline-block;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--br);background:var(--gd);padding:5px 13px;border-radius:20px;font-weight:600">● Video</div>
@@ -2037,28 +2037,37 @@ function crSetMode(mode){
   if(mode==='photo'){ if(hint)hint.innerHTML='● Photo'; if(inner){inner.style.background='#F7F1E8';inner.style.borderRadius='50%';inner.style.width='54px';inner.style.height='54px';} if(tip)tip.innerHTML='📸 Capture a moment to share'; }
   else if(mode==='voice'){ if(hint)hint.innerHTML='● Voice'; if(inner){inner.style.background='#C8963E';inner.style.borderRadius='14px';inner.style.width='40px';inner.style.height='40px';} if(tip)tip.innerHTML='🎙 Tap the button to record your voice memo'; }
   else { if(hint)hint.innerHTML='● Video'; if(inner){inner.style.background='#E0584F';inner.style.borderRadius='50%';inner.style.width='54px';inner.style.height='54px';} if(tip)tip.innerHTML='🎬 Videos get 3× more love — try one!'; }
-  // Voice mode swaps the camera preview for an animated waveform recorder.
+  // Voice mode swaps the camera preview for a waveform recorder. It opens STILL — the waves only
+  // move between tap-record and tap-stop (driven by the real mic where available).
   if(mode==='voice'){
     if(vpanel) vpanel.style.display='flex';
     if(canvas) canvas.style.display='none';
-    startVoiceTimer();
-    startVoiceWave();
+    stopVoiceRecording();          // ensure a clean, still, idle state on open
+    setText('cr-voice-timer','0:00');
+    flattenVoiceWave();
+    setVoiceRecBtn(false);
+    var st=document.getElementById('cr-voice-status'); if(st) st.textContent='Tap the record button to start';
   } else {
     if(vpanel) vpanel.style.display='none';
     if(canvas) canvas.style.display='';
-    stopVoiceTimer();
-    stopVoiceWave();
+    stopVoiceRecording();
   }
 }
-// Animated record-mode waveform: drive each bar with a lively, center-weighted random
-// height so it reads as "capturing your voice" (prototype behavior — real mic capture is
-// limited on iOS Safari / static hosting).
+// ── Voice recorder: still → tap record → waves (real mic where available) → tap → still ──
+// Flat/still waveform (opening + stopped state).
+function flattenVoiceWave(){
+  var bars=document.querySelectorAll('#cr-wave span');
+  bars.forEach(function(b){ b.style.animation='none'; b.style.transition='transform .18s ease'; b.style.transform='scaleY(0.12)'; });
+}
+// Fallback animated waveform — used only WHILE recording when the real mic is unavailable/denied.
+// Still only runs between tap-record and tap-stop.
 function startVoiceWave(){
   stopVoiceWave();
   var bars=document.querySelectorAll('#cr-wave span'); if(!bars.length) return;
   var n=bars.length;
   bars.forEach(function(b){ b.style.animation='none'; b.style.transition='transform .12s ease'; });
   window._crWave=setInterval(function(){
+    if(!window._crRec) return;
     for(var i=0;i<n;i++){
       var center=1-Math.abs(i-(n-1)/2)/((n-1)/2);   // taller in the middle
       var h=0.2 + (0.25+0.75*center)*Math.random();
@@ -2068,8 +2077,6 @@ function startVoiceWave(){
 }
 function stopVoiceWave(){
   if(window._crWave){ clearInterval(window._crWave); window._crWave=null; }
-  var bars=document.querySelectorAll('#cr-wave span');
-  bars.forEach(function(b){ b.style.animation=''; b.style.transform=''; });
 }
 function startVoiceTimer(){
   stopVoiceTimer();
@@ -2080,11 +2087,75 @@ function startVoiceTimer(){
   },1000);
 }
 function stopVoiceTimer(){ if(window._crVoiceTimer){ clearInterval(window._crVoiceTimer); window._crVoiceTimer=null; } }
+// Toggle the round record button between idle (gold, rounded) and recording (red square).
+function setVoiceRecBtn(recording){
+  var inner=document.getElementById('cr-capture-inner'); if(!inner) return;
+  if(recording){ inner.style.background='#E0584F'; inner.style.borderRadius='6px'; inner.style.width='30px'; inner.style.height='30px'; }
+  else { inner.style.background='#C8963E'; inner.style.borderRadius='14px'; inner.style.width='40px'; inner.style.height='40px'; }
+}
+function voiceRecordToggle(){
+  if(window._crRec) stopVoiceRecording(); else startVoiceRecording();
+}
+function startVoiceRecording(){
+  if(window._crRec) return;
+  window._crRec=true;
+  setVoiceRecBtn(true);
+  startVoiceTimer();
+  var st=document.getElementById('cr-voice-status'); if(st) st.textContent='Recording your voice reflection…';
+  // Try the real microphone (Web Audio). Where granted (e.g. Android Chrome) the bars react to
+  // loudness; where blocked/denied (common on iOS Safari / static hosting) fall back to the
+  // animated waveform — either way the motion only exists while recording.
+  var md=navigator.mediaDevices;
+  if(md && md.getUserMedia){
+    md.getUserMedia({audio:true}).then(function(stream){
+      if(!window._crRec){ stream.getTracks().forEach(function(t){t.stop();}); return; } // stopped before grant
+      window._crMicStream=stream;
+      try{
+        var AC=window.AudioContext||window.webkitAudioContext;
+        var ac=new AC(); window._crAudioCtx=ac;
+        var src=ac.createMediaStreamSource(stream);
+        var an=ac.createAnalyser(); an.fftSize=64; an.smoothingTimeConstant=0.75;
+        src.connect(an); window._crAnalyser=an;
+        window._crFreq=new Uint8Array(an.frequencyBinCount);
+        crMicLoop();
+      }catch(e){ startVoiceWave(); }
+    }).catch(function(){ startVoiceWave(); }); // denied / unavailable → animated fallback
+  } else {
+    startVoiceWave();
+  }
+}
+function crMicLoop(){
+  if(!window._crRec || !window._crAnalyser){ return; }
+  var an=window._crAnalyser, data=window._crFreq; an.getByteFrequencyData(data);
+  var bars=document.querySelectorAll('#cr-wave span'); var n=bars.length; var bins=data.length;
+  for(var i=0;i<n;i++){
+    var center=1-Math.abs(i-(n-1)/2)/((n-1)/2);
+    var bin=Math.min(bins-1, 1+Math.floor(i/n*(bins-2)));
+    var v=data[bin]/255;                          // 0 (silence) .. 1 (loud)
+    var h=0.12 + Math.min(1,v*1.7)*(0.35+0.65*center);
+    bars[i].style.transform='scaleY('+h.toFixed(3)+')';
+  }
+  window._crRAF=requestAnimationFrame(crMicLoop);
+}
+function stopVoiceRecording(){
+  window._crRec=false;
+  stopVoiceTimer();
+  stopVoiceWave();
+  if(window._crRAF){ cancelAnimationFrame(window._crRAF); window._crRAF=null; }
+  if(window._crAudioCtx){ try{ window._crAudioCtx.close(); }catch(e){} window._crAudioCtx=null; }
+  window._crAnalyser=null; window._crFreq=null;
+  if(window._crMicStream){ try{ window._crMicStream.getTracks().forEach(function(t){t.stop();}); }catch(e){} window._crMicStream=null; }
+  setVoiceRecBtn(false);
+  flattenVoiceWave();
+  var st=document.getElementById('cr-voice-status'); if(st && crCurMode==='voice') st.textContent='Tap the record button to start';
+}
 function crCapture(){
   var btn=document.getElementById('cr-capture-btn');
   if(btn){ btn.style.transform='scale(.9)'; setTimeout(function(){ btn.style.transform='scale(1)'; },150); }
-  if(crCurMode==='voice'){ var a=document.getElementById('cr-file-aud'); if(a) a.click(); }
-  else { var c=document.getElementById('cr-file-cam'); if(c) c.click(); }
+  // Voice: the round button starts/stops the recorder (waveform), not a file picker
+  // (use the "Upload from library" button to attach an existing audio file).
+  if(crCurMode==='voice'){ voiceRecordToggle(); return; }
+  var c=document.getElementById('cr-file-cam'); if(c) c.click();
 }
 function crFilePicked(input, source){
   var f = input.files && input.files[0];
@@ -3374,6 +3445,8 @@ function C(id){
   var el=document.getElementById(id);
   if(!el)return;
   if(typeof closeAllCmtMenus==='function') closeAllCmtMenus();
+  // Closing the create sheet must release the mic and stop the recorder.
+  if(id==='ov-create' && typeof stopVoiceRecording==='function') stopVoiceRecording();
   var hs=el.querySelector('.hs');
   if(hs)hs.classList.remove('up');
   el.classList.remove('show');
