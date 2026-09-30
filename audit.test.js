@@ -373,16 +373,67 @@ async function sweepScreen(page, screenId) {
   (f1 && JSON.stringify(f1) !== JSON.stringify(f2)) ? P('community/explore', 'popup video/canvas plays') : B('community/explore', 'popup video/canvas not animating');
   exr.rail >= 3 ? P('community/explore', `like/repost/save rail present (${exr.rail} buttons)`) : I('community/explore', `rail has only ${exr.rail} buttons`);
 
-  // -- avatar -> story from an Explore post (this passes p.bg, a CSS gradient) --
-  const beforeAv = pageErrors.length;
-  await page.evaluate(() => { const a = document.querySelector('#comm-post-inner [onclick^="closeCommPost();openStory"]'); if (a) a.click(); });
-  await page.waitForTimeout(450);
-  const avStory = await page.evaluate(() => { const s = document.getElementById('ov-story'); return s ? s.classList.contains('show') : false; });
-  const avErr = pageErrors.slice(beforeAv).join(' | ');
-  if (!avStory || /addColorStop|could not be parsed as a color/.test(avErr)) {
-    B('community/explore', 'avatar->story on an Explore post passes a CSS gradient as a solid-color arg to openStory -> addColorStop throws, story never opens (also affects comment-row avatars via cpCmt). ' + (avErr ? 'err: ' + avErr : ''));
-  } else P('community/explore', 'avatar->story opens from an Explore post');
+  // -- REGRESSION (Batch 18): avatar -> story via REAL taps (pointerdown->click on the actual
+  //    element), not synthetic .click(). Explore post + comment avatars pass CSS gradients; Home
+  //    avatars pass solid hex. All must open ov-story with no console error. --
+  // realTapStory: click a real selector, wait, report whether ov-story opened + any new pageerror.
+  async function realTapStory(sel, timeoutMs) {
+    const before = pageErrors.length;
+    const loc = page.locator(sel).first();
+    let tapped = false;
+    try { await loc.scrollIntoViewIfNeeded({ timeout: 2000 }); } catch (_) {}
+    try { await loc.dispatchEvent('pointerdown'); } catch (_) {}      // realistic pointerdown ...
+    try { await loc.click({ timeout: 3000 }); tapped = true; }        // ... then a real user-like click
+    catch (e) { try { await loc.click({ timeout: 2000, force: true }); tapped = true; } catch (_) {} }
+    await page.waitForTimeout(timeoutMs || 450);
+    const open = await page.evaluate(() => { const s = document.getElementById('ov-story'); return s ? s.classList.contains('show') : false; });
+    const err = pageErrors.slice(before).join(' | ');
+    return { tapped, open, err };
+  }
+  const storyErrRe = /addColorStop|could not be parsed as a color/;
+
+  // (1) Explore POST author avatar (real scroll to a bottom post, real tap the cell, real tap avatar)
+  await page.evaluate(() => { document.getElementById('nb-community').click(); commToggle('explore'); });
+  await page.waitForTimeout(300);
+  for (let i = 0; i < 6; i++) { await page.evaluate(() => { const s = document.getElementById('s-community'); s.scrollTop = s.scrollHeight; }); await page.waitForTimeout(200); }
+  await page.evaluate(() => { const cells = [...document.querySelectorAll('#comm-grid > div')]; const c = cells[cells.length - 2] || cells[cells.length - 1]; c.scrollIntoView({ block: 'center' }); c.click(); });
+  await page.waitForTimeout(400);
+  const rPost = await realTapStory('#comm-post-inner [onclick^="closeCommPost();openStory"]');
+  (rPost.tapped && rPost.open && !storyErrRe.test(rPost.err)) ? P('community/explore', 'REAL TAP: Explore post author avatar opens the story (no error)')
+    : B('community/explore', `REAL TAP: Explore post avatar failed (opened:${rPost.open}, tapped:${rPost.tapped}) ${rPost.err ? 'err: ' + rPost.err : ''}`);
   await closeAll(page);
+
+  // (2) Explore COMMENT-row avatar (cpCmt passes a gradient too)
+  await page.evaluate(() => { document.getElementById('nb-community').click(); commToggle('explore'); });
+  await page.waitForTimeout(250);
+  await page.evaluate(() => { const c = document.querySelector('#comm-grid > div'); if (c) c.click(); });
+  await page.waitForTimeout(350);
+  await page.evaluate(() => { if (typeof openCommComments === 'function') openCommComments(); });
+  await page.waitForTimeout(250);
+  const rCmt = await realTapStory('#cp-cmts [onclick^="closeCommPost();openStory"]');
+  (rCmt.tapped && rCmt.open && !storyErrRe.test(rCmt.err)) ? P('community/explore', 'REAL TAP: Explore comment-row avatar opens the story (no error)')
+    : B('community/explore', `REAL TAP: Explore comment avatar failed (opened:${rCmt.open}, tapped:${rCmt.tapped}) ${rCmt.err ? 'err: ' + rCmt.err : ''}`);
+  await closeAll(page);
+
+  // (3) Home-feed avatar (solid hex) — no-regression guard
+  await goTab(page, 'home'); await page.waitForTimeout(200);
+  const rHome = await realTapStory('#s-home .pav[onclick^="openStory"]');
+  (rHome.tapped && rHome.open && !storyErrRe.test(rHome.err)) ? P('home/social', 'REAL TAP: Home-feed avatar still opens the story (no regression)')
+    : B('home/social', `REAL TAP: Home-feed avatar failed (opened:${rHome.open}, tapped:${rHome.tapped}) ${rHome.err ? 'err: ' + rHome.err : ''}`);
+  await closeAll(page);
+
+  // (4) Home post-comment avatar via openUserStory (derives SOLID colors) — extra no-regression guard.
+  //     NOTE: notification rows route via notifNav (open content), NOT a story — there is no
+  //     "notification avatar -> story" behavior in the app, so that specific assertion is reported
+  //     under NOT VERIFIED rather than faked here.
+  await goTab(page, 'home'); await page.waitForTimeout(150);
+  await page.evaluate(() => { const el = document.querySelector('#s-home [onclick*="O(\'ov-cmts\')"], #s-home [onclick*="openComments"]'); if (el) el.click(); else if (typeof O === 'function') O('ov-cmts'); });
+  await page.waitForTimeout(300);
+  const rUserStory = await realTapStory('#ov-cmts .cmt-av[onclick^="openUserStory"]');
+  (rUserStory.tapped && rUserStory.open && !storyErrRe.test(rUserStory.err)) ? P('home/social', 'REAL TAP: comment avatar via openUserStory opens the story (solid-color path, no regression)')
+    : (rUserStory.tapped ? B('home/social', `REAL TAP: openUserStory comment avatar failed (opened:${rUserStory.open}) ${rUserStory.err || ''}`) : I('home/social', 'openUserStory comment avatar not reachable to tap in this harness (comments overlay not opened)'));
+  await closeAll(page);
+  NV('notifications', 'Notification rows route via notifNav to content and have NO story-opening avatar — a "notification avatar opens a story" assertion is not applicable; notifNav routing is covered under §B.');
 
   // -- name -> profile, and openStory happy-path with SOLID colors (correct API contract) --
   const social = await page.evaluate(() => {

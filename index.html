@@ -3697,7 +3697,26 @@ function refreshSavedTab(){
   el.insertBefore(div, el.firstChild);
 }
 
+// Coerce a color argument to a SOLID color the canvas can use. Accepts a solid color unchanged
+// (hex/rgb/rgba/hsl/named), extracts the FIRST color stop from a CSS gradient string, and falls back
+// to a brand color for anything invalid/undefined. Validated with a canvas fillStyle round-trip
+// (two probes with different defaults) rather than a fragile regex alone.
+function toSolidColor(value, fallback){
+  fallback = fallback || '#2C1A0E';
+  if(typeof value!=='string' || !value.trim()) return fallback;
+  var v=value.trim();
+  if(/gradient\(/i.test(v)){                       // pull the first stop out of a gradient string
+    var m=v.match(/#[0-9a-fA-F]{3,8}|rgba?\([^)]*\)|hsla?\([^)]*\)/);
+    v = m ? m[0] : fallback;
+  }
+  try{
+    var p1=document.createElement('canvas').getContext('2d'); p1.fillStyle='#ff0000'; p1.fillStyle=v;
+    var p2=document.createElement('canvas').getContext('2d'); p2.fillStyle='#0000ff'; p2.fillStyle=v;
+    return (p1.fillStyle===p2.fillStyle) ? p1.fillStyle : fallback; // same canonical => valid; else invalid
+  }catch(e){ return fallback; }
+}
 function openStory(initials,username,c1,c2){
+  c1=toSolidColor(c1,'#2C1A0E'); c2=toSolidColor(c2,'#C8963E');  // gradient/undefined args are now safe
   setText('story-av',initials);
   document.getElementById('story-av').style.background=`linear-gradient(135deg,${c1},${c2})`;
   setText('story-un',username);
