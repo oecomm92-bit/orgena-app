@@ -115,6 +115,35 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .pab:hover{border-color:rgba(200,150,62,.2);color:var(--gdl)}
 .pab.liked{color:var(--gd)}.pab.liked svg{fill:var(--gd)}
 .pab.saved svg{fill:var(--gd)}
+/* ── Tap-target expansion (Batch 20): give small controls a >=44px EFFECTIVE hit area without
+   changing their visual size, spacing, typography or layout. A transparent, centered ::after
+   overlay captures the tap; it paints nothing (before/after look identical) and takes no layout
+   space. Applied only to leaf buttons (never to containers that hold their own buttons). Bounded
+   per context so a hit area NEVER overlaps a neighbour:
+     - symmetric rule below: width/height = max(own size, 44), centred. For elements already
+       >=44px wide only the HEIGHT grows, so horizontal neighbours are never covered. The one
+       sub-44 width here ("All", 41px) grows 1.5px/side into a 7px gap — still clear.
+     - sticky filter bars (.fp/.np-ctrl) are overflow:auto, so the ::after is CLIPPED to the bar
+       (~42px). That is the achievable ceiling without making the bar taller (a spacing change).
+     - .pab (home post actions, 2px apart) uses the separate bounded rule so adjacent icons can't
+       steal each other's taps.
+   DELIBERATELY NOT EXPANDED — the Community screen's events list (.ev-rsvp Book/Going/RSVP, the
+   My Events button, the Explore/Events toggle). That screen paints a live <canvas> map, which
+   makes Chrome GPU-composite any position:relative descendant that shares its layer; the
+   compositing resamples the button text and softens it (measured: max per-channel delta 93 at 2x,
+   visible under magnification). Since position:relative is required to anchor the ::after overlay,
+   expanding these would break the "before/after identical" guarantee, so they are left at their
+   native size here; enlarging them cleanly needs a spacing/size change the user has reserved. */
+.fp,.np-ctrl,.btn-tr,.btn-buy,.mc-add,.exp-bk,.pr-edit,.pr-qr,.pfbtn,.hit{position:relative}
+.fp::after,.np-ctrl::after,.btn-tr::after,.btn-buy::after,.mc-add::after,.exp-bk::after,.pr-edit::after,.pr-qr::after,.pfbtn::after,.hit::after{
+  content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:100%;height:100%;min-width:44px;min-height:44px;background:transparent}
+/* Tight control rows: expand vertically but only to the gap midpoint horizontally so
+   neighbouring controls never overlap. .pab (home post actions, 2px gap) and .spd (ASMR
+   speed 0.5x/1x/2x, 6px gap). */
+.pab,.spd{position:relative}
+.pab::after{content:"";position:absolute;left:-1px;right:-1px;top:-6px;bottom:-6px;background:transparent}
+.spd::after{content:"";position:absolute;left:-3px;right:-3px;top:-11px;bottom:-11px;background:transparent}
 /* OVERLAYS */
 .ov{position:absolute;inset:0;z-index:500;display:none;flex-direction:column}
 .ov.show{display:flex}
@@ -658,7 +687,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
           <span style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:rgba(200,150,62,.6)">0.5×</span>
           <input type="range" min="0.5" max="2" step="0.25" value="1" style="-webkit-appearance:none;flex:1;height:3px;border-radius:2px;background:rgba(200,150,62,.2);outline:none;cursor:pointer" oninput="this.nextElementSibling.textContent=this.value+'×'" class="asmr-sl">
           <span style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--gd);min-width:26px">1×</span>
-          <button onclick="toggleASMRSound(this)" style="background:transparent;border:1px solid rgba(200,150,62,.3);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gd);font-size:13px" title="Sound on/off">🔊</button>
+          <button onclick="toggleASMRSound(this)" class="hit" style="background:transparent;border:1px solid rgba(200,150,62,.3);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gd);font-size:13px" title="Sound on/off">🔊</button>
         </div>
       </div>
     </div>
@@ -728,7 +757,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
             <button class="btn-tr" style="border-color:rgba(94,200,100,.3);color:rgba(94,200,100,.7)" onclick="O('ov-trailer');setTrailer('New Release','Coming Soon')">
               <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Preview
             </button>
-            <button onclick="toggleNotifyMe(this)" style="background:rgba(94,200,100,.12);border:1px solid rgba(94,200,100,.4);color:rgba(94,200,100,.9);font-size:10px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;padding:6px 13px;border-radius:2px;cursor:pointer">🔔 Notify Me</button>
+            <button class="hit" onclick="toggleNotifyMe(this)" style="background:rgba(94,200,100,.12);border:1px solid rgba(94,200,100,.4);color:rgba(94,200,100,.9);font-size:10px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;padding:6px 13px;border-radius:2px;cursor:pointer">🔔 Notify Me</button>
           </div>
         </div>
       </div>
@@ -878,8 +907,8 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
         </div>
       </div>
       <div style="display:flex;gap:8px;padding:11px 13px 13px">
-        <button onclick="toggleNotifyMe(this)" style="flex:1;padding:10px;background:var(--gd);color:var(--br);border:none;border-radius:3px;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">🔔 Notify Me</button>
-        <button onclick="window._shareText='The Tradition — a film in production. ✦ Orgena';O('ov-share')" style="flex:1;padding:10px;background:transparent;color:rgba(247,241,232,.5);border:1px solid rgba(247,241,232,.1);border-radius:3px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Share</button>
+        <button class="hit" onclick="toggleNotifyMe(this)" style="flex:1;padding:10px;background:var(--gd);color:var(--br);border:none;border-radius:3px;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">🔔 Notify Me</button>
+        <button onclick="window._shareText='The Tradition — a film in production. ✦ Orgena';O('ov-share')" class="hit" style="flex:1;padding:10px;background:transparent;color:rgba(247,241,232,.5);border:1px solid rgba(247,241,232,.1);border-radius:3px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Share</button>
       </div>
     </div>
   </div>
@@ -5397,7 +5426,7 @@ const postTemplates = [
         <div style="font-size:38px">🎧</div>
         <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;font-style:italic;color:var(--cr)">The Full Trilogy</div>
         <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gd);opacity:.75">All 3 Audiobooks · Available Soon</div>
-        <button onclick="toggleNotifyMe(this)" style="margin-top:6px;padding:8px 20px;background:var(--gd);color:var(--br);border:none;border-radius:2px;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;cursor:pointer" onclick="toggleNotifyMe(this)">🔔 Notify Me</button>
+        <button class="hit" onclick="toggleNotifyMe(this)" style="margin-top:6px;padding:8px 20px;background:var(--gd);color:var(--br);border:none;border-radius:2px;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;cursor:pointer" onclick="toggleNotifyMe(this)">🔔 Notify Me</button>
       </div>
     </div>
     <div class="pa">

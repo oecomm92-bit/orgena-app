@@ -483,20 +483,59 @@ async function runAudit({ engineName, browserType, execPath, url, full, shotPref
     });
     (overflow.docW > 392) ? I('global/layout', `horizontal overflow: document scrollWidth ${overflow.docW}px > 390 (wide els: ${overflow.wide.join(', ')})`) : P('global/layout', 'no horizontal overflow');
 
-    // 5c. tap targets < 44x44 among primary action buttons
-    const smallTaps = await page.evaluate(() => {
-      const small = [];
-      ['home', 'creations', 'player', 'community', 'profile'].forEach(() => { });
-      [...document.querySelectorAll('.sc.on button, .sc.on .ev-rsvp, .sc.on .fp, .sc.on [onclick]')].forEach(e => {
-        const r = e.getBoundingClientRect(); if (r.width < 1 || r.height < 1) return;
-        if ((r.height < 44 || r.width < 44) && e.textContent.trim().length && e.textContent.trim().length < 24) small.push({ t: e.textContent.trim().slice(0, 18), w: Math.round(r.width), h: Math.round(r.height) });
-      });
-      const seen = {}; return small.filter(s => { const k = s.t + s.w + s.h; if (seen[k]) return false; seen[k] = 1; return true; }).slice(0, 12);
-    });
-    // report per-tab by scanning each tab
-    const tapByTab = {};
-    for (const t of tabs) { await go(page, t); if (t === 'community') { await page.evaluate(() => commToggle('explore')); await page.waitForTimeout(150); } tapByTab[t] = await page.evaluate(() => { const small = []; [...document.querySelectorAll('.sc.on button, .sc.on .ev-rsvp, .sc.on .fp')].forEach(e => { const r = e.getBoundingClientRect(); if (r.width < 1) return; if (r.height < 44 || r.width < 44) small.push(e.textContent.trim().slice(0, 16) + ' ' + Math.round(r.width) + 'x' + Math.round(r.height)); }); return [...new Set(small)].slice(0, 8); }); }
-    for (const t of tabs) if (tapByTab[t].length) I(t + '/tap-size', `sub-44px tap targets: ${tapByTab[t].join(', ')}`);
+    // 5c. EFFECTIVE tap-target size (Batch 20). We measure the hit area a finger actually gets,
+    //     not the visual box: scroll each target into view, then probe outward from its centre with
+    //     elementFromPoint until the target (or its transparent ::after) stops owning the point. The
+    //     owned span in each axis = the effective hit size. We never let a target own a neighbour's
+    //     centre (that would be a steal), so a capped value means "bounded by spacing", not broken.
+    for (const t of tabs) {
+      await go(page, t);
+      if (t === 'community') { await page.evaluate(() => commToggle('events')); await page.waitForTimeout(200); }
+      const sel = '.sc.on button, .sc.on .ev-rsvp, .sc.on .fp, .sc.on .np-ctrl, .sc.on .pab, .sc.on .pfbtn';
+      const n = await page.evaluate((s) => document.querySelectorAll(s).length, sel);
+      const rows = [];
+      const cap = Math.min(n, 40);
+      for (let i = 0; i < cap; i++) {
+        const info = await page.evaluate((arg) => {
+          const el = document.querySelectorAll(arg.sel)[arg.i]; if (!el) return null;
+          try { el.scrollIntoView({ block: 'center' }); } catch (_) {}
+          const r = el.getBoundingClientRect(); if (r.width < 2 || r.height < 2) return { skip: true };
+          const cx = Math.round(r.left + r.width / 2), cy = Math.round(r.top + r.height / 2);
+          if (cx < 0 || cx > 390 || cy < 0 || cy > 844) return { skip: true };
+          const own = (x, y) => { const p = document.elementFromPoint(x, y); return !!(p && (p === el || el.contains(p))); };
+          const reach = (dx, dy) => { let d = 0; for (let k = 1; k <= 24; k++) { if (own(cx + dx * k, cy + dy * k)) d = k; else break; } return d; };
+          const up = reach(0, -1), down = reach(0, 1), left = reach(-1, 0), right = reach(1, 0);
+          // steal check: does this element own a point at a neighbour's centre?
+          let steal = false;
+          const sibs = [...el.parentElement.children].filter(c => c !== el && (c.getAttribute && c.getAttribute('onclick')) && c.getBoundingClientRect().width > 2);
+          for (const sb of sibs) { const sr = sb.getBoundingClientRect(); if (own(sr.left + sr.width / 2, sr.top + sr.height / 2)) { steal = true; break; } }
+          return { t: (el.textContent || '').trim().slice(0, 14) || (el.getAttribute('onclick') || '').slice(0, 14), w: Math.round(r.width), h: Math.round(r.height), effW: left + right + 1, effH: up + down + 1, steal, dirs: [up, down, left, right] };
+        }, { sel, i });
+        if (info && !info.skip) rows.push(info);
+      }
+      const dedup = {}; const uniq = rows.filter(x => { const k = x.t + x.w + x.h; if (dedup[k]) return false; dedup[k] = 1; return true; });
+      const okT = uniq.filter(x => x.effW >= 44 && x.effH >= 44);
+      const capped = uniq.filter(x => !(x.effW >= 44 && x.effH >= 44) && (x.effW >= Math.min(x.w + 6, 44) - 1 && x.effH > x.h + 4));
+      const fail = uniq.filter(x => x.effH <= x.h + 3 && x.effW <= x.w + 3);
+      const steals = uniq.filter(x => x.steal);
+      P(t + '/tap-size', `effective hit >=44x44: ${okT.length}/${uniq.length} targets`);
+      if (capped.length) I(t + '/tap-size', `${capped.length} capped by spacing (hit enlarged but bounded, no overlap): ` + capped.slice(0, 6).map(x => `${x.t}=${x.effW}x${x.effH}`).join(', '));
+      if (fail.length) I(t + '/tap-size', `${fail.length} NOT enlarged: ` + fail.slice(0, 6).map(x => `${x.t}=${x.effW}x${x.effH}`).join(', '));
+      if (steals.length) B(t + '/tap-size', `${steals.length} hit area STEALS a neighbour's tap: ` + steals.map(x => x.t).join(', '));
+    }
+    // Real-tap verification: a point OUTSIDE the visible pill but INSIDE the new hit area must
+    // activate the right element; a tap in the gap must not activate the wrong neighbour.
+    await go(page, 'home'); await page.waitForTimeout(150);
+    const pillBox = await page.evaluate(() => { const p = [...document.querySelectorAll('#s-home .fb .fp')].find(e => e.textContent.trim() === 'Community'); if (!p) return null; const r = p.getBoundingClientRect(); return { cx: r.left + r.width / 2, top: r.top, bottom: r.bottom }; });
+    if (pillBox) {
+      // tap ~6px above the visible pill (inside the expanded hit area, outside the visual box)
+      await page.mouse.click(pillBox.cx, Math.max(2, pillBox.top - 6));
+      await page.waitForTimeout(250);
+      const act = await page.evaluate(() => { const on = document.querySelector('#s-home .fb .fp.on'); return on ? on.textContent.trim() : null; });
+      (act === 'Community') ? P('home/tap-size', 'REAL TAP above the visible "Community" pill (inside expanded hit area) activates it') : I('home/tap-size', `tap above pill activated "${act}" (expected Community) — hit area may not extend above here`);
+      // reset to All
+      await page.evaluate(() => { const a = [...document.querySelectorAll('#s-home .fb .fp')].find(e => e.textContent.trim() === 'All'); if (a) a.click(); });
+    }
     await go(page, 'home');
 
     // 5d. overlay escape / z-index vs tab bar
