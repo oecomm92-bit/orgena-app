@@ -186,6 +186,12 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .msg-un{font-size:13px;font-weight:500;color:var(--cr)}
 .msg-pre{font-size:11px;color:rgba(247,241,232,.4);margin-top:1px}
 .msg-time{font-size:9px;color:rgba(247,241,232,.25)}
+/* Batch 21: deep-link highlight — a burnt-gold (#C8963E) flash on the exact item a notification
+   references, fading over ~1.5s. Uses an inset box-shadow fill (not `background`) so targets that
+   carry their own background — the rewards card, a post — keep it; the animation reverts to the
+   element's real styles when it ends. */
+@keyframes notifHL{0%{box-shadow:inset 0 0 0 2000px rgba(200,150,62,.30),inset 0 0 0 2px rgba(200,150,62,.85)}100%{box-shadow:inset 0 0 0 2000px rgba(200,150,62,0),inset 0 0 0 2px rgba(200,150,62,0)}}
+.notif-hl{animation:notifHL 1.6s ease-out}
 /* COMMENTS */
 #ov-cmts .hs{height:66%}
 .cmt-list{padding:10px 16px;display:flex;flex-direction:column;gap:12px;max-height:calc(66vh - 165px);overflow-y:auto}
@@ -651,8 +657,8 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <button class="pab" onclick="tSave(this)"><svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg></button>
     </div>
   </div>
-  <!-- POST: Character -->
-  <div class="post" data-cat="all characters">
+  <!-- POST: Character (peggy_lavizzo_nola — target of her "posted a new reflection" notification) -->
+  <div class="post" id="post-peggy" data-cat="all characters">
     <div class="ph">
       <div class="pav char" style="background:linear-gradient(135deg,#5C3D28,#C8963E)" onclick="openStory('PJ','peggy_lavizzo_nola','#3B1A06','#7A4E35')">PJ</div>
       <div class="pui" onclick="goPublicProfile('peggy_lavizzo_nola')"><div class="pun char">peggy_lavizzo_nola</div><div class="ptag">Pecan Candy — Character Account</div><div class="cbadge">✦ Character Account</div></div>
@@ -1102,7 +1108,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <div id="notif-center-list" style="overflow-y:auto;max-height:calc(844px - 200px)">
       <!-- Today -->
       <div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(247,241,232,.28);padding:10px 16px 6px">Today</div>
-      <div class="nc-item unread" onclick="notifNav('reflection',null,this)" data-nav="comment">
+      <div class="nc-item unread" onclick="notifNav('post','post-peggy',this)" data-nav="post">
         <div class="nc-dot"></div>
         <div class="nc-av" style="background:linear-gradient(135deg,#5C3D28,#C8963E)">PJ</div>
         <div class="nc-body">
@@ -1120,7 +1126,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
         </div>
         <div class="nc-arrow">›</div>
       </div>
-      <div class="nc-item unread" onclick="notifNav('comment',null,this)" data-nav="comment">
+      <div class="nc-item unread" onclick="notifNav('reply','cmt-nb-reply',this)" data-nav="reply">
         <div class="nc-dot"></div>
         <div class="nc-av" style="background:linear-gradient(135deg,#3B2010,#C8963E)">NB</div>
         <div class="nc-body">
@@ -1131,7 +1137,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       </div>
       <!-- Earlier -->
       <div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(247,241,232,.28);padding:10px 16px 6px">Earlier</div>
-      <div class="nc-item read" onclick="notifNav('reward',null,this)" data-nav="reward">
+      <div class="nc-item read" onclick="notifNav('reward','pr-rewards',this)" data-nav="reward">
         <div class="nc-dot" style="background:transparent"></div>
         <div class="nc-av" style="background:var(--gd)">🏆</div>
         <div class="nc-body">
@@ -1170,7 +1176,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
   </div>
   <!-- PRIVATE: Rewards -->
   <div id="pr-private-only" style="display:block">
-    <div class="rewards"><div class="rw-top"><span class="rw-tier">✦ Candy Lover — Tier 2</span><span class="rw-pts">620 / 1000 pts</span></div><div class="rw-bar-wrap"><div class="rw-bar"></div></div><div class="rw-tiers"><span class="rw-t">Huck-A-Buck</span><span class="rw-t on">Candy Lover</span><span class="rw-t">Pecan Sweet</span><span class="rw-t">OG Reader</span></div></div>
+    <div class="rewards" id="pr-rewards"><div class="rw-top"><span class="rw-tier">✦ Candy Lover — Tier 2</span><span class="rw-pts">620 / 1000 pts</span></div><div class="rw-bar-wrap"><div class="rw-bar"></div></div><div class="rw-tiers"><span class="rw-t">Huck-A-Buck</span><span class="rw-t on">Candy Lover</span><span class="rw-t">Pecan Sweet</span><span class="rw-t">OG Reader</span></div></div>
     <!-- Privacy controls -->
     <div style="margin:0 14px 12px;background:rgba(44,26,14,.5);border:1px solid rgba(200,150,62,.14);border-radius:8px;padding:12px 14px">
       <div style="font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:rgba(200,150,62,.7);margin-bottom:11px">Privacy Settings — What Public Sees</div>
@@ -1246,7 +1252,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     </div>
     <!-- Auto-generated 48-hour event reminders are injected here by generateEventReminders(). -->
     <div id="notif-auto"></div>
-    <div class="notif-item" style="background:rgba(200,150,62,.04)" onclick="notifNav('reflection',null,this)">
+    <div class="notif-item" style="background:rgba(200,150,62,.04)" onclick="notifNav('post','post-peggy',this)">
       <div style="width:8px;height:8px;border-radius:50%;background:var(--gd);flex-shrink:0;margin-top:4px"></div>
       <div class="notif-av" style="background:linear-gradient(135deg,#5C3D28,#C8963E)">PJ</div>
       <div style="flex:1"><div class="notif-txt"><b>peggy_lavizzo_nola</b> posted a new reflection</div><div class="notif-time">2h ago</div></div>
@@ -1265,8 +1271,8 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <div style="display:flex;align-items:center;justify-content:flex-start;padding:0 18px 10px;border-bottom:1px solid rgba(200,150,62,.08)">
         <span style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(247,241,232,.35)">Recent chats</span>
       </div>
-      <div class="msg-item" onclick="C('ov-notif');openConvo('peggy_lavizzo_nola','Did you read chapter 18 yet? 🌿')"><div class="msg-av" style="background:linear-gradient(135deg,#5C3D28,#C8963E)">PJ</div><div class="msg-info"><div class="msg-un">peggy_lavizzo_nola</div><div class="msg-pre">Did you read chapter 18 yet? 🌿</div></div><div class="msg-time">2h</div></div>
-      <div class="msg-item" onclick="C('ov-notif');openConvo('marlena_k','That grocery scene gets me every time')"><div class="msg-av" style="background:linear-gradient(135deg,#C8963E,#4A2C18)">MK</div><div class="msg-info"><div class="msg-un">marlena_k</div><div class="msg-pre">That grocery scene gets me every time</div></div><div class="msg-time">5h</div></div>
+      <div class="msg-item" onclick="notifNav('message','peggy_lavizzo_nola',this,'Did you read chapter 18 yet? 🌿')"><div class="msg-av" style="background:linear-gradient(135deg,#5C3D28,#C8963E)">PJ</div><div class="msg-info"><div class="msg-un">peggy_lavizzo_nola</div><div class="msg-pre">Did you read chapter 18 yet? 🌿</div></div><div class="msg-time">2h</div></div>
+      <div class="msg-item" onclick="notifNav('message','marlena_k',this,'That grocery scene gets me every time')"><div class="msg-av" style="background:linear-gradient(135deg,#C8963E,#4A2C18)">MK</div><div class="msg-info"><div class="msg-un">marlena_k</div><div class="msg-pre">That grocery scene gets me every time</div></div><div class="msg-time">5h</div></div>
       <div style="display:flex;justify-content:center;padding:12px 18px 4px">
         <span onclick="C('ov-notif');O('ov-msgs')" style="font-size:11px;color:var(--gd);cursor:pointer;letter-spacing:.06em">See more →</span>
       </div>
@@ -1350,6 +1356,9 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <div class="cmt"><div class="cmt-av" onclick="openUserStory('marlena_k')" style="background:linear-gradient(135deg,#C8963E,#7A4E35);cursor:pointer">MK</div><div><div class="cmt-un" onclick="goPublicProfile('marlena_k')" style="cursor:pointer">marlena_k</div><div class="cmt-txt">The grocery store scene made me understand what love should feel like. Life-changing.</div><div class="cmt-acts"><span class="cmt-act" onclick="this.classList.toggle('on')">♥ 48</span><span class="cmt-act" onclick="toggleDownvote(this)">↓ 2</span><span class="cmt-act" onclick="replyToComment(this,'marlena_k')">Reply</span><span class="cmt-act">2h</span></div></div></div>
       <div class="cmt"><div class="cmt-av" onclick="openUserStory('n_boudreaux')" style="background:linear-gradient(135deg,#3B2010,#C8963E);cursor:pointer">NB</div><div><div class="cmt-un" onclick="goPublicProfile('n_boudreaux')" style="cursor:pointer">n_boudreaux</div><div class="cmt-txt">I shared this with my mom and she cried. This book is for everyone who ever loved against the odds.</div><div class="cmt-acts"><span class="cmt-act on">♥ 32</span><span class="cmt-act" onclick="toggleDownvote(this)">↓ 1</span><span class="cmt-act" onclick="replyToComment(this,'marlena_k')">Reply</span><span class="cmt-act">5h</span></div></div></div>
       <div class="cmt" style="margin-left:36px"><div class="cmt-av" onclick="openUserStory('soulful_mia')" style="background:linear-gradient(135deg,#5C3D28,#C8963E);cursor:pointer">SM</div><div><div class="cmt-un" onclick="goPublicProfile('soulful_mia')" style="cursor:pointer">soulful_mia</div><div class="cmt-txt">↩ My whole book club read it together. We talk about Peggy like she's real.</div><div class="cmt-acts"><span class="cmt-act" onclick="this.classList.toggle('on')">♥ 14</span><span class="cmt-act" onclick="toggleDownvote(this)">↓ 0</span><span class="cmt-act">Reply</span><span class="cmt-act">3h</span></div></div></div>
+      <!-- Your reflection + n_boudreaux's reply to it (targets of the "n_boudreaux replied to your reflection" notification). -->
+      <div class="cmt" id="cmt-you-refl"><div class="cmt-av" style="background:linear-gradient(135deg,#C8963E,#5C3D28)">Y</div><div><div class="cmt-un">your_handle</div><div class="cmt-txt">This book put words to something I'd carried for years — the way Peggy keeps choosing Clint even when it costs her. I felt seen on every page.</div><div class="cmt-acts"><span class="cmt-act" onclick="this.classList.toggle('on')">♥ 21</span><span class="cmt-act" onclick="toggleDownvote(this)">↓ 0</span><span class="cmt-act" onclick="replyToComment(this,'your_handle')">Reply</span><span class="cmt-act">4h</span></div></div></div>
+      <div class="cmt" id="cmt-nb-reply" style="margin-left:36px"><div class="cmt-av" onclick="openUserStory('n_boudreaux')" style="background:linear-gradient(135deg,#3B2010,#C8963E);cursor:pointer">NB</div><div><div class="cmt-un" onclick="goPublicProfile('n_boudreaux')" style="cursor:pointer">n_boudreaux</div><div class="cmt-txt">↩ @your_handle yes — that Orleans Ave chapter undid me too. You said what I couldn't put into words.</div><div class="cmt-acts"><span class="cmt-act" onclick="this.classList.toggle('on')">♥ 9</span><span class="cmt-act" onclick="toggleDownvote(this)">↓ 0</span><span class="cmt-act" onclick="replyToComment(this,'n_boudreaux')">Reply</span><span class="cmt-act">6h</span></div></div></div>
     </div>
     <div class="cmt-inp-row"><input class="cmt-inp" placeholder="Add your reflection..."><button class="cmt-send" onclick="postComment(this)">↑</button></div>
   </div>
@@ -2486,7 +2495,7 @@ function generateEventReminders(){
   host.innerHTML=due.map(function(e){
     var days=evDaysAway(e); var when=(days==null||days<=0)?'today':('in '+days+' day'+(days===1?'':'s'));
     var safe=(e.name||'').replace(/'/g,"\\'");
-    return '<div class="notif-item" style="background:rgba(200,150,62,.04)" onclick="C(\'ov-notif\');T(\'community\');setTimeout(function(){if(typeof commToggle===\'function\')commToggle(\'events\');openEvPopup(\''+safe+'\');},130)">'
+    return '<div class="notif-item" style="background:rgba(200,150,62,.04)" onclick="notifNav(\'event\',\''+safe+'\',this)">'
       +'<div style="width:8px;height:8px;border-radius:50%;background:var(--gd);flex-shrink:0;margin-top:4px"></div>'
       +'<div class="notif-av" style="background:linear-gradient(135deg,#5C3D28,#C8963E);display:flex;align-items:center;justify-content:center">⏰</div>'
       +'<div style="flex:1"><div class="notif-txt"><b>'+e.name+'</b> is '+when+' — '+(e.date||'')+(e.city?' · '+e.city:'')+'. Get ready!</div><div class="notif-time">48-hour reminder</div></div></div>';
@@ -4816,29 +4825,115 @@ function markAllRead(){
     if(dot) dot.style.background='transparent';
   });
 }
-// Navigate a notification to the EXACT content it references.
-// kind: 'comment'/'reflection' -> the post's comment thread; 'exclusive'/'podcast' -> that
-// audio in Soul Player; 'reward' -> profile rewards. arg = specific title where relevant.
-function notifNav(kind, arg, el){
+// ── Notification routing (Batch 21) ───────────────────────────────────────
+// EVERY notification carries {type, targetId} and goes through this one router.
+// Each type lands on the EXACT item it references, in that item's real home.
+// To add a new type: add a case below mapping it to its real destination, and
+// make sure the notification points at a real, existing target (see the
+// "Adding a notification" section in CONTENT_UPLOAD_PLAYBOOK.md).
+//
+//   type                         targetId              lands on
+//   post                         post element id       home feed, scrolled to that post + highlighted
+//   comment / reflection / reply comment element id    its thread (ov-cmts), scrolled to that comment + highlighted
+//   event / experience           event name            Community › Events, that event's popup
+//   book / product               merch/book name       Creations, that product's detail popup
+//   podcast/episode/audiobook/exclusive  title         Soul Player, playing that title
+//   user / follow                username              that member's profile
+//   reward                       section element id    Profile, scrolled to that section + highlighted
+//   message                      username              that conversation, scrolled to the latest message
+
+// Close every open sheet/overlay/popup so a notification always starts from a clean frame.
+function closeAllOverlays(){
+  document.querySelectorAll('.ov.show').forEach(function(o){ C(o.id); });
+  if(typeof closeEvPopup==='function') closeEvPopup();
+  if(typeof closeCommPost==='function') closeCommPost();
+  var cp=document.getElementById('city-popup'); if(cp) cp.style.display='none';
+}
+// Center an element inside its scroll container (comment list / screen).
+function nScrollTo(el, container){
+  if(!el) return;
+  container = container || el.closest('.cmt-list, .sc, #notif-center-list') || el.parentElement;
+  if(!container) return;
+  var cRect=container.getBoundingClientRect(), eRect=el.getBoundingClientRect();
+  container.scrollTop += (eRect.top - cRect.top) - (container.clientHeight/2 - eRect.height/2);
+}
+// Burnt-gold flash on the exact referenced item, fading over ~1.5s.
+function notifHighlight(el){
+  if(!el) return;
+  el.classList.remove('notif-hl'); void el.offsetWidth; // restart if re-fired
+  el.classList.add('notif-hl');
+  setTimeout(function(){ el.classList.remove('notif-hl'); }, 1700);
+}
+function notifNav(type, targetId, el, extra){
+  // Mark the tapped notification read (dot off), for both the center and the bell styles.
   if(el){
     el.classList.remove('unread');
     var d=el.querySelector('.nc-dot'); if(d) d.style.background='transparent';
     var nd=el.querySelector('div[style*="background:var(--gd)"]'); if(nd) nd.style.background='transparent';
   }
-  C('ov-notif');
+  closeAllOverlays();
   hideNotifCenter();
-  if(kind==='comment' || kind==='reflection' || kind==='post'){
-    T('home');
-    setTimeout(function(){ O('ov-cmts'); }, 260);
-  } else if(kind==='exclusive' || kind==='podcast'){
-    T('player');
-    setTimeout(function(){ if(typeof openPodDesc==='function') openPodDesc(arg||'Writing New Orleans','Author Exclusive'); }, 300);
-  } else if(kind==='reward'){
-    T('profile');
-    hideNotifCenter();
-    if(typeof showMyProfile==='function') showMyProfile();
-  } else {
-    T('home');
+  switch(type){
+    case 'comment': case 'reflection': case 'reply': {
+      // Open the thread the comment lives in, scroll to it, highlight it.
+      T('home');
+      setTimeout(function(){
+        O('ov-cmts');
+        setTimeout(function(){
+          var c=targetId&&document.getElementById(targetId);
+          if(c){ nScrollTo(c, c.closest('.cmt-list')); notifHighlight(c); }
+        }, 300);
+      }, 180);
+      break;
+    }
+    case 'post': {
+      // Go to the feed where the post lives, scroll to it, highlight it.
+      T('home');
+      setTimeout(function(){
+        var p=targetId&&document.getElementById(targetId);
+        var s=document.getElementById('s-home');
+        if(p){ nScrollTo(p, s); notifHighlight(p); }
+        else if(s){ s.scrollTop=0; }
+      }, 220);
+      break;
+    }
+    case 'podcast': case 'episode': case 'audiobook': case 'exclusive': {
+      T('player');
+      setTimeout(function(){ if(typeof openPodDesc==='function') openPodDesc(targetId||'Writing New Orleans','Author Exclusive'); }, 300);
+      break;
+    }
+    case 'event': case 'experience': {
+      T('community');
+      setTimeout(function(){
+        if(typeof commToggle==='function') commToggle('events');
+        if(typeof openEvPopup==='function') openEvPopup(targetId);
+      }, 160);
+      break;
+    }
+    case 'book': case 'product': {
+      T('creations');
+      setTimeout(function(){ if(typeof openMerchPur==='function') openMerchPur(targetId); }, 220);
+      break;
+    }
+    case 'user': case 'follow': {
+      if(typeof goPublicProfile==='function') goPublicProfile(targetId);
+      break;
+    }
+    case 'reward': {
+      T('profile');
+      if(typeof showMyProfile==='function') showMyProfile();
+      setTimeout(function(){
+        var r=targetId&&document.getElementById(targetId);
+        if(r){ nScrollTo(r, document.getElementById('s-profile')); notifHighlight(r); }
+      }, 220);
+      break;
+    }
+    case 'message': {
+      if(typeof openConvo==='function') openConvo(targetId, extra);
+      break;
+    }
+    default:
+      T('home');
   }
 }
 function toggleNotifyMe(btn){

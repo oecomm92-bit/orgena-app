@@ -184,3 +184,52 @@ Then open at **390×844** and confirm on the actual surfaces:
 
 If a placeholder gradient still shows, or you see white/letterbox side bars, or a 404 — you missed one
 of the traps in §0. Fix the file name/encoding/aspect, not the CSS.
+
+---
+
+## 6. ADDING A NOTIFICATION
+
+**Iron rule (product owner):** tapping ANY notification lands on the **exact item it references,
+in the place that item actually lives** — never a generic tab, list, or thread. A notification that
+opens the shared comments sheet without scrolling to and highlighting its specific comment is a bug.
+
+**Data shape.** Every notification is a row whose `onclick` calls the single router with a type and
+the id/name of a **real, existing** target:
+
+```html
+<div class="nc-item unread" onclick="notifNav('<type>','<targetId>',this)"> … </div>
+```
+
+(The Messages segment passes a 4th arg — the preview text — e.g.
+`notifNav('message','peggy_lavizzo_nola',this,'Did you read chapter 18 yet?')`.)
+
+**Allowed types → where they land** (all handled in `notifNav()` in `index.html`):
+
+| type | `targetId` is… | lands on |
+|---|---|---|
+| `post` | the post element's `id` | home feed, scrolled to that post + burnt-gold highlight |
+| `comment` / `reflection` / `reply` | the comment element's `id` | its thread (`ov-cmts`), scrolled to that comment + highlight |
+| `event` / `experience` | the event **name** (matches `EVENTS[].name`) | Community › Events, that event's popup |
+| `book` / `product` | the product **name** (matches `merchArt`/book maps) | Creations, that product's detail popup |
+| `podcast` / `episode` / `audiobook` / `exclusive` | the audio **title** | Soul Player, playing that title (`#np-track`) |
+| `user` / `follow` | the **username** | that member's public profile |
+| `reward` | the profile section element's `id` (e.g. `pr-rewards`) | Profile, scrolled to that section + highlight |
+| `message` | the **username** | that conversation, scrolled to the latest message |
+
+**Steps**
+1. **Make the target real first.** The id/name you pass MUST resolve to a live element or data entry.
+   If it doesn't exist yet, add it to its real source (a post in the feed, a comment in `ov-cmts`'s
+   `.cmt-list`, an entry in `EVENTS`/`merchArt`, a conversation) and give it a stable `id` — matching
+   the notification's wording. Never point a notification at content that isn't there.
+2. **Add the row** with `onclick="notifNav('<type>','<targetId>',this)"` in the bell dropdown
+   (`#notif-seg`), the Notification Center (`#notif-center-list`), and/or as an auto-generated row.
+3. **Adding a NEW type?** Add a `case` in `notifNav()` mapping it to its real destination by the same
+   principle (close open overlays → switch to the real tab/overlay → scroll the exact item into view →
+   `notifHighlight()` it for content that lives in a list). Then extend the audit (below).
+4. **Highlight** for list/feed targets: the router calls `notifHighlight(el)`, which flashes the
+   `.notif-hl` burnt-gold (`#C8963E`) animation fading over ~1.5s. It uses an inset box-shadow (not
+   `background`), so targets with their own background keep it.
+5. **Verify** in `audit.test.js`: the NOTIFICATION DESTINATION section asserts every notification lands
+   on its specific item (popup/title match; specific comment/post/section in view AND highlighted;
+   correct profile/conversation) and that it still works launched from another tab with an overlay
+   open. A generic landing is reported **BROKEN**.

@@ -221,105 +221,181 @@ async function runAudit({ engineName, browserType, execPath, url, full, shotPref
   await page.goto(url, { waitUntil: 'domcontentloaded' }).catch(() => {}); await page.waitForTimeout(1200);
 
   // ---------------------------------------------------------------------------
-  // (3) NOTIFICATION DESTINATION ASSERTIONS (specific-item match)
+  // (3) NOTIFICATION DESTINATION ASSERTIONS — EXACT referenced item (Batch 21)
   // ---------------------------------------------------------------------------
-  // Expected destinations, derived from source:
-  //   notifNav reflection/comment/post -> home + ov-cmts (generic comments overlay)
-  //   notifNav exclusive/podcast  arg='Writing New Orleans' -> player + pod-desc shows that title
-  //   notifNav reward -> profile + profile-main (not notif-center)
-  //   bell auto reminder -> community events + ev-popup showing the event title
-  async function readNotifTargets(container) {
+  // RULE: tapping ANY notification must land on the exact thing it references, in
+  // the place it lives. Every notification routes through notifNav(type,targetId).
+  // A notification that lands on a generic tab/list/thread (e.g. ov-cmts shown but
+  // NO specific comment scrolled-to + highlighted) is BROKEN.
+  //   post                 -> home feed, that post in view + burnt-gold highlight
+  //   comment/reflection/reply -> its thread (ov-cmts), that comment in view + highlight
+  //   podcast/episode/audiobook/exclusive -> player, #np-track == that title
+  //   event/experience     -> community events, ev-popup showing that title
+  //   reward               -> profile, that section in view + highlight
+  //   user/follow          -> that member's profile
+  //   message              -> that conversation, convo-name == target
+  const notifTable = [];   // { surface, label, type, target, expected, actual, ok }
+  function parseNotif(oc) {
+    const m = oc.match(/notifNav\('([^']*)'\s*,\s*'([^']*)'/);
+    return m ? { type: m[1], target: m[2] } : null;
+  }
+  async function readNotifItems(container) {
     return await page.evaluate((sel) => {
       let host;
       if (sel === 'bell') { O('ov-notif'); host = document.getElementById('notif-seg'); }
       else { O('ov-notif'); if (typeof goNotifCenter === 'function') goNotifCenter(); host = document.getElementById('notif-center'); }
-      const items = [...host.querySelectorAll('[onclick]')].filter(n => /notifNav|openEvPopup|openPodDesc|openConvo/.test(n.getAttribute('onclick')));
-      return items.map(n => ({ oc: n.getAttribute('onclick'), txt: n.textContent.replace(/\s+/g, ' ').trim().slice(0, 60) }));
+      const items = [...host.querySelectorAll('[onclick]')].filter(n => /notifNav/.test(n.getAttribute('onclick')));
+      return items.map(n => ({ oc: n.getAttribute('onclick'), txt: n.textContent.replace(/\s+/g, ' ').trim().slice(0, 56) }));
     }, container);
   }
-  async function assertNotif(container, idx) {
-    // (re)open and click item idx
-    const info = await page.evaluate((arg) => {
-      window.__closeAll();
-      let host;
-      if (arg.sel === 'bell') { O('ov-notif'); host = document.getElementById('notif-seg'); }
-      else { O('ov-notif'); if (typeof goNotifCenter === 'function') goNotifCenter(); host = document.getElementById('notif-center'); }
-      const items = [...host.querySelectorAll('[onclick]')].filter(n => /notifNav|openEvPopup|openPodDesc|openConvo/.test(n.getAttribute('onclick')));
-      const el = items[arg.idx]; if (!el) return null;
-      const oc = el.getAttribute('onclick'); el.click(); return { oc };
-    }, { sel: container, idx });
-    if (!info) return null;
-    await page.waitForTimeout(500);
-    const landed = await page.evaluate(() => {
+  function landingEval(targetId) {
+    return page.evaluate((tid) => {
       const on = [...document.querySelectorAll('.sc.on')].map(s => s.id).join(',');
       const cmts = document.getElementById('ov-cmts'); const cmtsShown = cmts && cmts.classList.contains('show');
-      // podcast/exclusive -> openPodDesc -> openPlayer: title lands in #np-track, overlay ov-player
-      const player = document.getElementById('ov-player'); const playerShown = player && player.classList.contains('show');
       const npTrack = (document.getElementById('np-track') || {}).textContent || '';
-      const podTxt = npTrack; const anyPodTitle = npTrack;
       const evp = document.getElementById('ev-popup-bg'); const evpShown = evp && (evp.style.display !== 'none');
-      const evTitle = (document.getElementById('ev-popup-title') || document.getElementById('ev-popup-name') || {}).textContent || '';
-      const profileMain = document.getElementById('profile-main'); const pmShown = profileMain && getComputedStyle(profileMain).display !== 'none';
+      const evTitle = (document.getElementById('ev-popup-name') || {}).textContent || '';
+      const convo = document.getElementById('ov-convo'); const convoShown = convo && convo.classList.contains('show');
+      const convoName = (document.getElementById('convo-name') || {}).textContent || '';
+      const prName = (document.querySelector('#s-profile .pr-name') || {}).textContent || '';
       const anyOv = [...document.querySelectorAll('.ov.show')].map(o => o.id);
-      return { on, cmtsShown, podTxt, anyPodTitle, evpShown, evTitle, pmShown, anyOv, bodyText: document.body.innerText.slice(0, 0) };
-    });
-    return { oc: info.oc, landed };
+      let tgtExists = false, tgtInView = false, tgtHL = false;
+      if (tid) {
+        const t = document.getElementById(tid);
+        if (t) {
+          tgtExists = true; tgtHL = t.classList.contains('notif-hl');
+          const r = t.getBoundingClientRect();
+          const cont = t.closest('.cmt-list') || t.closest('.sc') || document.querySelector('.phone');
+          const cr = cont.getBoundingClientRect();
+          tgtInView = r.bottom > cr.top + 2 && r.top < cr.bottom - 2;
+        }
+      }
+      return { on, cmtsShown, npTrack, evpShown, evTitle, convoShown, convoName, prName, anyOv, tgtExists, tgtInView, tgtHL };
+    }, targetId);
   }
-  // bell dropdown
-  const bellTargets = await readNotifTargets('bell'); await closeAll(page);
-  for (let i = 0; i < bellTargets.length; i++) {
+  async function assertNotif(surface, idx, prep) {
+    const clicked = await page.evaluate((arg) => {
+      (window.__closeAll || closeAllOverlays)();
+      if (arg.prep) { try { eval(arg.prep); } catch (e) {} }
+      let host;
+      if (arg.surface === 'bell') { O('ov-notif'); host = document.getElementById('notif-seg'); }
+      else { O('ov-notif'); if (typeof goNotifCenter === 'function') goNotifCenter(); host = document.getElementById('notif-center'); }
+      const items = [...host.querySelectorAll('[onclick]')].filter(n => /notifNav/.test(n.getAttribute('onclick')));
+      const el = items[arg.idx]; if (!el) return null;
+      const oc = el.getAttribute('onclick'); el.click(); return { oc };
+    }, { surface, idx, prep: prep || null });
+    if (!clicked) return null;
+    await page.waitForTimeout(950);  // long enough for route delay + highlight to be live
+    const p = parseNotif(clicked.oc) || { type: '?', target: '' };
+    const L = await landingEval(p.target);
+    return { oc: clicked.oc, type: p.type, target: p.target, L };
+  }
+  function scoreNotif(surface, label, r) {
+    const { type, target, L } = r;
+    let expected = '', actual = '', ok = false, broken = false;
+    const titleRe = (s) => new RegExp(s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/&amp;/g, '&').slice(0, 12), 'i');
+    if (/^(comment|reflection|reply)$/.test(type)) {
+      expected = `comments thread, "${target}" in view + highlighted`;
+      actual = `cmtsShown=${L.cmtsShown}; target=${target}; inView=${L.tgtInView}; highlighted=${L.tgtHL}`;
+      ok = L.cmtsShown && L.tgtExists && L.tgtInView && L.tgtHL;
+      if (L.cmtsShown && !(L.tgtExists && L.tgtInView && L.tgtHL)) broken = true; // generic thread landing
+    } else if (type === 'post') {
+      expected = `home feed, post "${target}" in view + highlighted`;
+      actual = `on=${L.on}; inView=${L.tgtInView}; highlighted=${L.tgtHL}`;
+      ok = /home/.test(L.on) && L.tgtExists && L.tgtInView && L.tgtHL;
+    } else if (/^(podcast|episode|audiobook|exclusive)$/.test(type)) {
+      expected = `player, playing "${target}"`;
+      actual = `on=${L.on}; np-track="${L.npTrack}"`;
+      ok = /player/.test(L.on) && titleRe(target).test(L.npTrack);
+    } else if (/^(event|experience)$/.test(type)) {
+      expected = `community events, popup "${target}"`;
+      actual = `evpShown=${L.evpShown}; evTitle="${L.evTitle}"`;
+      ok = L.evpShown && titleRe(target).test(L.evTitle);
+    } else if (type === 'reward') {
+      expected = `profile, section "${target}" in view + highlighted`;
+      actual = `on=${L.on}; inView=${L.tgtInView}; highlighted=${L.tgtHL}`;
+      ok = /profile/.test(L.on) && L.tgtExists && L.tgtInView && L.tgtHL;
+    } else if (/^(user|follow)$/.test(type)) {
+      expected = `profile of @${target}`;
+      actual = `on=${L.on}; prName="${L.prName}"`;
+      ok = /profile/.test(L.on) && titleRe(target.replace(/_/g, ' ')).test(L.prName);
+    } else if (type === 'message') {
+      expected = `conversation "${target}", latest message`;
+      actual = `convoShown=${L.convoShown}; convoName="${L.convoName}"`;
+      ok = L.convoShown && L.convoName === target;
+    } else {
+      expected = 'specific destination'; actual = JSON.stringify(L); ok = false;
+    }
+    notifTable.push({ surface, label, type, target, expected, actual, ok });
+    if (ok) P('notifications', `${surface} "${label}" -> ${expected} ✓`);
+    else if (broken) B('notifications', `${surface} "${label}" landed on the GENERIC comments thread (no specific comment in view + highlighted) — ${actual}`);
+    else B('notifications', `${surface} "${label}" MISROUTE — expected ${expected}; actual ${actual}`);
+  }
+  // Bell dropdown (Notifications segment)
+  const bellItems = await readNotifItems('bell'); await closeAll(page);
+  for (let i = 0; i < bellItems.length; i++) {
     const r = await assertNotif('bell', i); await closeAll(page);
-    if (!r) continue;
-    const oc = r.oc, L = r.landed, label = (bellTargets[i].txt || oc).slice(0, 48);
-    let expected = '', ok = false, actual = '';
-    if (/openPodDesc|exclusive|podcast/.test(oc)) {
-      const m = oc.match(/'([^']+)'/g); const title = (oc.match(/'(?:exclusive|podcast)','([^']+)'/) || [])[1] || 'Writing New Orleans';
-      expected = `player + podcast "${title}"`; actual = `on=${L.on}; podTitle="${L.anyPodTitle}"; ov=${L.anyOv.join(',')}`;
-      ok = /player/.test(L.on) && (new RegExp(title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')).test(L.anyPodTitle + ' ' + L.podTxt);
-    } else if (/openEvPopup/.test(oc)) {
-      const title = (oc.match(/openEvPopup\('([^']+)'/) || [])[1] || '';
-      expected = `community events + event popup "${title}"`; actual = `evpShown=${L.evpShown}; evTitle="${L.evTitle}"; on=${L.on}`;
-      ok = L.evpShown && (title ? L.evTitle.replace(/&amp;/g, '&').includes(title.replace(/&amp;/g, '&').slice(0, 10)) : true);
-    } else if (/reflection|comment|post/.test(oc)) {
-      expected = 'home + comments overlay (ov-cmts)'; actual = `on=${L.on}; cmtsShown=${L.cmtsShown}`;
-      ok = /home/.test(L.on) && L.cmtsShown;
-    } else if (/reward/.test(oc)) {
-      expected = 'profile + profile-main'; actual = `on=${L.on}; profileMain=${L.pmShown}`; ok = /profile/.test(L.on) && L.pmShown;
-    } else { expected = 'leave sheet'; actual = `ov=${L.anyOv.join(',')}`; ok = !L.anyOv.includes('ov-notif'); }
-    ok ? P('notifications', `bell "${label}" -> ${expected} ✓`) : B('notifications', `bell "${label}" MISROUTE — expected ${expected}; actual ${actual}`);
+    if (r) scoreNotif('bell', (bellItems[i].txt || r.oc).slice(0, 46), r);
   }
-  // Notification Center
-  const ncTargets = await readNotifTargets('center'); await closeAll(page);
-  const ncGeneric = []; // collect "reflection/comment land on generic comments" observation
-  for (let i = 0; i < ncTargets.length; i++) {
+  // Notification Center (profile)
+  const ncItems = await readNotifItems('center'); await closeAll(page);
+  for (let i = 0; i < ncItems.length; i++) {
     const r = await assertNotif('center', i); await closeAll(page);
-    if (!r) continue;
-    const oc = r.oc, L = r.landed, label = (ncTargets[i].txt || oc).slice(0, 48);
-    let expected = '', ok = false, actual = '';
-    if (/openPodDesc|exclusive|podcast/.test(oc)) {
-      const title = (oc.match(/'(?:exclusive|podcast)','([^']+)'/) || [])[1] || 'Writing New Orleans';
-      expected = `player + podcast "${title}"`; actual = `on=${L.on}; podTitle="${L.anyPodTitle}"`;
-      ok = /player/.test(L.on) && (new RegExp(title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')).test(L.anyPodTitle + ' ' + L.podTxt);
-    } else if (/reflection|comment|post/.test(oc)) {
-      expected = 'home + comments overlay'; actual = `on=${L.on}; cmtsShown=${L.cmtsShown}`; ok = /home/.test(L.on) && L.cmtsShown;
-      if (ok) ncGeneric.push(label);
-    } else if (/reward/.test(oc)) {
-      expected = 'profile + profile-main'; actual = `on=${L.on}; profileMain=${L.pmShown}`; ok = /profile/.test(L.on) && L.pmShown;
-    } else { expected = 'leave center'; actual = `ov=${L.anyOv.join(',')}`; ok = true; }
-    ok ? P('notifications', `center "${label}" -> ${expected} ✓`) : B('notifications', `center "${label}" MISROUTE — expected ${expected}; actual ${actual}`);
+    if (r) scoreNotif('center', (ncItems[i].txt || r.oc).slice(0, 46), r);
   }
-  if (ncGeneric.length) I('notifications', `${ncGeneric.length} reflection/comment notifications route to the SAME generic comments overlay (ov-cmts, Pecan Candy thread) rather than the specific referenced reflection/user — destination not item-specific: ${ncGeneric.join(' | ')}`);
-  // Messages threads -> correct conversation (convo-name matches)
-  const msgTargets = await page.evaluate(() => { O('ov-notif'); if (typeof notifTab === 'function') notifTab('msgs'); return [...document.querySelectorAll('#msgs-seg .msg-item')].map(m => (m.getAttribute('onclick').match(/openConvo\('([^']+)'/) || [])[1]); });
+  // Messages (bell Messages segment)
+  const msgItems = await page.evaluate(() => { O('ov-notif'); if (typeof notifTab === 'function') notifTab('msgs'); return [...document.querySelectorAll('#msgs-seg .msg-item')].map(m => ({ oc: m.getAttribute('onclick'), txt: m.textContent.replace(/\s+/g, ' ').trim().slice(0, 40) })); });
   await closeAll(page);
-  for (let i = 0; i < msgTargets.length; i++) {
-    await page.evaluate((idx) => { window.__closeAll(); O('ov-notif'); notifTab('msgs'); const el = document.querySelectorAll('#msgs-seg .msg-item')[idx]; if (el) el.click(); }, i);
-    await page.waitForTimeout(550);
-    const who = await page.evaluate(() => { const c = document.getElementById('ov-convo'); const name = (document.getElementById('convo-name') || {}).textContent || ''; return { shown: c && c.classList.contains('show'), name }; });
+  for (let i = 0; i < msgItems.length; i++) {
+    const r = await page.evaluate((idx) => {
+      (window.__closeAll || closeAllOverlays)(); O('ov-notif'); notifTab('msgs');
+      const el = document.querySelectorAll('#msgs-seg .msg-item')[idx]; if (!el) return null;
+      const oc = el.getAttribute('onclick'); el.click(); return { oc };
+    }, i);
+    if (r) {
+      await page.waitForTimeout(700);
+      const p = parseNotif(r.oc) || { type: 'message', target: '' };
+      const L = await landingEval(null);
+      scoreNotif('bell-msgs', (msgItems[i].txt || '').slice(0, 46), { oc: r.oc, type: p.type, target: p.target, L });
+    }
     await closeAll(page);
-    const want = msgTargets[i];
-    (who.shown && who.name === want) ? P('notifications', `message thread -> opens conversation "${want}" ✓`)
-      : B('notifications', `message thread MISROUTE — expected conversation "${want}"; actual shown=${who.shown} name="${who.name}"`);
+  }
+  // (3b) EACH notification launched from a DIFFERENT tab with an overlay open → must
+  //      close everything and still land on its exact target (no stuck/double overlays).
+  const deepPreps = ["T('creations');O('ov-cart')", "T('player');O('ov-share')", "T('community');O('ov-settings')"];
+  const centerCount = ncItems.length;
+  for (let i = 0; i < centerCount; i++) {
+    const prep = deepPreps[i % deepPreps.length];
+    const r = await assertNotif('center', i, prep);
+    const clean = r ? await page.evaluate(() => {
+      const open = [...document.querySelectorAll('.ov.show')].map(o => o.id);
+      // "clean" = at most the one destination overlay (cmts), never a leftover cart/share/settings
+      const leftovers = open.filter(id => ['ov-cart', 'ov-share', 'ov-settings', 'ov-notif'].includes(id));
+      return { open, leftovers };
+    }) : null;
+    await closeAll(page);
+    if (r && clean) {
+      const okTarget = notifSpecificOK(r);
+      (okTarget && clean.leftovers.length === 0)
+        ? P('notifications', `center "${(ncItems[i].txt || '').slice(0, 40)}" from [${prep}] -> clean nav to exact target ✓`)
+        : B('notifications', `center "${(ncItems[i].txt || '').slice(0, 40)}" from [${prep}] -> leftovers=${clean.leftovers.join(',')||'none'}; targetOK=${okTarget}`);
+    }
+  }
+  function notifSpecificOK(r) {
+    const { type, L } = r;
+    if (/^(comment|reflection|reply)$/.test(type)) return L.cmtsShown && L.tgtInView && L.tgtHL;
+    if (type === 'post') return /home/.test(L.on) && L.tgtInView && L.tgtHL;
+    if (/^(podcast|episode|audiobook|exclusive)$/.test(type)) return /player/.test(L.on);
+    if (/^(event|experience)$/.test(type)) return L.evpShown;
+    if (type === 'reward') return /profile/.test(L.on) && L.tgtInView && L.tgtHL;
+    if (/^(user|follow)$/.test(type)) return /profile/.test(L.on);
+    if (type === 'message') return L.convoShown;
+    return false;
+  }
+  // Emit the notification routing table into the report.
+  if (notifTable.length) {
+    console.log('\n  NOTIFICATION ROUTING TABLE (notification -> expected target -> result):');
+    notifTable.forEach(t => console.log(`   [${t.ok ? 'PASS' : 'FAIL'}] (${t.surface}) "${t.label}"  type=${t.type} target="${t.target}"  -> ${t.expected}`));
   }
 
   // ---------------------------------------------------------------------------
