@@ -127,13 +127,12 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
        (~42px). That is the achievable ceiling without making the bar taller (a spacing change).
      - .pab (home post actions, 2px apart) uses the separate bounded rule so adjacent icons can't
        steal each other's taps.
-   DELIBERATELY NOT EXPANDED — the Community screen's events list (.ev-rsvp Book/Going/RSVP, the
-   My Events button, the Explore/Events toggle). That screen paints a live <canvas> map, which
-   makes Chrome GPU-composite any position:relative descendant that shares its layer; the
-   compositing resamples the button text and softens it (measured: max per-channel delta 93 at 2x,
-   visible under magnification). Since position:relative is required to anchor the ::after overlay,
-   expanding these would break the "before/after identical" guarantee, so they are left at their
-   native size here; enlarging them cleanly needs a spacing/size change the user has reserved. */
+   COMMUNITY EVENTS SCREEN (.ev-rsvp Book/Going/RSVP, My Events, the Explore/Events toggle) is
+   expanded by a DIFFERENT, zero-compositing method — see the .hitv wrapper below. The ::after
+   overlay is NOT used there: it needs position:relative on the button, which (next to the live
+   <canvas> map) makes Chrome GPU-composite and softens the text. The .hitv wrapper adds no
+   compositing trigger to the button, so Community stays pixel-identical (verified: frozen full
+   diff = 0) while the invisible hit area reaches >=44px. */
 .fp,.np-ctrl,.btn-tr,.btn-buy,.mc-add,.exp-bk,.pr-edit,.pr-qr,.pfbtn,.hit{position:relative}
 .fp::after,.np-ctrl::after,.btn-tr::after,.btn-buy::after,.mc-add::after,.exp-bk::after,.pr-edit::after,.pr-qr::after,.pfbtn::after,.hit::after{
   content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
@@ -497,6 +496,14 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .ev-meta{font-size:10px;color:rgba(247,241,232,.38);letter-spacing:.04em}
 .ev-rsvp{padding:7px 14px;border-radius:20px;border:1px solid rgba(200,150,62,.35);background:transparent;color:var(--gd);font-size:10px;font-weight:500;letter-spacing:.08em;cursor:pointer;flex-shrink:0;transition:all .2s}
 .ev-rsvp.on{background:var(--gd);color:var(--br);border-color:var(--gd)}
+/* Batch 22: INVISIBLE tap-target expansion for the Community events screen. A transparent
+   wrapper grows only the hit area — vertical padding adds the height needed to clear 44px, and an
+   EQUAL negative margin cancels it in layout so the wrapper's margin box equals the button's own
+   box. The button's visual size and position are therefore unchanged, and nothing here sets a
+   compositing trigger (no position/transform/will-change/filter/opacity/z-index on the button or
+   the wrapper), so the button text stays crisp next to the map canvas. hitFwd() forwards a tap on
+   the transparent padding to the wrapped control; a direct tap is left alone (no double-fire). */
+.hitv{display:inline-flex;align-items:center;align-self:center;flex-shrink:0;padding-top:11px;padding-bottom:11px;margin-top:-11px;margin-bottom:-11px}
 /* PROFILE */
 .pr-sc{background:var(--blk)}
 .pr-hdr{background:linear-gradient(160deg,var(--br),var(--blk))}
@@ -1042,8 +1049,8 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       </div>
       <!-- Explore / Events toggle -->
       <div style="display:flex;background:rgba(200,150,62,.08);border:1px solid rgba(200,150,62,.2);border-radius:24px;padding:3px">
-        <button id="comm-tog-explore" onclick="commToggle('explore')" style="padding:6px 16px;border-radius:20px;border:none;background:transparent;color:#FFFFFF;font-size:11px;font-weight:500;cursor:pointer;transition:all .2s">Explore</button>
-        <button id="comm-tog-events" onclick="commToggle('events')" style="padding:6px 16px;border-radius:20px;border:none;background:var(--gd);color:var(--br);font-size:11px;font-weight:500;cursor:pointer;transition:all .2s"><span style="filter:brightness(0) invert(1)">📍</span> Events</button>
+        <span class="hitv" onclick="hitFwd(event,this)"><button id="comm-tog-explore" onclick="commToggle('explore')" style="padding:6px 16px;border-radius:20px;border:none;background:transparent;color:#FFFFFF;font-size:11px;font-weight:500;cursor:pointer;transition:all .2s">Explore</button></span>
+        <span class="hitv" onclick="hitFwd(event,this)"><button id="comm-tog-events" onclick="commToggle('events')" style="padding:6px 16px;border-radius:20px;border:none;background:var(--gd);color:var(--br);font-size:11px;font-weight:500;cursor:pointer;transition:all .2s"><span style="filter:brightness(0) invert(1)">📍</span> Events</button></span>
       </div>
     </div>
     <!-- Explore filter pills (hidden when Events active) -->
@@ -1071,7 +1078,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <!-- All upcoming events list -->
     <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 13px 6px">
       <div id="ev-list-label" style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(247,241,232,.3)">All Upcoming Events</div>
-      <button onclick="openMyEvents()" style="display:flex;align-items:center;gap:5px;padding:5px 11px;background:rgba(200,150,62,.08);border:1px solid rgba(200,150,62,.28);border-radius:16px;color:var(--gd);font-size:10px;letter-spacing:.05em;cursor:pointer;white-space:nowrap"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#C8963E" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>My Events</button>
+      <span class="hitv" onclick="hitFwd(event,this)"><button onclick="openMyEvents()" style="display:flex;align-items:center;gap:5px;padding:5px 11px;background:rgba(200,150,62,.08);border:1px solid rgba(200,150,62,.28);border-radius:16px;color:var(--gd);font-size:10px;letter-spacing:.05em;cursor:pointer;white-space:nowrap"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#C8963E" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>My Events</button></span>
     </div>
     <div id="ev-list" style="display:flex;flex-direction:column;padding:0 13px">
       <div class="ev-row" data-city="New Orleans, LA" data-date="May 10" data-time="6:00 PM"><div class="ev-ico" onclick="flashOrbFromEl(this)" style="cursor:pointer"><svg viewBox="0 0 24 24" width="18" height="18" fill="#C8963E"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div><div class="ev-info"><div class="ev-name" onclick="openEvPopup('Pecan Candy Book Club','New Orleans, LA','May 10 · 6:00 PM','Join fellow readers in New Orleans for an intimate book club evening celebrating Pecan Candy & Huck-A-Bucks. Light refreshments, guided discussion, and a special surprise from Rhodesia.')" style="cursor:pointer">Pecan Candy Book Club</div><div class="ev-meta">New Orleans, LA · May 10 · 6:00 PM</div></div><button class="ev-rsvp" onclick="tRsvp(this)">RSVP</button></div><div class="ev-row" data-city="New Orleans, LA" data-date="May 11" data-time="5:00 PM"><div class="ev-ico" onclick="flashOrbFromEl(this)" style="cursor:pointer"><svg viewBox="0 0 24 24" width="18" height="18" fill="#C8963E"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div><div class="ev-info"><div class="ev-name" onclick="openEvPopup('Creole Cooking &amp; Stories','New Orleans, LA','May 11 · 5:00 PM','An evening of Creole cooking demos and storytelling inspired by Smothered Okra &amp; Long-Grain Rice — taste the recipes straight off the page.')" style="cursor:pointer">Creole Cooking &amp; Stories</div><div class="ev-meta">New Orleans, LA · May 11 · 5:00 PM</div></div><button class="ev-rsvp" onclick="tRsvp(this)">RSVP</button></div>
@@ -2688,6 +2695,12 @@ function labelZones(){
 }
 // ── Events list is rendered from the EVENTS data (so Creations experiences auto-appear here). ──
 var EV_PIN_SVG='<svg viewBox="0 0 24 24" width="18" height="18" fill="#C8963E"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>';
+// A tap on the transparent .hitv padding (not on the wrapped control itself) forwards exactly one
+// click to the control; a direct tap on the control is ignored here so it never double-fires.
+function hitFwd(ev, wrap){
+  if(ev.target!==wrap) return;
+  var c=wrap.querySelector('button'); if(c && !c.disabled) c.click();
+}
 function evListRow(e){
   var isExp=e.kind==='experience';
   var safe=(e.name||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
@@ -2697,11 +2710,12 @@ function evListRow(e){
   //   IN PLACE (no navigation). Tapping the name also books (details stay gated until purchased).
   var nameClick = isExp ? "bookExpFromList('"+safe+"')" : "openEvPopup('"+safe+"')";
   var booked = isExp && purchasedExperiences[e.name];
+  // Each RSVP/Book/Booked control is wrapped in a transparent .hitv (>=44px invisible hit area).
   var btn = isExp
     ? (booked
-        ? '<button class="ev-rsvp" style="background:transparent;color:var(--gd);border-color:rgba(200,150,62,.5);cursor:default" disabled>✓ Booked</button>'
-        : '<button class="ev-rsvp ev-book pbuy" onclick="bookExpFromList(\''+safe+'\')">Book</button>')
-    : '<button class="ev-rsvp" onclick="tRsvp(this)">RSVP</button>';
+        ? '<span class="hitv" onclick="hitFwd(event,this)"><button class="ev-rsvp" style="background:transparent;color:var(--gd);border-color:rgba(200,150,62,.5);cursor:default" disabled>✓ Booked</button></span>'
+        : '<span class="hitv" onclick="hitFwd(event,this)"><button class="ev-rsvp ev-book pbuy" onclick="bookExpFromList(\''+safe+'\')">Book</button></span>')
+    : '<span class="hitv" onclick="hitFwd(event,this)"><button class="ev-rsvp" onclick="tRsvp(this)">RSVP</button></span>';
   return '<div class="ev-row" data-city="'+(e.city||'')+'"'+(isExp?' data-exp="1"':'')+'>'
     +'<div class="ev-ico" onclick="flashOrbFromEl(this)" style="cursor:pointer">'+EV_PIN_SVG+'</div>'
     +'<div class="ev-info">'

@@ -120,9 +120,10 @@ async function realTap(page, locator) {
 //  secondary (engine,url) combos run a lighter parity subset for diffing.
 // =====================================================================================
 async function runAudit({ engineName, browserType, execPath, url, full, shotPrefix }) {
-  const R = { engineName, url, BROKEN: [], INCONSISTENT: [], SUSPECT: [], NOT_VERIFIED: [], pass: [], notes: [], coverage: {}, parity: {}, launched: false, loaded: false };
+  const R = { engineName, url, BROKEN: [], INCONSISTENT: [], SUSPECT: [], NOT_VERIFIED: [], ACCEPTED: [], pass: [], notes: [], coverage: {}, parity: {}, launched: false, loaded: false };
   const B = (t, m) => R.BROKEN.push(`[${t}] ${m}`), I = (t, m) => R.INCONSISTENT.push(`[${t}] ${m}`),
-    S = (t, m) => R.SUSPECT.push(`[${t}] ${m}`), NV = (t, m) => R.NOT_VERIFIED.push(`[${t}] ${m}`), P = (t, m) => R.pass.push(`[${t}] ${m}`);
+    S = (t, m) => R.SUSPECT.push(`[${t}] ${m}`), NV = (t, m) => R.NOT_VERIFIED.push(`[${t}] ${m}`), P = (t, m) => R.pass.push(`[${t}] ${m}`),
+    AC = (t, m) => R.ACCEPTED.push(`[${t}] ${m}`);  // owner-accepted as-is (listed, not counted as INCONSISTENT)
 
   let browser;
   try { browser = await browserType.launch(execPath ? { executablePath: execPath } : {}); }
@@ -578,24 +579,34 @@ async function runAudit({ engineName, browserType, execPath, url, full, shotPref
           const r = el.getBoundingClientRect(); if (r.width < 2 || r.height < 2) return { skip: true };
           const cx = Math.round(r.left + r.width / 2), cy = Math.round(r.top + r.height / 2);
           if (cx < 0 || cx > 390 || cy < 0 || cy > 844) return { skip: true };
-          const own = (x, y) => { const p = document.elementFromPoint(x, y); return !!(p && (p === el || el.contains(p))); };
+          // A point "owns" the target if it lands on the target, OR on the transparent ::after
+          // overlay (Batch 20), OR on the target's .hitv wrapper padding (Batch 22 Community).
+          const wrap = el.closest('.hitv');
+          const own = (x, y) => { const p = document.elementFromPoint(x, y); if (!p) return false; if (p === el || el.contains(p)) return true; return !!(wrap && (p === wrap || wrap.contains(p))); };
           const reach = (dx, dy) => { let d = 0; for (let k = 1; k <= 24; k++) { if (own(cx + dx * k, cy + dy * k)) d = k; else break; } return d; };
           const up = reach(0, -1), down = reach(0, 1), left = reach(-1, 0), right = reach(1, 0);
           // steal check: does this element own a point at a neighbour's centre?
           let steal = false;
           const sibs = [...el.parentElement.children].filter(c => c !== el && (c.getAttribute && c.getAttribute('onclick')) && c.getBoundingClientRect().width > 2);
           for (const sb of sibs) { const sr = sb.getBoundingClientRect(); if (own(sr.left + sr.width / 2, sr.top + sr.height / 2)) { steal = true; break; } }
-          return { t: (el.textContent || '').trim().slice(0, 14) || (el.getAttribute('onclick') || '').slice(0, 14), w: Math.round(r.width), h: Math.round(r.height), effW: left + right + 1, effH: up + down + 1, steal, dirs: [up, down, left, right] };
+          const isPill = el.classList.contains('fp') || el.classList.contains('np-ctrl');
+          const wrapped = !!el.closest('.hitv');
+          return { t: (el.textContent || '').trim().slice(0, 14) || (el.getAttribute('onclick') || '').slice(0, 14), w: Math.round(r.width), h: Math.round(r.height), effW: left + right + 1, effH: up + down + 1, steal, isPill, wrapped, dirs: [up, down, left, right] };
         }, { sel, i });
         if (info && !info.skip) rows.push(info);
       }
       const dedup = {}; const uniq = rows.filter(x => { const k = x.t + x.w + x.h; if (dedup[k]) return false; dedup[k] = 1; return true; });
       const okT = uniq.filter(x => x.effW >= 44 && x.effH >= 44);
-      const capped = uniq.filter(x => !(x.effW >= 44 && x.effH >= 44) && (x.effW >= Math.min(x.w + 6, 44) - 1 && x.effH > x.h + 4));
-      const fail = uniq.filter(x => x.effH <= x.h + 3 && x.effW <= x.w + 3);
+      const notOk = uniq.filter(x => !(x.effW >= 44 && x.effH >= 44));
+      const enlarged = x => x.effW >= Math.min(x.w + 6, 44) - 1 && x.effH > x.h + 4;
+      // Filter pills are clipped to ~41px by their overflow:auto bars — owner ACCEPTS these as-is.
+      const cappedPills = notOk.filter(x => x.isPill && enlarged(x));
+      const cappedOther = notOk.filter(x => !x.isPill && enlarged(x));
+      const fail = notOk.filter(x => !enlarged(x) && !(x.effH > x.h + 4 || x.effW > x.w + 4));
       const steals = uniq.filter(x => x.steal);
-      P(t + '/tap-size', `effective hit >=44x44: ${okT.length}/${uniq.length} targets`);
-      if (capped.length) I(t + '/tap-size', `${capped.length} capped by spacing (hit enlarged but bounded, no overlap): ` + capped.slice(0, 6).map(x => `${x.t}=${x.effW}x${x.effH}`).join(', '));
+      P(t + '/tap-size', `effective hit >=44x44: ${okT.length}/${uniq.length} targets` + (okT.some(x => x.wrapped) ? ` (incl ${okT.filter(x => x.wrapped).length} Community via invisible .hitv wrapper)` : ''));
+      if (cappedPills.length) AC(t + '/tap-size', `${cappedPills.length} filter pills capped ~41px by their overflow bar — owner-accepted as-is: ` + cappedPills.slice(0, 6).map(x => `${x.t}=${x.effW}x${x.effH}`).join(', '));
+      if (cappedOther.length) I(t + '/tap-size', `${cappedOther.length} capped by spacing (hit enlarged but bounded, no overlap): ` + cappedOther.slice(0, 6).map(x => `${x.t}=${x.effW}x${x.effH}`).join(', '));
       if (fail.length) I(t + '/tap-size', `${fail.length} NOT enlarged: ` + fail.slice(0, 6).map(x => `${x.t}=${x.effW}x${x.effH}`).join(', '));
       if (steals.length) B(t + '/tap-size', `${steals.length} hit area STEALS a neighbour's tap: ` + steals.map(x => x.t).join(', '));
     }
@@ -612,6 +623,56 @@ async function runAudit({ engineName, browserType, execPath, url, full, shotPref
       // reset to All
       await page.evaluate(() => { const a = [...document.querySelectorAll('#s-home .fb .fp')].find(e => e.textContent.trim() === 'All'); if (a) a.click(); });
     }
+    // Community invisible .hitv wrappers: a real tap OUTSIDE the visible button but INSIDE the
+    // wrapper must fire the control's action exactly once; a tap between two adjacent buttons must
+    // not activate either. (Batch 22.)
+    await go(page, 'community'); await page.evaluate(() => commToggle('events')); await page.waitForTimeout(300);
+    // Isolate the wrapper test: close any overlay/popup left open by a prior test, and hide the
+    // floating + button (z-index:100) so it can't intercept a tap over the RSVP column.
+    await page.evaluate(() => {
+      (window.__closeAll || function () {})();
+      ['ev-popup-bg', 'myev-bg', 'city-popup'].forEach(id => { const e = document.getElementById(id); if (e) e.style.display = 'none'; });
+      const fab = document.getElementById('fab'); if (fab) fab.dataset._disp = fab.style.display, fab.style.display = 'none';
+      if (typeof renderEventsList === 'function') renderEventsList(); // reset any RSVP toggled by earlier tests
+    });
+    await page.waitForTimeout(150);
+    await page.evaluate(() => { const s = document.querySelector('.sc.on'); if (s) s.scrollTop = 0; }); await page.waitForTimeout(150);
+    await page.evaluate(() => { window.__hc = { tRsvp: 0, openMyEvents: 0, commToggle: 0 }; ['tRsvp', 'openMyEvents', 'commToggle'].forEach(fn => { const o = window[fn]; if (o) window[fn] = function () { window.__hc[fn]++; return o.apply(this, arguments); }; }); });
+    const realTapXY = async (x, y) => { await page.mouse.move(x, y); await page.mouse.down(); await page.waitForTimeout(25); await page.mouse.up(); await page.waitForTimeout(220); };
+    // (a) RSVP: tap 6px ABOVE the visible button (inside wrapper padding) -> toggles to "✓ Going" once
+    const rb = await page.evaluate(() => { const b = [...document.querySelectorAll('.ev-rsvp')].find(x => x.textContent.trim() === 'RSVP'); if (!b) return null; const r = b.getBoundingClientRect(); return { cx: r.left + r.width / 2, top: r.top }; });
+    if (rb) {
+      await page.evaluate(() => window.__hc.tRsvp = 0);
+      await realTapXY(rb.cx, rb.top - 6);
+      const res = await page.evaluate(() => ({ c: window.__hc.tRsvp, on: !!document.querySelector('.ev-rsvp.on') }));
+      (res.c === 1 && res.on) ? P('community/tap-size', 'REAL TAP above the visible RSVP (inside .hitv) fires RSVP exactly once (→ ✓ Going)') : B('community/tap-size', `RSVP pad-tap fired ${res.c}x (expected 1), toggled=${res.on}`);
+    }
+    // (b) direct tap ON the button -> exactly once (no double-fire from the wrapper)
+    const rb2 = await page.evaluate(() => { const b = [...document.querySelectorAll('.ev-rsvp')].find(x => x.textContent.trim() === 'RSVP'); if (!b) return null; const r = b.getBoundingClientRect(); return { cx: r.left + r.width / 2, cy: r.top + r.height / 2 }; });
+    if (rb2) {
+      await page.evaluate(() => window.__hc.tRsvp = 0);
+      await realTapXY(rb2.cx, rb2.cy);
+      const c = await page.evaluate(() => window.__hc.tRsvp);
+      (c === 1) ? P('community/tap-size', 'Direct tap on RSVP fires exactly once (wrapper does not double-fire)') : B('community/tap-size', `direct RSVP tap fired ${c}x (expected 1)`);
+    }
+    // (c) My Events: tap in wrapper padding above the button -> opens My Events once
+    const meb = await page.evaluate(() => { const b = [...document.querySelectorAll('button')].find(x => /My Events/.test(x.textContent)); if (!b) return null; const r = b.getBoundingClientRect(); return { cx: r.left + r.width / 2, top: r.top }; });
+    if (meb) {
+      await page.evaluate(() => { window.__hc.openMyEvents = 0; const bg = document.getElementById('myev-bg'); if (bg) bg.style.display = 'none'; });
+      await realTapXY(meb.cx, meb.top - 6);
+      const res = await page.evaluate(() => ({ c: window.__hc.openMyEvents, open: document.getElementById('myev-bg').style.display === 'flex' }));
+      (res.c === 1 && res.open) ? P('community/tap-size', 'REAL TAP above My Events (inside .hitv) opens My Events exactly once') : B('community/tap-size', `My Events pad-tap fired ${res.c}x open=${res.open}`);
+      await page.evaluate(() => { const bg = document.getElementById('myev-bg'); if (bg) bg.style.display = 'none'; });
+    }
+    // (d) gap between two adjacent RSVP buttons -> neither fires
+    const gp = await page.evaluate(() => { const bs = [...document.querySelectorAll('.ev-rsvp')].filter(x => x.textContent.trim() === 'RSVP'); if (bs.length < 2) return null; const r1 = bs[0].getBoundingClientRect(), r2 = bs[1].getBoundingClientRect(); return { cx: r1.left + r1.width / 2, midY: (r1.bottom + r2.top) / 2, gap: +(r2.top - r1.bottom).toFixed(1) }; });
+    if (gp) {
+      await page.evaluate(() => window.__hc.tRsvp = 0);
+      await realTapXY(gp.cx, gp.midY);
+      const c = await page.evaluate(() => window.__hc.tRsvp);
+      (c === 0) ? P('community/tap-size', `Tap in the ${gp.gap}px gap between adjacent RSVP buttons activates neither (no wrong-fire)`) : B('community/tap-size', `gap tap fired tRsvp ${c}x (expected 0)`);
+    }
+    await page.evaluate(() => { const fab = document.getElementById('fab'); if (fab) fab.style.display = fab.dataset._disp || ''; }); // restore FAB
     await go(page, 'home');
 
     // 5d. overlay escape / z-index vs tab bar
@@ -780,6 +841,7 @@ async function runAudit({ engineName, browserType, execPath, url, full, shotPref
   section('② INCONSISTENT', primary.INCONSISTENT);
   section('③ SUSPECT (no observable effect on tap — triage, not auto-broken)', primary.SUSPECT);
   section('④ NOT VERIFIED', primary.NOT_VERIFIED);
+  section('⑤ ACCEPTED (owner decision — as-is, not a defect)', primary.ACCEPTED);
   console.log('\nPASSED (' + primary.pass.length + ')'); primary.pass.forEach(x => console.log('  ✓ ' + x));
 
   console.log('\n' + '─'.repeat(74));
@@ -794,7 +856,7 @@ async function runAudit({ engineName, browserType, execPath, url, full, shotPref
 
   const allBroken = results.reduce((a, r) => a + r.BROKEN.length, 0);
   console.log('\n' + line);
-  console.log(`SUMMARY (primary): ${primary.BROKEN.length} BROKEN · ${primary.INCONSISTENT.length} INCONSISTENT · ${primary.SUSPECT.length} SUSPECT · ${primary.NOT_VERIFIED.length} NOT-VERIFIED · ${primary.pass.length} passed`);
+  console.log(`SUMMARY (primary): ${primary.BROKEN.length} BROKEN · ${primary.INCONSISTENT.length} INCONSISTENT · ${primary.SUSPECT.length} SUSPECT · ${primary.NOT_VERIFIED.length} NOT-VERIFIED · ${primary.ACCEPTED.length} ACCEPTED · ${primary.pass.length} passed`);
   console.log(line + '\n');
   process.exit(allBroken ? 1 : 0);
 })().catch(e => { console.error('AUDIT HARNESS ERROR:', e.message, e.stack); process.exit(2); });
