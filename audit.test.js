@@ -752,6 +752,88 @@ async function runAudit({ engineName, browserType, execPath, url, full, shotPref
     R.coverage.suspectScanned = scanned; R.coverage.suspectFound = suspectCount;
     await go(page, 'home');
 
+    // ═══ IDENTITY — logged-in username + display name (Batch 23) ═══════════════
+    await closeAll(page);
+    // Reset to defaults so the checks don't depend on earlier state.
+    await page.evaluate(() => { try { localStorage.removeItem('orgena_current_user'); } catch (e) {} CURRENT_USER.username = 'your_handle'; CURRENT_USER.displayName = 'Your Name'; CURRENT_USER.usernameChangedAt = null; window._viewingProfile = null; if (typeof showMyProfile === 'function') showMyProfile(); applyCurrentUser(); });
+    await go(page, 'profile'); await page.evaluate(() => O('ov-settings')); await page.waitForTimeout(300);
+    // overlay inside the phone frame?
+    const setBox = await page.evaluate(() => { const r = document.getElementById('ov-settings').getBoundingClientRect(); const z = +getComputedStyle(document.getElementById('ov-settings')).zIndex || 0; return { inFrame: r.left >= -1 && r.right <= 392 && r.bottom <= 846, z }; });
+    setBox.inFrame ? P('identity', 'Settings overlay stays within the phone frame') : B('identity', `Settings overlay escapes frame`);
+    // (3) each validation failure shows the right message AND blocks Save
+    const vcases = [
+      { v: 'a', re: /at least 2/, lbl: '1 char' },
+      { v: 'x'.repeat(41), re: /40 characters or fewer/, lbl: '41 chars' },
+      { v: 'ab cd', re: /No spaces/, lbl: 'space' },
+      { v: 'ab$cd', re: /letters, numbers/, lbl: 'invalid char' },
+      { v: 'Peggy_Lavizzo_Nola', re: /taken/, lbl: 'taken (diff case)' },
+      { v: 'orgena', re: /reserved/, lbl: 'reserved orgena' },
+      { v: 'rhodesia', re: /reserved/, lbl: 'reserved rhodesia' },
+      { v: 'rhodesia_official', re: /reserved/, lbl: 'reserved rhodesia_official' },
+      { v: 'admin', re: /reserved/, lbl: 'reserved admin' },
+      { v: 'support', re: /reserved/, lbl: 'reserved support' },
+    ];
+    for (const c of vcases) {
+      await page.fill('#set-username', ''); await page.type('#set-username', c.v, { delay: 2 }); await page.waitForTimeout(70);
+      const r = await page.evaluate(() => ({ msg: document.getElementById('set-username-msg').textContent, dis: document.getElementById('set-save-btn').disabled }));
+      (c.re.test(r.msg) && r.dis) ? P('identity', `validation ${c.lbl}: "${r.msg}" + Save blocked ✓`) : B('identity', `validation ${c.lbl}: msg="${r.msg}" saveBlocked=${r.dis} (expected ${c.re})`);
+    }
+    // (2) change username + display name via real typing -> every surface updates
+    await page.fill('#set-displayname', ''); await page.type('#set-displayname', 'Audit User', { delay: 2 });
+    await page.fill('#set-username', ''); await page.type('#set-username', 'audit_user_z9', { delay: 2 }); await page.waitForTimeout(120);
+    const validGate = await page.evaluate(() => ({ msg: document.getElementById('set-username-msg').textContent, dis: document.getElementById('set-save-btn').disabled }));
+    (/Available/.test(validGate.msg) && !validGate.dis) ? P('identity', 'valid username enables Save (✓ Available)') : B('identity', `valid username did not enable Save: ${JSON.stringify(validGate)}`);
+    await page.evaluate(() => document.getElementById('set-save-btn').click()); await page.waitForTimeout(400);
+    const surf = await page.evaluate(() => ({
+      toast: document.body.innerText.includes('Profile saved') || !!document.querySelector('[class*=toast]'),
+      closed: !document.getElementById('ov-settings').classList.contains('show'),
+      prName: (document.querySelector('#s-profile .pr-name') || {}).textContent,
+      prHandle: (document.querySelector('#s-profile .pr-handle') || {}).textContent,
+      prAv: (document.querySelector('#s-profile .pr-av') || {}).textContent,
+      cmtUn: (document.querySelector('#cmt-you-refl .cu-username') || {}).textContent,
+      mention: (document.querySelector('#cmt-nb-reply .cu-handle') || {}).textContent,
+      qr: (document.querySelector('.qr-handle') || {}).textContent,
+    }));
+    const surfOK = surf.prName === 'Audit User' && surf.prHandle === '@audit_user_z9' && surf.prAv === 'A' && surf.cmtUn === 'audit_user_z9' && surf.mention === '@audit_user_z9' && /@audit_user_z9/.test(surf.qr);
+    surfOK ? P('identity', 'save updates every surface (profile header, your comment, @mention, QR, avatar)') : B('identity', `surface mismatch: ${JSON.stringify(surf)}`);
+    surf.toast ? P('identity', 'success toast shown on save') : I('identity', 'no success toast detected on save');
+    // posting a comment uses the current username, not "you"
+    await closeAll(page); await go(page, 'home'); await page.evaluate(() => O('ov-cmts')); await page.waitForTimeout(250);
+    await page.fill('#ov-cmts .cmt-inp', 'Testing identity from a fresh comment');
+    await page.evaluate(() => { const b = document.querySelector('#ov-cmts .cmt-send'); if (b) b.click(); }); await page.waitForTimeout(250);
+    const postedUn = await page.evaluate(() => { const els = [...document.querySelectorAll('#ov-cmts .cmt-un')]; const last = els[els.length - 1]; return last ? last.textContent.trim() : ''; });
+    (postedUn === 'audit_user_z9') ? P('identity', 'a newly posted comment shows the current username (not "you")') : B('identity', `posted comment username = "${postedUn}" (expected audit_user_z9)`);
+    // (1) no "your_handle" placeholder identity remains anywhere in the rendered app
+    const leftover = await page.evaluate(() => {
+      const bad = [];
+      if (/your_handle/.test(document.body.innerText)) bad.push('visible text');
+      document.querySelectorAll('input').forEach(i => { if (/your_handle/.test(i.value)) bad.push('input value'); });
+      // a current-user comment still literally labelled "you"
+      const youCmt = [...document.querySelectorAll('.cmt-un')].some(e => e.textContent.trim() === 'you');
+      if (youCmt) bad.push('comment labelled "you"');
+      return bad;
+    });
+    (leftover.length === 0) ? P('identity', 'no "your_handle"/"you" placeholder identity remains in the rendered app') : B('identity', 'placeholder identity still present: ' + leftover.join(', '));
+    await closeAll(page);
+    // (4) second change within 30 days is blocked, with the correct unlock date shown
+    await go(page, 'profile'); await page.evaluate(() => O('ov-settings')); await page.waitForTimeout(250);
+    const lock = await page.evaluate(() => ({ ro: document.getElementById('set-username').readOnly, shown: document.getElementById('set-username-lock').style.display !== 'none', txt: document.getElementById('set-username-lock').textContent }));
+    const expDate = new Date(Date.now() + 30 * 86400000).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+    (lock.ro && lock.shown && lock.txt.includes(expDate)) ? P('identity', `within 30 days username is read-only + "${lock.txt}"`) : B('identity', `30-day lock wrong: ro=${lock.ro} shown=${lock.shown} txt="${lock.txt}" (expected date ${expDate})`);
+    // allowed again after 30 days (simulate by backdating the stored timestamp)
+    await page.evaluate(() => { CURRENT_USER.usernameChangedAt = Date.now() - 31 * 86400000; saveCurrentUser(); C('ov-settings'); O('ov-settings'); }); await page.waitForTimeout(250);
+    const unlocked = await page.evaluate(() => ({ ro: document.getElementById('set-username').readOnly, shown: document.getElementById('set-username-lock').style.display !== 'none' }));
+    (!unlocked.ro && !unlocked.shown) ? P('identity', 'after 30 days the username field is editable again') : B('identity', `still locked after 30 days: ${JSON.stringify(unlocked)}`);
+    await closeAll(page);
+    // (5) changes survive a reload
+    await page.evaluate(() => { CURRENT_USER.username = 'reload_test_user'; CURRENT_USER.displayName = 'Reload Test'; CURRENT_USER.usernameChangedAt = Date.now(); saveCurrentUser(); });
+    await page.reload({ waitUntil: 'domcontentloaded' }); await page.waitForTimeout(1100);
+    const persisted = await page.evaluate(() => ({ un: CURRENT_USER.username, dn: CURRENT_USER.displayName, handle: (document.querySelector('#s-profile .pr-handle') || {}).textContent, cmtUn: (document.querySelector('#cmt-you-refl .cu-username') || {}).textContent }));
+    (persisted.un === 'reload_test_user' && persisted.handle === '@reload_test_user' && persisted.cmtUn === 'reload_test_user') ? P('identity', 'username + display name survive a reload (localStorage)') : B('identity', `did not persist across reload: ${JSON.stringify(persisted)}`);
+    // reset to defaults for the screenshots/parity that follow
+    await page.evaluate(() => { try { localStorage.removeItem('orgena_current_user'); } catch (e) {} CURRENT_USER.username = 'your_handle'; CURRENT_USER.displayName = 'Your Name'; CURRENT_USER.usernameChangedAt = null; if (typeof applyCurrentUser === 'function') applyCurrentUser(); });
+    await go(page, 'home');
+
     // screenshots for the report (explore post + stories handled by caller flows)
     await shot('home'); await go(page, 'creations'); await shot('creations');
     await go(page, 'player'); await shot('player'); await go(page, 'community'); await shot('community');

@@ -559,6 +559,13 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .set-toggle-knob{width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform .2s}
 .set-toggle.on .set-toggle-knob{transform:translateX(18px)}
 .set-save{width:100%;padding:12px;background:var(--gd);color:var(--br);font-size:12px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;border:none;border-radius:4px;cursor:pointer;margin-top:10px}
+.set-save:disabled,.set-save.disabled{opacity:.4;cursor:not-allowed}
+/* Username inline validation (Batch 23) — matches the Settings input styling. */
+.set-msg{font-size:10px;letter-spacing:.03em;margin-top:5px;min-height:12px;line-height:1.2}
+.set-msg.err{color:#E0584F}
+.set-msg.ok{color:rgba(94,200,100,.9)}
+.set-lock{font-size:10px;letter-spacing:.02em;color:rgba(247,241,232,.4);font-style:italic;margin-top:5px}
+.set-inp.locked{opacity:.55;cursor:not-allowed}
 /* QR */
 #ov-qr{align-items:center;justify-content:center}
 .qr-box{width:270px;background:var(--br);border-radius:12px;padding:22px;text-align:center;border:1px solid rgba(200,150,62,.2);z-index:2}
@@ -1364,8 +1371,8 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <div class="cmt"><div class="cmt-av" onclick="openUserStory('n_boudreaux')" style="background:linear-gradient(135deg,#3B2010,#C8963E);cursor:pointer">NB</div><div><div class="cmt-un" onclick="goPublicProfile('n_boudreaux')" style="cursor:pointer">n_boudreaux</div><div class="cmt-txt">I shared this with my mom and she cried. This book is for everyone who ever loved against the odds.</div><div class="cmt-acts"><span class="cmt-act on">♥ 32</span><span class="cmt-act" onclick="toggleDownvote(this)">↓ 1</span><span class="cmt-act" onclick="replyToComment(this,'marlena_k')">Reply</span><span class="cmt-act">5h</span></div></div></div>
       <div class="cmt" style="margin-left:36px"><div class="cmt-av" onclick="openUserStory('soulful_mia')" style="background:linear-gradient(135deg,#5C3D28,#C8963E);cursor:pointer">SM</div><div><div class="cmt-un" onclick="goPublicProfile('soulful_mia')" style="cursor:pointer">soulful_mia</div><div class="cmt-txt">↩ My whole book club read it together. We talk about Peggy like she's real.</div><div class="cmt-acts"><span class="cmt-act" onclick="this.classList.toggle('on')">♥ 14</span><span class="cmt-act" onclick="toggleDownvote(this)">↓ 0</span><span class="cmt-act">Reply</span><span class="cmt-act">3h</span></div></div></div>
       <!-- Your reflection + n_boudreaux's reply to it (targets of the "n_boudreaux replied to your reflection" notification). -->
-      <div class="cmt" id="cmt-you-refl"><div class="cmt-av" style="background:linear-gradient(135deg,#C8963E,#5C3D28)">Y</div><div><div class="cmt-un">your_handle</div><div class="cmt-txt">This book put words to something I'd carried for years — the way Peggy keeps choosing Clint even when it costs her. I felt seen on every page.</div><div class="cmt-acts"><span class="cmt-act" onclick="this.classList.toggle('on')">♥ 21</span><span class="cmt-act" onclick="toggleDownvote(this)">↓ 0</span><span class="cmt-act" onclick="replyToComment(this,'your_handle')">Reply</span><span class="cmt-act">4h</span></div></div></div>
-      <div class="cmt" id="cmt-nb-reply" style="margin-left:36px"><div class="cmt-av" onclick="openUserStory('n_boudreaux')" style="background:linear-gradient(135deg,#3B2010,#C8963E);cursor:pointer">NB</div><div><div class="cmt-un" onclick="goPublicProfile('n_boudreaux')" style="cursor:pointer">n_boudreaux</div><div class="cmt-txt">↩ @your_handle yes — that Orleans Ave chapter undid me too. You said what I couldn't put into words.</div><div class="cmt-acts"><span class="cmt-act" onclick="this.classList.toggle('on')">♥ 9</span><span class="cmt-act" onclick="toggleDownvote(this)">↓ 0</span><span class="cmt-act" onclick="replyToComment(this,'n_boudreaux')">Reply</span><span class="cmt-act">6h</span></div></div></div>
+      <div class="cmt" id="cmt-you-refl"><div class="cmt-av cu-avatar" onclick="viewMyStory()" style="background:linear-gradient(135deg,#C8963E,#5C3D28);cursor:pointer">Y</div><div><div class="cmt-un cu-username" onclick="goMyProfile()" style="cursor:pointer">your_handle</div><div class="cmt-txt">This book put words to something I'd carried for years — the way Peggy keeps choosing Clint even when it costs her. I felt seen on every page.</div><div class="cmt-acts"><span class="cmt-act" onclick="this.classList.toggle('on')">♥ 21</span><span class="cmt-act" onclick="toggleDownvote(this)">↓ 0</span><span class="cmt-act" onclick="replyToComment(this,CURRENT_USER.username)">Reply</span><span class="cmt-act">4h</span></div></div></div>
+      <div class="cmt" id="cmt-nb-reply" style="margin-left:36px"><div class="cmt-av" onclick="openUserStory('n_boudreaux')" style="background:linear-gradient(135deg,#3B2010,#C8963E);cursor:pointer">NB</div><div><div class="cmt-un" onclick="goPublicProfile('n_boudreaux')" style="cursor:pointer">n_boudreaux</div><div class="cmt-txt">↩ <span class="cu-handle">@your_handle</span> yes — that Orleans Ave chapter undid me too. You said what I couldn't put into words.</div><div class="cmt-acts"><span class="cmt-act" onclick="this.classList.toggle('on')">♥ 9</span><span class="cmt-act" onclick="toggleDownvote(this)">↓ 0</span><span class="cmt-act" onclick="replyToComment(this,'n_boudreaux')">Reply</span><span class="cmt-act">6h</span></div></div></div>
     </div>
     <div class="cmt-inp-row"><input class="cmt-inp" placeholder="Add your reflection..."><button class="cmt-send" onclick="postComment(this)">↑</button></div>
   </div>
@@ -1682,8 +1689,8 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <div class="sh"></div><div class="sh-t">Profile &amp; Settings</div>
     <div class="set-body">
       <div class="set-sect"><div class="set-sh">Personal Info</div>
-        <div class="set-field"><div class="set-lbl">Full Name</div><input class="set-inp" placeholder="Your name"></div>
-        <div class="set-field"><div class="set-lbl">Username</div><input class="set-inp" placeholder="@your_handle"></div>
+        <div class="set-field"><div class="set-lbl">Display Name</div><input id="set-displayname" class="set-inp" placeholder="Your name" maxlength="50"></div>
+        <div class="set-field"><div class="set-lbl">Username</div><input id="set-username" class="set-inp" placeholder="username" autocomplete="off" autocapitalize="off" spellcheck="false" oninput="onUsernameInput()"><div id="set-username-msg" class="set-msg"></div><div id="set-username-lock" class="set-lock" style="display:none"></div></div>
         <div class="set-field"><div class="set-lbl">Email</div><input class="set-inp" type="email" placeholder="email@example.com"></div>
         <div class="set-field"><div class="set-lbl">Phone</div><input class="set-inp" type="tel" placeholder="+1 (555) 000-0000"></div>
         <div class="set-field"><div class="set-lbl">Date of Birth</div>
@@ -1738,7 +1745,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
         <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0"><span style="font-size:13px;color:var(--cr)">Messages</span><div class="set-toggle" onclick="toggleSetting(this)"><div class="set-toggle-knob"></div></div></div>
       </div>
       <div style="height:60px"></div>
-      <button class="set-save" onclick="alert('Profile saved! ✓');C('ov-settings')">Save Changes</button>
+      <button id="set-save-btn" class="set-save" onclick="saveSettings()">Save Changes</button>
     </div>
   </div>
 </div>
@@ -1945,6 +1952,10 @@ fitPhone();
   }
   if(document.readyState==='loading') window.addEventListener('DOMContentLoaded', containOverlays);
   else containOverlays();
+  // Batch 23: push the (possibly persisted) logged-in identity onto every surface after load.
+  function _applyCU(){ if(typeof applyCurrentUser==='function') applyCurrentUser(); }
+  if(document.readyState==='loading') window.addEventListener('DOMContentLoaded', _applyCU);
+  else _applyCU();
 })();
 function shopItem(name){
   T('creations');
@@ -3487,6 +3498,7 @@ function O(id){
   // one closes the other, so tapping the bell always returns to Notifications (even after Messages).
   if(id==='ov-notif'){ var m=document.getElementById('ov-msgs'); if(m&&m.classList.contains('show')) C('ov-msgs'); if(typeof notifTab==='function') notifTab('notif'); }
   if(id==='ov-msgs'){ var n=document.getElementById('ov-notif'); if(n&&n.classList.contains('show')) C('ov-notif'); }
+  if(id==='ov-settings' && typeof syncSettingsIdentity==='function') syncSettingsIdentity();
   if(id==='ov-notif' && typeof generateEventReminders==='function'){ generateEventReminders(); }
   el.style.cssText='';
   el.classList.add('show');
@@ -5225,6 +5237,148 @@ function userInitials(name){
   var letters=name.replace(/[^a-z]/gi,'');
   return (letters.substring(0,2)||'OE').toUpperCase();
 }
+/* ═══ LOGGED-IN USER IDENTITY (Batch 23) ═════════════════════════════════════
+   ONE source of truth for the logged-in user. Every surface that shows "you"
+   (profile header, comments, @mentions of you, QR, story, settings) reads from
+   CURRENT_USER. Persisted per-device in localStorage. PROTOTYPE LIMITATION:
+   real platform-wide uniqueness, the 30-day limit and cross-device persistence
+   need a backend — see BACKEND_TODO.md. */
+var USER_DEFAULTS = { username: 'your_handle', displayName: 'Your Name' };
+// Reserved usernames — ONE list so more can be added later (checked case-insensitively).
+var RESERVED_USERNAMES = ['orgena', 'rhodesia', 'rhodesia_official', 'admin', 'support'];
+var USERNAME_CHANGE_DAYS = 30;
+var USER_STORE_KEY = 'orgena_current_user';
+function loadCurrentUser(){
+  var def = { username: USER_DEFAULTS.username, displayName: USER_DEFAULTS.displayName, usernameChangedAt: null };
+  try{
+    var raw = localStorage.getItem(USER_STORE_KEY);
+    if(raw){
+      var o = JSON.parse(raw);
+      return {
+        username: (typeof o.username==='string' && o.username) ? o.username : def.username,
+        displayName: (typeof o.displayName==='string' && o.displayName) ? o.displayName : def.displayName,
+        usernameChangedAt: (typeof o.usernameChangedAt==='number') ? o.usernameChangedAt : null
+      };
+    }
+  }catch(e){}
+  return def;
+}
+var CURRENT_USER = loadCurrentUser();
+function saveCurrentUser(){
+  try{ localStorage.setItem(USER_STORE_KEY, JSON.stringify({ username: CURRENT_USER.username, displayName: CURRENT_USER.displayName, usernameChangedAt: CURRENT_USER.usernameChangedAt })); }catch(e){}
+}
+// Single-letter avatar (keeps the existing "Y" style), derived from the display name.
+function cuAvatar(){ var s=(CURRENT_USER.displayName||CURRENT_USER.username||'Y').trim(); return (s.charAt(0)||'Y').toUpperCase(); }
+function goMyProfile(){ T('profile'); if(typeof showMyProfile==='function') showMyProfile(); }
+// Every username already present in the app's data — gathered PROGRAMMATICALLY (not hand-listed)
+// by scanning onclick handlers and the usernames shown in comments/posts/messages.
+function takenUsernames(){
+  var set = new Set();
+  // goPublicProfile/openUserStory/openConvo take the username as the FIRST arg;
+  // openStory takes (initials, username, …) so its username is the SECOND arg.
+  var reArg = /(?:goPublicProfile|openUserStory|openConvo)\(\s*['"]([^'"]+)['"]/g;
+  var reStory = /openStory\(\s*['"][^'"]*['"]\s*,\s*['"]([^'"]+)['"]/g;
+  document.querySelectorAll('[onclick]').forEach(function(e){
+    var oc = e.getAttribute('onclick')||'', m;
+    while((m = reArg.exec(oc))){ var c=m[1]; if(/^[a-z0-9_.]{2,40}$/i.test(c)) set.add(c.toLowerCase()); }
+    reArg.lastIndex = 0;
+    while((m = reStory.exec(oc))){ var c2=m[1]; if(/^[a-z0-9_.]{2,40}$/i.test(c2)) set.add(c2.toLowerCase()); }
+    reStory.lastIndex = 0;
+  });
+  document.querySelectorAll('.cmt-un,.pun,.msg-un,.convo-name').forEach(function(e){
+    var t=(e.textContent||'').trim().split(/\s/)[0];
+    if(/^[a-z0-9_.]{2,40}$/i.test(t)) set.add(t.toLowerCase());
+  });
+  try{ if(typeof convoStore==='object' && convoStore) Object.keys(convoStore).forEach(function(k){ if(/^[a-z0-9_.]{2,40}$/i.test(k)) set.add(k.toLowerCase()); }); }catch(e){}
+  set.delete('you');
+  set.delete((CURRENT_USER.username||'').toLowerCase());  // your own current name is not "taken"
+  return set;
+}
+// Validate a candidate username. Returns {ok, msg}. Checked in the order the owner listed.
+function validateUsernameValue(v){
+  v = (v||'').trim();
+  if(v.length < 2)  return { ok:false, msg:'Username must be at least 2 characters' };
+  if(v.length > 40) return { ok:false, msg:'Username must be 40 characters or fewer' };
+  if(/\s/.test(v))  return { ok:false, msg:'No spaces allowed' };
+  if(!/^[A-Za-z0-9_.]+$/.test(v)) return { ok:false, msg:'Only letters, numbers, underscore and period' };
+  var low = v.toLowerCase();
+  if(low === (CURRENT_USER.username||'').toLowerCase()) return { ok:true, msg:'This is your current username' };
+  if(RESERVED_USERNAMES.indexOf(low) >= 0) return { ok:false, msg:'That username is reserved' };
+  if(takenUsernames().has(low)) return { ok:false, msg:'That username is taken' };
+  return { ok:true, msg:'✓ Available' };
+}
+function canChangeUsername(){
+  if(!CURRENT_USER.usernameChangedAt) return true;          // first change from the default is always allowed
+  return (Date.now() - CURRENT_USER.usernameChangedAt) >= USERNAME_CHANGE_DAYS*86400000;
+}
+function usernameUnlockDate(){
+  var d = new Date((CURRENT_USER.usernameChangedAt||0) + USERNAME_CHANGE_DAYS*86400000);
+  return d.toLocaleDateString(undefined, { year:'numeric', month:'long', day:'numeric' });
+}
+// Push CURRENT_USER onto every surface that shows the logged-in user — no reload needed.
+function applyCurrentUser(){
+  var u = CURRENT_USER;
+  document.querySelectorAll('.cu-username').forEach(function(e){ e.textContent = u.username; });
+  document.querySelectorAll('.cu-handle').forEach(function(e){ e.textContent = '@'+u.username; });
+  document.querySelectorAll('.cu-name').forEach(function(e){ e.textContent = u.displayName; });
+  document.querySelectorAll('.cu-avatar').forEach(function(e){ e.textContent = cuAvatar(); });
+  // Profile header ONLY when you're viewing your own profile (public profiles reuse these nodes).
+  if(!window._viewingProfile){
+    var nm=document.querySelector('#s-profile .pr-name'); if(nm) nm.textContent=u.displayName;
+    var hd=document.querySelector('#s-profile .pr-handle'); if(hd) hd.textContent='@'+u.username;
+    var av=document.querySelector('#s-profile .pr-av'); if(av) av.textContent=cuAvatar();
+  }
+  var qr=document.querySelector('.qr-handle'); if(qr) qr.textContent='@'+u.username+' · Orgena';
+  if(typeof syncSettingsIdentity==='function') syncSettingsIdentity();
+}
+// Populate the Settings identity fields and reflect the 30-day lock state.
+function syncSettingsIdentity(){
+  var dn=document.getElementById('set-displayname'); if(dn) dn.value=CURRENT_USER.displayName;
+  var un=document.getElementById('set-username');
+  var msg=document.getElementById('set-username-msg');
+  var lock=document.getElementById('set-username-lock');
+  var sb=document.getElementById('set-save-btn');
+  if(msg){ msg.textContent=''; msg.className='set-msg'; }
+  if(un){
+    un.value=CURRENT_USER.username;
+    var locked = !canChangeUsername();
+    un.readOnly = locked; un.classList.toggle('locked', locked);
+    if(lock){ lock.style.display = locked ? 'block' : 'none'; if(locked) lock.textContent='You can change your username again on '+usernameUnlockDate(); }
+  }
+  if(sb){ sb.disabled=false; sb.classList.remove('disabled'); }
+}
+// Live validation on every keystroke in the username field.
+function onUsernameInput(){
+  var un=document.getElementById('set-username'); if(!un) return;
+  var msg=document.getElementById('set-username-msg');
+  var sb=document.getElementById('set-save-btn');
+  var r=validateUsernameValue(un.value);
+  if(msg){ msg.textContent=r.msg; msg.className='set-msg '+(r.ok?'ok':'err'); }
+  if(sb){ sb.disabled=!r.ok; sb.classList.toggle('disabled', !r.ok); }
+}
+function saveSettings(){
+  var un=document.getElementById('set-username');
+  var dn=document.getElementById('set-displayname');
+  var newName=((dn&&dn.value||'').trim() || CURRENT_USER.displayName).slice(0,50);
+  if(un && !un.readOnly){
+    var v=(un.value||'').trim();
+    var r=validateUsernameValue(v);
+    if(!r.ok){ onUsernameInput(); return; }                 // blocked — invalid
+    if(v.toLowerCase() !== (CURRENT_USER.username||'').toLowerCase() || v !== CURRENT_USER.username){
+      if(v !== CURRENT_USER.username){
+        if(!canChangeUsername()){ syncSettingsIdentity(); return; } // 30-day lock
+        CURRENT_USER.username = v;
+        CURRENT_USER.usernameChangedAt = Date.now();
+      }
+    }
+  }
+  CURRENT_USER.displayName = newName;
+  saveCurrentUser();
+  applyCurrentUser();
+  if(typeof showMyProfile==='function' && !window._viewingProfile) showMyProfile();
+  if(typeof showToast==='function') showToast('✓ Profile saved');
+  C('ov-settings');
+}
 function goPublicProfile(name){
   // Remember whose profile we're viewing so the avatar opens THEIR story and
   // the Message button drafts to THEM.
@@ -5264,10 +5418,10 @@ function showMyProfile(){
   if(typeof setPrView==='function') setPrView('private');
   var nm=document.querySelector('#s-profile .pr-name');
   var hd=document.querySelector('#s-profile .pr-handle');
-  if(nm) nm.textContent='Your Name';
-  if(hd) hd.textContent='@your_handle';
+  if(nm) nm.textContent=(typeof CURRENT_USER!=='undefined')?CURRENT_USER.displayName:'Your Name';
+  if(hd) hd.textContent='@'+((typeof CURRENT_USER!=='undefined')?CURRENT_USER.username:'your_handle');
   var av=document.querySelector('#s-profile .pr-av');
-  if(av){ av.textContent='Y'; av.style.background=''; }
+  if(av){ av.textContent=(typeof cuAvatar==='function')?cuAvatar():'Y'; av.style.background=''; }
   // Restore your own posts grid.
   var grid=document.getElementById('pr-grid');
   if(grid && window._ownGridHTML!=null){ grid.innerHTML=window._ownGridHTML; grid.dataset.empty=''; }
@@ -5337,10 +5491,10 @@ function postComment(btn){
   const id = 'mycmt-' + Date.now();
   const el = document.createElement('div');
   el.className = 'cmt'; el.id = id; el.style.animation = 'fadeIn .3s ease';
-  el.innerHTML = '<div class="cmt-av" onclick="viewMyStory()" style="background:linear-gradient(135deg,#C8963E,#4A2C18);color:var(--br);cursor:pointer">Y</div>'
+  el.innerHTML = '<div class="cmt-av cu-avatar" onclick="viewMyStory()" style="background:linear-gradient(135deg,#C8963E,#4A2C18);color:var(--br);cursor:pointer">'+cuAvatar()+'</div>'
     + '<div style="flex:1">'
     + '<div style="display:flex;align-items:center;justify-content:space-between">'
-    + '<div class="cmt-un" onclick="goPublicProfile(\'you\')" style="cursor:pointer">you</div>'
+    + '<div class="cmt-un cu-username" onclick="goMyProfile()" style="cursor:pointer">'+CURRENT_USER.username+'</div>'
     + '<span class="cmt-act" style="position:relative" onclick="toggleCmtMenu(this)">\u22EF'
     + '<span class="cmt-menu" style="display:none;position:absolute;right:0;top:18px;background:#241608;border:1px solid rgba(200,150,62,.25);border-radius:8px;overflow:hidden;z-index:20;min-width:90px">'
     + '<div onclick="editComment(\'' + id + '\')" style="padding:9px 14px;font-size:11px;color:var(--cr);cursor:pointer;white-space:nowrap">\u270E Edit</div>'
@@ -5348,7 +5502,7 @@ function postComment(btn){
     + '</span></span>'
     + '</div>'
     + '<div class="cmt-txt">' + txt + '</div>'
-    + '<div class="cmt-acts"><span class="cmt-act" onclick="this.classList.toggle(\'on\')">\u2665 0</span><span class="cmt-act" onclick="toggleDownvote(this)">\u2193 0</span><span class="cmt-act" onclick="setReply(\'you\')">Reply</span><span class="cmt-act">now</span></div>'
+    + '<div class="cmt-acts"><span class="cmt-act" onclick="this.classList.toggle(\'on\')">\u2665 0</span><span class="cmt-act" onclick="toggleDownvote(this)">\u2193 0</span><span class="cmt-act" onclick="setReply(CURRENT_USER.username)">Reply</span><span class="cmt-act">now</span></div>'
     + '</div>';
   list.appendChild(el);
   inp.value = ''; list.scrollTop = list.scrollHeight;
@@ -5993,7 +6147,7 @@ function setupCreationsScroll(){
     <div style="flex:1;height:3px;background:rgba(255,255,255,.25);border-radius:2px;overflow:hidden"><div style="height:100%;width:100%;background:var(--gd);animation:sfill 4s linear forwards"></div></div>
   </div>
   <div style="position:absolute;top:26px;left:16px;display:flex;align-items:center;gap:8px">
-    <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gd),#7A4E35);display:flex;align-items:center;justify-content:center;color:var(--br);font-weight:600;font-size:13px">Y</div>
+    <div class="cu-avatar" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gd),#7A4E35);display:flex;align-items:center;justify-content:center;color:var(--br);font-weight:600;font-size:13px">Y</div>
     <div style="font-size:12px;font-weight:500;color:#fff">Your Story</div>
     <span onclick="closeMyStory()" style="margin-left:auto;color:#fff;font-size:20px;cursor:pointer;padding-left:30px">✕</span>
   </div>
