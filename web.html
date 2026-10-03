@@ -662,7 +662,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 @keyframes evpulse{0%,100%{opacity:.7}50%{opacity:1}}
 /* ===== WEBSITE LAYOUT — appended; overrides phone shell for web.html only ===== */
 body{display:block;min-height:100vh;background:radial-gradient(ellipse at 30% 15%,#3B1A06,#0D0804)}
-.phone{width:100vw;height:100vh;max-width:none;border-radius:0;box-shadow:none;display:grid;grid-template-columns:248px 1fr;grid-template-rows:62px 1fr;grid-template-areas:"side top" "side main"}
+.phone{width:100vw;height:100vh;max-width:none;border-radius:0;box-shadow:none;display:grid;grid-template-columns:248px minmax(0,1fr);grid-template-rows:62px 1fr;grid-template-areas:"side top" "side main"}
 .sb{display:none}
 .tn{grid-area:top;height:62px;justify-content:space-between;gap:8px;padding:0 26px}
 .sw{grid-area:main;overflow:hidden;position:relative}
@@ -689,14 +689,16 @@ body{display:block;min-height:100vh;background:radial-gradient(ellipse at 30% 15
 .sc .sp-grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
 .sc .pr-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
 @media(max-width:900px){
- .phone{grid-template-columns:74px 1fr}
+ .phone{grid-template-columns:74px minmax(0,1fr)}
  .bn{width:74px;padding:16px 8px}
  .nb,.nb-soul{justify-content:center;padding:12px 0}
  .nb-l{display:none}
  .nb-i{width:auto}
 }
 @media(max-width:560px){
- .tn{padding:0 14px}
+ .tn{padding:0 10px}
+ .tn-brand .bw{display:none}
+ .tn-right{gap:6px}
  .sc{padding-inline:10px}
 }
 </style>
