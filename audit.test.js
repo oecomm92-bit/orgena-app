@@ -101,6 +101,16 @@ const PAGE_HELPERS = () => {
     ['comm-post-popup', 'ev-popup-bg', 'city-popup'].forEach(id => { const e = document.getElementById(id); if (e) e.style.display = 'none'; });
     try { if (typeof closeCommPost === 'function') closeCommPost(); } catch (_) {}
     try { if (typeof hideNotifCenter === 'function') hideNotifCenter(); } catch (_) {}
+    // Batch 24: the generic handler sweeps can trip "Log out"/"Reset demo", which shows the
+    // full-screen auth layer (z-index 1200) and would block every later section. Auto-recover
+    // the logged-in demo state here so coverage sweeps never leave the app logged out.
+    try {
+      if (typeof CURRENT_USER !== 'undefined' && CURRENT_USER.loggedIn === false) {
+        CURRENT_USER.loggedIn = true;
+        if (typeof applyAuthState === 'function') applyAuthState();
+      }
+      var al = document.getElementById('auth-layer'); if (al && getComputedStyle(al).display !== 'none' && (typeof CURRENT_USER === 'undefined' || CURRENT_USER.loggedIn !== false)) al.style.display = 'none';
+    } catch (_) {}
   };
 };
 
@@ -755,7 +765,7 @@ async function runAudit({ engineName, browserType, execPath, url, full, shotPref
     // ═══ IDENTITY — logged-in username + display name (Batch 23) ═══════════════
     await closeAll(page);
     // Reset to defaults so the checks don't depend on earlier state.
-    await page.evaluate(() => { try { localStorage.removeItem('orgena_current_user'); } catch (e) {} CURRENT_USER.username = 'your_handle'; CURRENT_USER.displayName = 'Your Name'; CURRENT_USER.usernameChangedAt = null; window._viewingProfile = null; if (typeof showMyProfile === 'function') showMyProfile(); applyCurrentUser(); });
+    await page.evaluate(() => { try { localStorage.removeItem('orgena_current_user'); localStorage.removeItem('orgena_session'); localStorage.removeItem('orgena_users_added'); } catch (e) {} if (typeof USERS !== 'undefined') USERS = USERS.filter(function (u) { return !u.created; }); CURRENT_USER.username = 'your_handle'; CURRENT_USER.displayName = 'Your Name'; CURRENT_USER.usernameChangedAt = null; CURRENT_USER.emailVerified = true; CURRENT_USER.phoneVerified = true; CURRENT_USER.loggedIn = true; window._viewingProfile = null; if (typeof showMyProfile === 'function') showMyProfile(); applyCurrentUser(); });
     await go(page, 'profile'); await page.evaluate(() => O('ov-settings')); await page.waitForTimeout(300);
     // overlay inside the phone frame?
     const setBox = await page.evaluate(() => { const r = document.getElementById('ov-settings').getBoundingClientRect(); const z = +getComputedStyle(document.getElementById('ov-settings')).zIndex || 0; return { inFrame: r.left >= -1 && r.right <= 392 && r.bottom <= 846, z }; });
@@ -794,7 +804,7 @@ async function runAudit({ engineName, browserType, execPath, url, full, shotPref
       mention: (document.querySelector('#cmt-nb-reply .cu-handle') || {}).textContent,
       qr: (document.querySelector('.qr-handle') || {}).textContent,
     }));
-    const surfOK = surf.prName === 'Audit User' && surf.prHandle === '@audit_user_z9' && surf.prAv === 'A' && surf.cmtUn === 'audit_user_z9' && surf.mention === '@audit_user_z9' && /@audit_user_z9/.test(surf.qr);
+    const surfOK = surf.prName === 'Audit User' && surf.prHandle === '@audit_user_z9' && surf.prAv === 'AU' && surf.cmtUn === 'audit_user_z9' && surf.mention === '@audit_user_z9' && /@audit_user_z9/.test(surf.qr);
     surfOK ? P('identity', 'save updates every surface (profile header, your comment, @mention, QR, avatar)') : B('identity', `surface mismatch: ${JSON.stringify(surf)}`);
     surf.toast ? P('identity', 'success toast shown on save') : I('identity', 'no success toast detected on save');
     // posting a comment uses the current username, not "you"
@@ -831,7 +841,135 @@ async function runAudit({ engineName, browserType, execPath, url, full, shotPref
     const persisted = await page.evaluate(() => ({ un: CURRENT_USER.username, dn: CURRENT_USER.displayName, handle: (document.querySelector('#s-profile .pr-handle') || {}).textContent, cmtUn: (document.querySelector('#cmt-you-refl .cu-username') || {}).textContent }));
     (persisted.un === 'reload_test_user' && persisted.handle === '@reload_test_user' && persisted.cmtUn === 'reload_test_user') ? P('identity', 'username + display name survive a reload (localStorage)') : B('identity', `did not persist across reload: ${JSON.stringify(persisted)}`);
     // reset to defaults for the screenshots/parity that follow
-    await page.evaluate(() => { try { localStorage.removeItem('orgena_current_user'); } catch (e) {} CURRENT_USER.username = 'your_handle'; CURRENT_USER.displayName = 'Your Name'; CURRENT_USER.usernameChangedAt = null; if (typeof applyCurrentUser === 'function') applyCurrentUser(); });
+    await page.evaluate(() => { try { localStorage.clear(); } catch (e) {} if (typeof USERS !== 'undefined') USERS = USERS.filter(function (u) { return !u.created; }); var d = (typeof findUser === 'function') ? findUser('jordan_reads') : null; if (d) { d.displayName = 'Jordan Reed'; d.emailVerified = true; d.phoneVerified = true; } CURRENT_USER = { username: 'jordan_reads', displayName: 'Jordan Reed', usernameChangedAt: null, emailVerified: true, phoneVerified: true, loggedIn: true }; window._viewingProfile = null; if (typeof showMyProfile === 'function') showMyProfile(); if (typeof applyAuthState === 'function') applyAuthState(); });
+    await go(page, 'home');
+
+    // ═══ AUTH · SIGN-UP · VERIFICATION (Batch 24) ═══════════════════════════════
+    await page.evaluate(() => { try { localStorage.clear(); sessionStorage.clear(); } catch (e) {} window.confirm = function () { return true; }; });
+    await page.reload({ waitUntil: 'domcontentloaded' }); await page.waitForTimeout(1000);
+    await page.evaluate(() => { window.confirm = function () { return true; }; });
+    // (1) fresh load, empty storage → demo account Jordan Reed, fully unlocked, no placeholders anywhere
+    const phScan = await page.evaluate(async () => {
+      function scan() { return /\byour_handle\b|\bYour Name\b|@your_handle/.test(document.body.innerText); }
+      let bad = scan();
+      // sweep key surfaces: comment thread, QR, story, settings, each tab
+      try { O('ov-cmts'); } catch (e) {} bad = bad || scan();
+      try { C('ov-cmts'); O('ov-qr'); } catch (e) {} bad = bad || scan();
+      try { C('ov-qr'); if (typeof viewMyStory === 'function') viewMyStory(); } catch (e) {} bad = bad || scan();
+      try { if (typeof closeMyStory === 'function') closeMyStory(); O('ov-settings'); } catch (e) {} bad = bad || scan();
+      try { C('ov-settings'); } catch (e) {}
+      // lone "Y" avatar anywhere for the current user?
+      const loneY = [...document.querySelectorAll('#s-profile .pr-av, #cmt-you-refl .cu-avatar')].some(e => e.textContent.trim() === 'Y');
+      return { bad, loneY };
+    });
+    const demo = await page.evaluate(() => ({ prName: document.querySelector('#s-profile .pr-name').textContent, prHandle: document.querySelector('#s-profile .pr-handle').textContent, prAv: document.querySelector('#s-profile .pr-av').textContent, unlocked: isVerified(), loggedIn: getComputedStyle(document.getElementById('auth-layer')).display === 'none' }));
+    (!phScan.bad && !phScan.loneY) ? P('auth', 'fresh load: no your_handle / Your Name / lone-Y placeholder anywhere') : B('auth', `placeholder identity still present (bad=${phScan.bad} loneY=${phScan.loneY})`);
+    (demo.prName === 'Jordan Reed' && demo.prHandle === '@jordan_reads' && demo.prAv === 'JR' && demo.unlocked && demo.loggedIn) ? P('auth', 'demo account = Jordan Reed / @jordan_reads / JR, verified & logged in') : B('auth', `demo account wrong: ${JSON.stringify(demo)}`);
+    // (2) Settings label reads "Display Name"
+    await page.evaluate(() => { T('profile'); O('ov-settings'); }); await page.waitForTimeout(250);
+    const dnLabel = await page.evaluate(() => { const lbls = [...document.querySelectorAll('#ov-settings .set-lbl')].map(e => e.textContent.trim()); return { hasDisplay: lbls.includes('Display Name'), hasFull: lbls.includes('Full Name') }; });
+    (dnLabel.hasDisplay && !dnLabel.hasFull) ? P('auth', 'Settings label reads "Display Name"') : B('auth', `Settings label wrong: ${JSON.stringify(dnLabel)}`);
+    // (3) Log out → Welcome shown, no tab bar
+    await page.evaluate(() => { [...document.querySelectorAll('.set-acct-lbl')].find(e => e.textContent === 'Log out').click(); }); await page.waitForTimeout(350);
+    const loggedOut = await page.evaluate(() => ({ welcome: getComputedStyle(document.getElementById('auth-welcome')).display !== 'none', layer: getComputedStyle(document.getElementById('auth-layer')).display !== 'none', navHidden: getComputedStyle(document.getElementById('bottom-nav')).visibility === 'hidden' }));
+    (loggedOut.welcome && loggedOut.layer && loggedOut.navHidden) ? P('auth', 'log out → Welcome shown, tab bar hidden') : B('auth', `logout state wrong: ${JSON.stringify(loggedOut)}`);
+    // (4) sign-up validation for each field + button gating
+    await page.evaluate(() => { authShow('signup'); resetSignupForm(); }); await page.waitForTimeout(200);
+    async function suType(field, val) { await page.fill('#su-' + field, ''); await page.type('#su-' + field, val, { delay: 2 }); await page.waitForTimeout(70); }
+    const suCases = [
+      { f: 'username', v: 'admin', re: /reserved/ },
+      { f: 'username', v: 'peggy_lavizzo_nola', re: /taken/ },
+      { f: 'email', v: 'notanemail', re: /valid email/ },
+      { f: 'email', v: 'jordan.reed@example.com', re: /already uses that email/ },
+      { f: 'phone', v: '123', re: /10-digit/ },
+      { f: 'phone', v: '(504) 555-0100', re: /already uses that number/ },
+      { f: 'password', v: 'short', re: /8 characters/ },
+    ];
+    for (const c of suCases) {
+      await suType(c.f, c.v);
+      const m = await page.evaluate((f) => document.getElementById('su-' + f + '-msg').textContent, c.f);
+      c.re.test(m) ? P('auth', `sign-up ${c.f} "${c.v.slice(0, 14)}" → "${m}"`) : B('auth', `sign-up ${c.f} "${c.v}" → "${m}" (expected ${c.re})`);
+    }
+    // fill all valid, box unchecked → disabled; checked → enabled
+    await suType('username', 'river_jones'); await suType('email', 'river@example.com'); await suType('phone', '504-555-0199'); await suType('password', 'river1234');
+    const beforeChk = await page.evaluate(() => document.getElementById('su-submit').disabled);
+    await page.evaluate(() => document.getElementById('su-agree').click()); await page.waitForTimeout(80);
+    const afterChk = await page.evaluate(() => document.getElementById('su-submit').disabled);
+    (beforeChk === true && afterChk === false) ? P('auth', 'Create account disabled until all valid + box checked') : B('auth', `create-button gating wrong: unchecked=${beforeChk} checked=${afterChk}`);
+    // (5) successful sign-up → Home with banner, logged in unverified
+    await page.evaluate(() => document.getElementById('su-submit').click()); await page.waitForTimeout(450);
+    const afterSignup = await page.evaluate(() => ({ who: CURRENT_USER.username, tab: document.querySelector('.sc.on').id, banner: getComputedStyle(document.getElementById('verify-banner')).display !== 'none', unverified: !isVerified(), loggedIn: getComputedStyle(document.getElementById('auth-layer')).display === 'none' }));
+    (afterSignup.who === 'river_jones' && afterSignup.tab === 's-home' && afterSignup.banner && afterSignup.unverified && afterSignup.loggedIn) ? P('auth', 'successful sign-up → Home, unverified banner shown') : B('auth', `post-signup wrong: ${JSON.stringify(afterSignup)}`);
+    // (6) EVERY gated action opens the verify sheet and does NOT perform
+    const gated = await page.evaluate(() => {
+      const res = {};
+      function run(label, fn, performedCheck) {
+        try { fn(); } catch (e) {}
+        const sheet = document.getElementById('ov-verify').classList.contains('show');
+        const performed = performedCheck ? performedCheck() : false;
+        res[label] = { sheet, performed };
+        if (window.__closeAll) window.__closeAll();
+      }
+      run('like', () => { const b = document.querySelector('#s-home .post .pab[onclick*="tLike"]'); b.click(); }, () => document.querySelector('#s-home .post .pab[onclick*="tLike"]').classList.contains('liked'));
+      run('save', () => { const b = document.querySelector('#s-home .post .pab[onclick*="tSave"]'); if (b) b.click(); });
+      run('follow', () => { const b = document.querySelector('#s-home .pfbtn[onclick*="tFollow"]'); if (b) b.click(); });
+      run('comment', () => { const i = document.querySelector('#ov-cmts .cmt-inp'); if (i) i.value = 'hi'; const s = document.querySelector('#ov-cmts .cmt-send'); O('ov-cmts'); if (s) s.click(); });
+      run('repost', () => openRepost());
+      run('create', () => openCreate());
+      run('rsvp', () => tRsvp(document.querySelector('.ev-rsvp') || document.createElement('button')));
+      run('book', () => bookExpFromList('OE French Quarter Fest Experience'));
+      run('message', () => messageCurrentProfile());
+      run('purchase', () => completePur('Card'));
+      return res;
+    });
+    let gatedOK = true, gatedBad = [];
+    Object.keys(gated).forEach(k => { if (!gated[k].sheet || gated[k].performed) { gatedOK = false; gatedBad.push(k + '(sheet=' + gated[k].sheet + ',done=' + gated[k].performed + ')'); } });
+    gatedOK ? P('auth', `all ${Object.keys(gated).length} gated actions open Verify sheet and no-op (like/save/follow/comment/repost/create/rsvp/book/message/purchase)`) : B('auth', 'gated action(s) not blocked: ' + gatedBad.join(', '));
+    await page.evaluate(() => { if (window.__closeAll) window.__closeAll(); });
+    // (7) wrong code → error; correct → verified; both → banner gone & gated works
+    await page.evaluate(() => startVerify('email')); await page.waitForTimeout(250);
+    await page.evaluate(() => { document.querySelectorAll('#vc-code-row .code-box').forEach(b => b.value = '0'); vcVerify(); }); await page.waitForTimeout(150);
+    const wrong = await page.evaluate(() => ({ msg: document.getElementById('vc-msg').textContent, stillUnverified: !CURRENT_USER.emailVerified }));
+    (/Incorrect code/.test(wrong.msg) && wrong.stillUnverified) ? P('auth', 'wrong verification code → inline error, not verified') : B('auth', `wrong-code handling off: ${JSON.stringify(wrong)}`);
+    await page.evaluate(() => { document.querySelectorAll('#vc-code-row .code-box').forEach((b, i) => b.value = '123456'[i]); vcVerify(); }); await page.waitForTimeout(800);
+    await page.evaluate(() => startVerify('phone')); await page.waitForTimeout(250);
+    await page.evaluate(() => { document.querySelectorAll('#vc-code-row .code-box').forEach((b, i) => b.value = '123456'[i]); vcVerify(); }); await page.waitForTimeout(800);
+    await page.evaluate(() => { if (window.__closeAll) window.__closeAll(); T('home'); }); await page.waitForTimeout(300);
+    const afterVerify = await page.evaluate(() => { const b = document.querySelector('#s-home .post .pab[onclick*="tLike"]'); b.click(); const liked = b.classList.contains('liked'); const sheet = document.getElementById('ov-verify').classList.contains('show'); if (window.__closeAll) window.__closeAll(); return { verified: isVerified(), banner: getComputedStyle(document.getElementById('verify-banner')).display === 'none', liked, sheet }; });
+    (afterVerify.verified && afterVerify.banner && afterVerify.liked && !afterVerify.sheet) ? P('auth', 'both codes correct → verified, banner gone, gated action now works') : B('auth', `post-verify wrong: ${JSON.stringify(afterVerify)}`);
+    // (8) log in with username / email / phone; wrong password → generic error
+    async function tryLogin(id, pw) { await page.evaluate(() => doLogout()); await page.waitForTimeout(200); await page.evaluate(() => { authShow('login'); resetLogin(); }); await page.waitForTimeout(120); await page.fill('#li-id', id); await page.fill('#li-password', pw); await page.evaluate(() => submitLogin()); await page.waitForTimeout(300); return await page.evaluate(() => ({ inApp: getComputedStyle(document.getElementById('auth-layer')).display === 'none', who: CURRENT_USER.username, msg: document.getElementById('li-msg').textContent })); }
+    const lU = await tryLogin('jordan_reads', 'orgena-demo');
+    const lE = await tryLogin('jordan.reed@example.com', 'orgena-demo');
+    const lP = await tryLogin('(504) 555-0100', 'orgena-demo');
+    const lW = await tryLogin('jordan_reads', 'wrongpass');
+    (lU.inApp && lU.who === 'jordan_reads') ? P('auth', 'log in with username works') : B('auth', `login by username failed: ${JSON.stringify(lU)}`);
+    (lE.inApp && lE.who === 'jordan_reads') ? P('auth', 'log in with email works') : B('auth', `login by email failed: ${JSON.stringify(lE)}`);
+    (lP.inApp && lP.who === 'jordan_reads') ? P('auth', 'log in with phone works') : B('auth', `login by phone failed: ${JSON.stringify(lP)}`);
+    (!lW.inApp && /Incorrect login details/.test(lW.msg)) ? P('auth', 'wrong password → generic "Incorrect login details"') : B('auth', `wrong-password handling off: ${JSON.stringify(lW)}`);
+    // (9) forgot password → code → new password → logged in; new password works
+    await page.evaluate(() => doLogout()); await page.waitForTimeout(150);
+    await page.evaluate(() => { authShow('forgot'); resetForgot(); }); await page.waitForTimeout(150);
+    await page.fill('#fp-email', 'river@example.com'); await page.evaluate(() => fpSendCode()); await page.waitForTimeout(200);
+    await page.evaluate(() => { document.querySelectorAll('#fp-code-row .code-box').forEach((b, i) => b.value = '123456'[i]); fpVerifyCode(); }); await page.waitForTimeout(200);
+    await page.fill('#fp-pw', 'newpass999'); await page.waitForTimeout(80);
+    await page.evaluate(() => fpSetPassword()); await page.waitForTimeout(350);
+    const fp = await page.evaluate(() => ({ inApp: getComputedStyle(document.getElementById('auth-layer')).display === 'none', who: CURRENT_USER.username }));
+    const fpRelogin = await tryLogin('river_jones', 'newpass999');
+    (fp.inApp && fp.who === 'river_jones' && fpRelogin.inApp) ? P('auth', 'forgot-password flow sets a new password and logs in') : B('auth', `forgot-password flow off: ${JSON.stringify(fp)} relogin=${JSON.stringify(fpRelogin)}`);
+    // (10) reload after sign-up keeps the created account
+    await page.reload({ waitUntil: 'domcontentloaded' }); await page.waitForTimeout(1000);
+    await page.evaluate(() => { window.confirm = function () { return true; }; });
+    const persistedAcct = await page.evaluate(() => ({ inRegistry: !!findUser('river_jones'), who: CURRENT_USER.username }));
+    persistedAcct.inRegistry ? P('auth', 'created account persists across reload') : B('auth', `created account lost after reload: ${JSON.stringify(persistedAcct)}`);
+    // reset demo restores Jordan Reed + Welcome
+    await page.evaluate(() => { if (CURRENT_USER.loggedIn === false) { authShow('login'); loginUser('river_jones', 'newpass999'); } T('profile'); O('ov-settings'); }); await page.waitForTimeout(250);
+    await page.evaluate(() => doResetDemo()); await page.waitForTimeout(350);
+    const resetDemoState = await page.evaluate(() => ({ welcome: getComputedStyle(document.getElementById('auth-welcome')).display !== 'none', who: CURRENT_USER.username, riverGone: !findUser('river_jones') }));
+    (resetDemoState.welcome && resetDemoState.who === 'jordan_reads' && resetDemoState.riverGone) ? P('auth', 'Reset demo account → Jordan Reed restored, created account cleared, Welcome shown') : B('auth', `reset demo off: ${JSON.stringify(resetDemoState)}`);
+    // restore a clean logged-in demo for the screenshots/parity that follow
+    await page.evaluate(() => { try { localStorage.clear(); } catch (e) {} if (typeof USERS !== 'undefined') USERS = USERS.filter(function (u) { return !u.created; }); CURRENT_USER = { username: 'jordan_reads', displayName: 'Jordan Reed', usernameChangedAt: null, emailVerified: true, phoneVerified: true, loggedIn: true }; window._viewingProfile = null; if (typeof showMyProfile === 'function') showMyProfile(); if (typeof applyAuthState === 'function') applyAuthState(); });
+    await page.reload({ waitUntil: 'domcontentloaded' }); await page.waitForTimeout(1000);
     await go(page, 'home');
 
     // screenshots for the report (explore post + stories handled by caller flows)

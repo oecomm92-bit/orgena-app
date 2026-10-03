@@ -566,6 +566,51 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .set-msg.ok{color:rgba(94,200,100,.9)}
 .set-lock{font-size:10px;letter-spacing:.02em;color:rgba(247,241,232,.4);font-style:italic;margin-top:5px}
 .set-inp.locked{opacity:.55;cursor:not-allowed}
+/* Account rows in Settings (Batch 24) — styled like the existing set-field rows. */
+.set-acct{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(200,150,62,.07);cursor:pointer}
+.set-acct:last-child{border-bottom:none}
+.set-acct-lbl{font-size:13px;color:var(--cr)}
+.set-acct.danger .set-acct-lbl{color:#E0584F}
+.set-acct-arrow{color:rgba(247,241,232,.3);font-size:15px}
+/* Auth screens (Batch 24) — Orgena brand; stay inside the 390×844 frame. */
+#auth-layer{position:absolute;inset:0;z-index:1200;background:var(--blk);display:none;overflow-y:auto}
+.auth-scr{display:none;flex-direction:column;min-height:844px;padding:0 26px 34px;box-sizing:border-box;position:relative}
+.auth-top{padding-top:64px;text-align:center;margin-bottom:26px}
+.auth-logo{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:.17em;color:var(--gdl);text-transform:uppercase;line-height:1}
+.auth-tag{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:rgba(247,241,232,.5);margin-top:6px}
+.auth-h{font-family:'Playfair Display',serif;font-weight:700;font-style:italic;font-size:23px;color:var(--cr);margin:0 0 4px}
+.auth-sub{font-size:12px;color:rgba(247,241,232,.45);margin-bottom:20px;line-height:1.5}
+.auth-field{margin-bottom:12px}
+.auth-lbl{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:rgba(247,241,232,.4);margin-bottom:5px}
+.auth-inp{width:100%;background:rgba(0,0,0,.32);border:1px solid rgba(200,150,62,.18);border-radius:6px;padding:12px 14px;color:var(--cr);font-size:14px;outline:none;box-sizing:border-box;font-family:'DM Sans',sans-serif}
+.auth-inp:focus{border-color:rgba(200,150,62,.5)}
+.auth-inp::placeholder{color:rgba(247,241,232,.22)}
+.auth-msg{font-size:10.5px;letter-spacing:.02em;margin-top:5px;min-height:13px;line-height:1.2}
+.auth-msg.err{color:#E0584F}
+.auth-msg.ok{color:rgba(94,200,100,.9)}
+.auth-btn{width:100%;padding:14px;background:var(--gd);color:var(--br);border:none;border-radius:6px;font-size:13px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:6px}
+.auth-btn:disabled{opacity:.4;cursor:not-allowed}
+.auth-btn2{width:100%;padding:14px;background:transparent;color:var(--gd);border:1px solid rgba(200,150,62,.4);border-radius:6px;font-size:13px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;margin-top:11px;font-family:'DM Sans',sans-serif}
+.auth-alt{text-align:center;font-size:12px;color:rgba(247,241,232,.5);margin-top:18px}
+.auth-link{color:var(--gd);cursor:pointer;font-weight:500}
+.auth-back{position:absolute;top:24px;left:4px;color:var(--gd);font-size:24px;cursor:pointer;z-index:2;line-height:1}
+.auth-pwwrap{position:relative}
+.auth-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--gd);cursor:pointer}
+.auth-chk{display:flex;align-items:flex-start;gap:9px;margin:6px 0 16px;cursor:pointer}
+.auth-chk-box{width:20px;height:20px;border:1px solid rgba(200,150,62,.5);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--br);background:transparent;margin-top:1px}
+.auth-chk.on .auth-chk-box{background:var(--gd)}
+.auth-chk-lbl{font-size:11.5px;color:rgba(247,241,232,.6);line-height:1.5}
+.auth-doc{font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;color:rgba(247,241,232,.72);line-height:1.7}
+/* Verify banner on Home */
+.vbanner{display:none;align-items:center;gap:9px;padding:9px 14px;background:linear-gradient(90deg,var(--gd),var(--gdl));color:var(--br);font-size:11.5px;font-weight:500;cursor:pointer;letter-spacing:.01em;position:relative;z-index:30}
+.vbanner .vb-x{margin-left:auto;font-size:16px;opacity:.65;padding:0 2px;line-height:1}
+/* 6-digit code entry */
+.code-row{display:flex;gap:8px;justify-content:center;margin:18px 0 8px}
+.code-box{width:40px;height:50px;text-align:center;font-size:21px;background:rgba(0,0,0,.3);border:1px solid rgba(200,150,62,.25);border-radius:8px;color:var(--cr);outline:none;font-family:'DM Sans',sans-serif}
+.code-box:focus{border-color:var(--gd)}
+.demo-code{text-align:center;font-size:11px;color:var(--gdl);background:rgba(200,150,62,.1);border:1px dashed rgba(200,150,62,.4);border-radius:6px;padding:8px;margin:2px 0 12px;letter-spacing:.03em}
+.verify-row{display:flex;align-items:center;gap:12px;padding:13px;background:rgba(200,150,62,.06);border:1px solid rgba(200,150,62,.16);border-radius:8px;margin-bottom:10px;cursor:pointer}
+.verify-row-ic{width:34px;height:34px;border-radius:50%;background:rgba(200,150,62,.14);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
 /* QR */
 #ov-qr{align-items:center;justify-content:center}
 .qr-box{width:270px;background:var(--br);border-radius:12px;padding:22px;text-align:center;border:1px solid rgba(200,150,62,.2);z-index:2}
@@ -632,6 +677,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 <div class="sw">
 <!-- HOME -->
 <div class="sc on" id="s-home">
+  <div class="vbanner" id="verify-banner" onclick="openVerifySheet()"><span>🔒 Verify your email and phone to unlock everything.</span><span class="vb-x" onclick="event.stopPropagation();dismissVerifyBanner()">✕</span></div>
   <div class="hero"><canvas id="hcv"></canvas><div class="hgrain"></div><div class="hscan"></div>
     <div class="hcont">
       <div class="h-ey">THE WORLD OF ORGENA</div>
@@ -1744,6 +1790,10 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
         <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(200,150,62,.07)"><span style="font-size:13px;color:var(--cr)">Soul Player drops</span><div class="set-toggle on" onclick="toggleSetting(this)"><div class="set-toggle-knob"></div></div></div>
         <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0"><span style="font-size:13px;color:var(--cr)">Messages</span><div class="set-toggle" onclick="toggleSetting(this)"><div class="set-toggle-knob"></div></div></div>
       </div>
+      <div class="set-sect"><div class="set-sh">Account</div>
+        <div class="set-acct" onclick="doLogout()"><span class="set-acct-lbl">Log out</span><span class="set-acct-arrow">›</span></div>
+        <div class="set-acct danger" onclick="doResetDemo()"><span class="set-acct-lbl">Reset demo account</span><span class="set-acct-arrow">›</span></div>
+      </div>
       <div style="height:60px"></div>
       <button id="set-save-btn" class="set-save" onclick="saveSettings()">Save Changes</button>
     </div>
@@ -1887,7 +1937,114 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
   <div class="nb" id="nb-community" onclick="T('community')"><div class="nb-i">👥</div><span class="nb-l">Community</span></div>
   <div class="nb" id="nb-profile" onclick="T('profile');showMyProfile()"><div class="nb-i">👤</div><span class="nb-l">Profile</span></div>
 </div>
+<!-- ═══ AUTH LAYER (Batch 24) — shown only when logged out; covers the whole frame ═══ -->
+<div id="auth-layer">
+  <!-- Welcome -->
+  <div class="auth-scr" id="auth-welcome" style="justify-content:center;display:flex">
+    <div class="auth-top" style="padding-top:0;margin-bottom:46px">
+      <div class="auth-logo">Orgena</div>
+      <div class="auth-tag">Where our stories become real</div>
+    </div>
+    <button class="auth-btn" onclick="authShow('signup');resetSignupForm()">Create account</button>
+    <button class="auth-btn2" onclick="authShow('login');resetLogin()">Log in</button>
+    <div class="auth-alt" style="margin-top:26px;font-size:11px;color:rgba(247,241,232,.3);line-height:1.6">Love, Home &amp; Family</div>
+  </div>
+  <!-- Sign up -->
+  <div class="auth-scr" id="auth-signup">
+    <span class="auth-back" onclick="authShow('welcome')">‹</span>
+    <div class="auth-top" style="padding-top:52px;margin-bottom:16px"><div class="auth-logo" style="font-size:30px">Orgena</div></div>
+    <div class="auth-h">Create your account</div>
+    <div class="auth-sub">Join the Orgena community.</div>
+    <div class="auth-field"><div class="auth-lbl">Username</div><input id="su-username" class="auth-inp" placeholder="username" autocomplete="off" autocapitalize="off" spellcheck="false" oninput="onSignupInput()"><div id="su-username-msg" class="auth-msg"></div></div>
+    <div class="auth-field"><div class="auth-lbl">Email</div><input id="su-email" class="auth-inp" type="email" placeholder="you@example.com" autocomplete="off" autocapitalize="off" oninput="onSignupInput()"><div id="su-email-msg" class="auth-msg"></div></div>
+    <div class="auth-field"><div class="auth-lbl">Phone</div><input id="su-phone" class="auth-inp" type="tel" placeholder="(504) 555-0199" oninput="onSignupInput()"><div id="su-phone-msg" class="auth-msg"></div></div>
+    <div class="auth-field"><div class="auth-lbl">Password</div><div class="auth-pwwrap"><input id="su-password" class="auth-inp" type="password" placeholder="At least 8 characters" oninput="onSignupInput()"><span class="auth-eye" onclick="togglePw('su-password',this)">Show</span></div><div id="su-password-msg" class="auth-msg"></div></div>
+    <div class="auth-chk" id="su-agree" onclick="toggleAgree()"><div class="auth-chk-box">✓</div><div class="auth-chk-lbl">I'm 13 or older and agree to the <span class="auth-link" onclick="event.stopPropagation();authShow('terms')">Terms</span> &amp; <span class="auth-link" onclick="event.stopPropagation();authShow('privacy')">Privacy Policy</span></div></div>
+    <button id="su-submit" class="auth-btn" onclick="submitSignup()" disabled>Create account</button>
+    <div class="auth-alt">Already have an account? <span class="auth-link" onclick="authShow('login');resetLogin()">Log in</span></div>
+  </div>
+  <!-- Log in -->
+  <div class="auth-scr" id="auth-login">
+    <span class="auth-back" onclick="authShow('welcome')">‹</span>
+    <div class="auth-top" style="padding-top:52px;margin-bottom:16px"><div class="auth-logo" style="font-size:30px">Orgena</div></div>
+    <div class="auth-h">Welcome back</div>
+    <div class="auth-sub">Log in to continue.</div>
+    <div class="auth-field"><div class="auth-lbl">Username, email, or phone</div><input id="li-id" class="auth-inp" placeholder="username / email / phone" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+    <div class="auth-field"><div class="auth-lbl">Password</div><div class="auth-pwwrap"><input id="li-password" class="auth-inp" type="password" placeholder="Your password"><span class="auth-eye" onclick="togglePw('li-password',this)">Show</span></div></div>
+    <div id="li-msg" class="auth-msg"></div>
+    <button class="auth-btn" onclick="submitLogin()">Log in</button>
+    <div class="auth-alt" style="margin-top:14px"><span class="auth-link" onclick="authShow('forgot');resetForgot()">Forgot password?</span></div>
+    <div class="auth-alt">New here? <span class="auth-link" onclick="authShow('signup');resetSignupForm()">Create account</span></div>
+  </div>
+  <!-- Forgot password -->
+  <div class="auth-scr" id="auth-forgot">
+    <span class="auth-back" onclick="authShow('login')">‹</span>
+    <div class="auth-top" style="padding-top:52px;margin-bottom:16px"><div class="auth-logo" style="font-size:30px">Orgena</div></div>
+    <div id="fp-step-email">
+      <div class="auth-h">Reset password</div>
+      <div class="auth-sub">Enter your email and we'll send a code.</div>
+      <div class="auth-field"><div class="auth-lbl">Email</div><input id="fp-email" class="auth-inp" type="email" placeholder="you@example.com" autocomplete="off"></div>
+      <div id="fp-email-msg" class="auth-msg"></div>
+      <button class="auth-btn" onclick="fpSendCode()">Send code</button>
+    </div>
+    <div id="fp-step-code" style="display:none">
+      <div class="auth-h">Enter the code</div>
+      <div class="auth-sub">We sent a 6-digit code to your email.</div>
+      <div class="demo-code">Demo code: 123456 (prototype only)</div>
+      <div class="code-row" id="fp-code-row"></div>
+      <div id="fp-code-msg" class="auth-msg" style="text-align:center"></div>
+      <button class="auth-btn" onclick="fpVerifyCode()">Verify</button>
+    </div>
+    <div id="fp-step-pw" style="display:none">
+      <div class="auth-h">New password</div>
+      <div class="auth-sub">Choose a new password.</div>
+      <div class="auth-field"><div class="auth-lbl">New password</div><div class="auth-pwwrap"><input id="fp-pw" class="auth-inp" type="password" placeholder="At least 8 characters" oninput="fpPwInput()"><span class="auth-eye" onclick="togglePw('fp-pw',this)">Show</span></div><div id="fp-pw-msg" class="auth-msg"></div></div>
+      <button id="fp-pw-btn" class="auth-btn" onclick="fpSetPassword()" disabled>Set password &amp; log in</button>
+    </div>
+  </div>
+  <!-- Terms / Privacy placeholders -->
+  <div class="auth-scr" id="auth-terms">
+    <span class="auth-back" onclick="authShow('signup')">‹</span>
+    <div class="auth-top" style="padding-top:52px;margin-bottom:12px"><div class="auth-logo" style="font-size:26px">Orgena</div></div>
+    <div class="auth-h">Terms of Service</div>
+    <div class="auth-doc" style="margin-top:10px">This is a placeholder Terms of Service for the Orgena prototype. A full agreement will live here before launch — covering acceptable use, the content you create and own, community standards, and your account responsibilities.</div>
+  </div>
+  <div class="auth-scr" id="auth-privacy">
+    <span class="auth-back" onclick="authShow('signup')">‹</span>
+    <div class="auth-top" style="padding-top:52px;margin-bottom:12px"><div class="auth-logo" style="font-size:26px">Orgena</div></div>
+    <div class="auth-h">Privacy Policy</div>
+    <div class="auth-doc" style="margin-top:10px">This is a placeholder Privacy Policy for the Orgena prototype. The full policy will explain here what we collect, how verification and messages are handled, and the choices you have — before launch.</div>
+  </div>
+</div>
 </div><!-- end phone -->
+
+<!-- Verify to continue (Batch 24) -->
+<div class="ov" id="ov-verify" style="align-items:flex-end">
+  <div class="ov-bg" onclick="C('ov-verify')"></div>
+  <div class="hs" id="verify-hs" style="height:auto">
+    <div class="sh"></div><div class="sh-t">Verify to continue</div>
+    <div style="padding:4px 18px 24px">
+      <div id="verify-need-msg" style="font-size:12.5px;color:rgba(247,241,232,.6);margin-bottom:16px;line-height:1.5">Verify your email and phone to unlock this.</div>
+      <div class="verify-row" id="verify-email-row" onclick="C('ov-verify');startVerify('email')"><div class="verify-row-ic">✉️</div><div style="flex:1"><div style="font-size:13px;color:var(--cr);font-weight:500">Verify email</div><div style="font-size:11px;color:rgba(247,241,232,.4)">Confirm your email address</div></div><span style="color:var(--gd)">›</span></div>
+      <div class="verify-row" id="verify-phone-row" onclick="C('ov-verify');startVerify('phone')"><div class="verify-row-ic">📱</div><div style="flex:1"><div style="font-size:13px;color:var(--cr);font-weight:500">Verify phone</div><div style="font-size:11px;color:rgba(247,241,232,.4)">Confirm your phone number</div></div><span style="color:var(--gd)">›</span></div>
+    </div>
+  </div>
+</div>
+<!-- Verification code entry (email or phone) -->
+<div class="ov" id="ov-verify-code" style="align-items:flex-end">
+  <div class="ov-bg" onclick="C('ov-verify-code')"></div>
+  <div class="hs" id="verify-code-hs" style="height:auto">
+    <div class="sh"></div><div class="sh-t" id="vc-title">Verify email</div>
+    <div style="padding:4px 22px 28px">
+      <div id="vc-sub" style="font-size:12.5px;color:rgba(247,241,232,.55);text-align:center;margin-bottom:6px;line-height:1.5">Enter the 6-digit code we sent.</div>
+      <div class="demo-code">Demo code: 123456 (prototype only)</div>
+      <div class="code-row" id="vc-code-row"></div>
+      <div id="vc-msg" class="auth-msg" style="text-align:center"></div>
+      <button class="auth-btn" onclick="vcVerify()">Verify</button>
+      <div class="auth-alt"><span class="auth-link" id="vc-resend" onclick="vcResend()">Resend code</span> · <span class="auth-link" onclick="vcChange()">Change <span id="vc-change-what">email</span></span></div>
+    </div>
+  </div>
+</div>
 
 <!-- Experience Trailer -->
 <div class="ov ov-center" id="ov-exp-trailer">
@@ -1952,8 +2109,9 @@ fitPhone();
   }
   if(document.readyState==='loading') window.addEventListener('DOMContentLoaded', containOverlays);
   else containOverlays();
-  // Batch 23: push the (possibly persisted) logged-in identity onto every surface after load.
-  function _applyCU(){ if(typeof applyCurrentUser==='function') applyCurrentUser(); }
+  // Batch 23/24: push the (possibly persisted) identity onto every surface and set the
+  // logged-in vs logged-out shell after load.
+  function _applyCU(){ if(typeof applyAuthState==='function') applyAuthState(); else if(typeof applyCurrentUser==='function') applyCurrentUser(); }
   if(document.readyState==='loading') window.addEventListener('DOMContentLoaded', _applyCU);
   else _applyCU();
 })();
@@ -2439,7 +2597,7 @@ function syncRsvpButton(ev){
   if(rsvpedEvents[ev.name]){ outline('✓ Going'); }
   else { goldPrimary('RSVP'); }
 }
-function evPopupRsvp(){
+function evPopupRsvp(){if(typeof requireVerified==='function'&&!requireVerified())return;
   var ev=window.curEv; if(!ev || ev.kind==='experience') return;
   rsvpedEvents[ev.name]=!rsvpedEvents[ev.name];
   syncRsvpButton(ev);
@@ -2519,7 +2677,7 @@ function generateEventReminders(){
       +'<div style="flex:1"><div class="notif-txt"><b>'+e.name+'</b> is '+when+' — '+(e.date||'')+(e.city?' · '+e.city:'')+'. Get ready!</div><div class="notif-time">48-hour reminder</div></div></div>';
   }).join('');
 }
-function rsvpThenShowAttendees(){
+function rsvpThenShowAttendees(){if(typeof requireVerified==='function'&&!requireVerified())return;
   var ev=window.curEv; if(!ev) return;
   if(!rsvpedEvents[ev.name]) evPopupRsvp();
   openAttendees();
@@ -2668,7 +2826,7 @@ function showCityPopup(city){
   popup.style.display='block';
 }
 
-function tRsvp(btn){
+function tRsvp(btn){if(typeof requireVerified==='function'&&!requireVerified())return;
   btn.classList.toggle('on');
   var on=btn.classList.contains('on');
   if(on){
@@ -2743,7 +2901,7 @@ function renderEventsList(){
   if(typeof syncListRsvp==='function') syncListRsvp();
 }
 // Book a paid experience from the Community Events list WITHOUT leaving the tab.
-function bookExpFromList(name){
+function bookExpFromList(name){if(typeof requireVerified==='function'&&!requireVerified())return;
   currentExpName=name;
   var e=findEvent(name);
   var price=(e && e.kind==='experience') ? 85 : 85;
@@ -3704,8 +3862,8 @@ function spFilter(btn,cat){
   });
 }
 
-function tFollow(btn){btn.classList.contains('following')?(btn.textContent='+ Follow',btn.classList.remove('following')):(btn.textContent='Following ✓',btn.classList.add('following'));}
-function tLike(btn){
+function tFollow(btn){if(typeof requireVerified==='function'&&!requireVerified())return;btn.classList.contains('following')?(btn.textContent='+ Follow',btn.classList.remove('following')):(btn.textContent='Following ✓',btn.classList.add('following'));}
+function tLike(btn){if(typeof requireVerified==='function'&&!requireVerified())return;
   var on = btn.classList.toggle('liked');
   // Feed buttons (.pab) get their liked color from CSS; the Explore-popup rail buttons are
   // plain <button>s, so drive their SVG fill directly here or the heart never changes.
@@ -3714,7 +3872,7 @@ function tLike(btn){
     if(svg){ svg.style.fill = on ? 'var(--gd)' : 'rgba(255,255,255,.95)'; }
   }
 }
-function tSave(btn){
+function tSave(btn){if(typeof requireVerified==='function'&&!requireVerified())return;
   btn.classList.toggle('saved');
   const isSaved = btn.classList.contains('saved');
   const svg = btn.querySelector('svg');
@@ -3872,7 +4030,7 @@ function purUpdateSubtotal(){
   fmts.forEach(function(f){ var q=window.fmtQty[f.n]||0; var pnum=parseFloat((f.p||'0').replace(/[^0-9.]/g,''))||0; total+=q*pnum; count+=q; });
   setText('cart-price', count? '$'+total.toFixed(2) : '');
 }
-function completePur(m){
+function completePur(m){if(typeof requireVerified==='function'&&!requireVerified())return;
   // Was this purchase initiated straight from the ticket sheet ("Reserve Now")?
   var expSheetOpen=(function(){ var e=document.getElementById('ov-exp-tickets'); return !!(e && e.classList.contains('show')); })();
   ['ov-pur','ov-cart','ov-exp-tickets','ov-merch'].forEach(function(id){
@@ -4270,7 +4428,7 @@ function plNext(){
 function setPlRate(v){plRate=parseFloat(v)||1;}
 
 let crMode='';
-function openCreate(){crGo(1,'');O('ov-create');setTimeout(function(){var s=document.getElementById('cr-sheet');if(s)s.classList.add('up');if(typeof crSetMode==='function')crSetMode('video');},10);}
+function openCreate(){if(typeof requireVerified==='function'&&!requireVerified())return;crGo(1,'');O('ov-create');setTimeout(function(){var s=document.getElementById('cr-sheet');if(s)s.classList.add('up');if(typeof crSetMode==='function')crSetMode('video');},10);}
 // Community FAB is context-aware: record content on Explore/Home, but open the event form on the Events view.
 function fabAction(){
   var comm=document.getElementById('s-community');
@@ -4440,7 +4598,7 @@ function addExpToCart(){
   updateCartDot();
   if(typeof showToast==='function') showToast('✓ Added to cart');
 }
-function buyNowFlow(){
+function buyNowFlow(){if(typeof requireVerified==='function'&&!requireVerified())return;
   const opts=document.getElementById('buy-now-opts');
   if(opts) opts.style.display=opts.style.display==='none'?'flex':'none';
 }
@@ -5146,7 +5304,7 @@ function renderConvo(){
   }).join('');
   msgs.scrollTop=msgs.scrollHeight;
 }
-function sendConvoMsg(){
+function sendConvoMsg(){if(typeof requireVerified==='function'&&!requireVerified())return;
   const inp=document.getElementById('convo-inp');
   if(!inp||!inp.value.trim()||currentConvo===null) return;
   if(!convoStore[currentConvo]) convoStore[currentConvo]=[];
@@ -5169,7 +5327,7 @@ function initCountdowns(){
     el.textContent=diff>0?diff+' days away':'Happening soon!';
   });
 }
-function openRepost(captionEl){
+function openRepost(captionEl){if(typeof requireVerified==='function'&&!requireVerified())return;
   if(captionEl){
     const post=captionEl.closest('.post,.cs-post');
     const cap=post?post.querySelector('.pcap,.asmr-q'):null;
@@ -5177,7 +5335,7 @@ function openRepost(captionEl){
   }
   O('ov-repost');
 }
-function doRepost(type){
+function doRepost(type){if(typeof requireVerified==='function'&&!requireVerified())return;
   C('ov-repost');
   var caption = window._lastPostCaption || 'Orgena content shared from the feed';
   setTimeout(()=>{
@@ -5237,75 +5395,132 @@ function userInitials(name){
   var letters=name.replace(/[^a-z]/gi,'');
   return (letters.substring(0,2)||'OE').toUpperCase();
 }
-/* ═══ LOGGED-IN USER IDENTITY (Batch 23) ═════════════════════════════════════
-   ONE source of truth for the logged-in user. Every surface that shows "you"
-   (profile header, comments, @mentions of you, QR, story, settings) reads from
-   CURRENT_USER. Persisted per-device in localStorage. PROTOTYPE LIMITATION:
-   real platform-wide uniqueness, the 30-day limit and cross-device persistence
-   need a backend — see BACKEND_TODO.md. */
-var USER_DEFAULTS = { username: 'your_handle', displayName: 'Your Name' };
+/* ═══ IDENTITY · USER REGISTRY · AUTH (Batch 23 + 24) ════════════════════════
+   ONE source of truth for people: USERS (the mock registry) and CURRENT_USER
+   (whoever is logged in — always one of USERS). Every surface that shows the
+   logged-in user reads from CURRENT_USER; uniqueness/login/name/avatar read
+   from USERS. The app opens logged in as the Jordan Reed demo account (verified,
+   full access). PROTOTYPE LIMITATION: real accounts, password security, sending
+   email/SMS codes, sessions and rate limiting all need a backend — see
+   BACKEND_TODO.md. */
+var USER_DEFAULTS = { username: 'jordan_reads', displayName: 'Jordan Reed' };
+var DEMO_USERNAME = 'jordan_reads';
+var DEMO_PASSWORD = 'orgena-demo';          // documented demo password (prototype testing only)
 // Reserved usernames — ONE list so more can be added later (checked case-insensitively).
 var RESERVED_USERNAMES = ['orgena', 'rhodesia', 'rhodesia_official', 'admin', 'support'];
 var USERNAME_CHANGE_DAYS = 30;
-var USER_STORE_KEY = 'orgena_current_user';
+var USER_STORE_KEY = 'orgena_current_user'; // logged-in user's editable profile (display name, username change date, verification)
+var SESSION_KEY = 'orgena_session';         // { username, loggedIn }
+var ADDED_KEY = 'orgena_users_added';       // accounts created via sign-up (persisted and merged into USERS)
+
+// NEVER store a plaintext password, even in the prototype — store a simple hash.
+// (Prototype only; a real app hashes on the server with a slow salted KDF — see BACKEND_TODO.md.)
+function hashPw(s){ s=String(s==null?'':s); var h=5381>>>0; for(var i=0;i<s.length;i++){ h=(((h<<5)+h)+s.charCodeAt(i))>>>0; } return 'h'+h.toString(36); }
+function normalizePhone(p){ var d=String(p==null?'':p).replace(/\D/g,''); if(d.length===11 && d.charAt(0)==='1') d=d.slice(1); return d; }
+function fmtPhone(p){ var d=normalizePhone(p); return d.length===10 ? '('+d.slice(0,3)+') '+d.slice(3,6)+'-'+d.slice(6) : (p||''); }
+function initialsFor(name){ return (typeof userInitials==='function') ? userInitials(name) : (String(name||'').replace(/[^a-z]/gi,'').slice(0,2)||'OE').toUpperCase(); }
+
+// Mock user registry — the ONE place uniqueness / login / profile rendering read from.
+// Display names and avatars match what the app already derives from each username, so nothing
+// looks different; only the demo account is renamed (Jordan Reed). Emails are @example.com and
+// phones use the 555-01xx range reserved for fiction (New Orleans 504 area code).
+var USERS = [
+  { username:'jordan_reads',        displayName:'Jordan Reed',        email:'jordan.reed@example.com',    phone:'5045550100', avatar:'JR', passHash:hashPw(DEMO_PASSWORD), emailVerified:true, phoneVerified:true, demo:true },
+  { username:'rhodesia_official',   displayName:'Rhodesia Official',  email:'rhodesia@example.com',       phone:'5045550101', avatar:'OE', emailVerified:true, phoneVerified:true },
+  { username:'peggy_lavizzo_nola',  displayName:'Peggy Lavizzo Nola', email:'peggy.lavizzo@example.com',  phone:'5045550102', avatar:'PE', emailVerified:true, phoneVerified:true },
+  { username:'marlena_k',           displayName:'Marlena K',          email:'marlena.k@example.com',      phone:'5045550103', avatar:'MA', emailVerified:true, phoneVerified:true },
+  { username:'n_boudreaux',         displayName:'N Boudreaux',        email:'n.boudreaux@example.com',    phone:'5045550104', avatar:'NB', emailVerified:true, phoneVerified:true },
+  { username:'clint_johnston_nola', displayName:'Clint Johnston Nola',email:'clint.johnston@example.com', phone:'5045550105', avatar:'CL', emailVerified:true, phoneVerified:true },
+  { username:'sweet_boudreaux',     displayName:'Sweet Boudreaux',    email:'sweet.boudreaux@example.com',phone:'5045550106', avatar:'SW', emailVerified:true, phoneVerified:true },
+  { username:'jazz_nola_88',        displayName:'Jazz Nola 88',       email:'jazz.nola@example.com',      phone:'5045550107', avatar:'JA', emailVerified:true, phoneVerified:true },
+  { username:'soulful_mia',         displayName:'Soulful Mia',        email:'soulful.mia@example.com',    phone:'5045550108', avatar:'SO', emailVerified:true, phoneVerified:true }
+];
+function loadAddedUsers(){ try{ var raw=localStorage.getItem(ADDED_KEY); if(raw){ var a=JSON.parse(raw); if(Array.isArray(a)) a.forEach(function(u){ if(u&&u.username && !findUser(u.username)) USERS.push(u); }); } }catch(e){} }
+function saveAddedUsers(){ try{ localStorage.setItem(ADDED_KEY, JSON.stringify(USERS.filter(function(u){return u.created;}))); }catch(e){} }
+function findUser(name){ name=String(name||'').toLowerCase(); return USERS.filter(function(u){return u.username.toLowerCase()===name;})[0]||null; }
+function findUserByEmail(e){ e=String(e||'').toLowerCase(); return USERS.filter(function(u){return (u.email||'').toLowerCase()===e;})[0]||null; }
+function findUserByPhone(p){ var d=normalizePhone(p); if(!d) return null; return USERS.filter(function(u){return normalizePhone(u.phone)===d;})[0]||null; }
+// Resolve a login identifier (username OR email OR phone) to a user.
+function findUserByLogin(id){ id=String(id||'').trim(); if(!id) return null; return findUser(id) || findUserByEmail(id) || findUserByPhone(id); }
+function emailExists(e){ return !!findUserByEmail(e); }
+function phoneExists(p){ return !!findUserByPhone(p); }
+function allUsernamesLower(){ return USERS.map(function(u){ return u.username.toLowerCase(); }); }
+
 function loadCurrentUser(){
-  var def = { username: USER_DEFAULTS.username, displayName: USER_DEFAULTS.displayName, usernameChangedAt: null };
+  loadAddedUsers();
+  var demo = findUser(DEMO_USERNAME);
+  var def = { username: demo.username, displayName: demo.displayName, usernameChangedAt: null, emailVerified: true, phoneVerified: true, loggedIn: true };
   try{
-    var raw = localStorage.getItem(USER_STORE_KEY);
-    if(raw){
-      var o = JSON.parse(raw);
-      return {
-        username: (typeof o.username==='string' && o.username) ? o.username : def.username,
-        displayName: (typeof o.displayName==='string' && o.displayName) ? o.displayName : def.displayName,
-        usernameChangedAt: (typeof o.usernameChangedAt==='number') ? o.usernameChangedAt : null
+    var sess = JSON.parse(localStorage.getItem(SESSION_KEY)||'null');
+    if(sess && sess.username){
+      // The session is the source of truth for the logged-in user's current state (so profile
+      // and verification edits survive reload). USERS is used for login/uniqueness/avatar.
+      var rec = findUser(sess.username);
+      var cu = {
+        username: sess.username,
+        displayName: (typeof sess.displayName==='string' && sess.displayName) ? sess.displayName : (rec?rec.displayName:sess.username),
+        usernameChangedAt: (typeof sess.usernameChangedAt==='number') ? sess.usernameChangedAt : null,
+        emailVerified: (typeof sess.emailVerified==='boolean') ? sess.emailVerified : (rec?!!rec.emailVerified:false),
+        phoneVerified: (typeof sess.phoneVerified==='boolean') ? sess.phoneVerified : (rec?!!rec.phoneVerified:false),
+        loggedIn: sess.loggedIn!==false
       };
+      if(rec){ rec.displayName=cu.displayName; rec.emailVerified=cu.emailVerified; rec.phoneVerified=cu.phoneVerified; if(rec.created) saveAddedUsers(); }
+      return cu;
     }
   }catch(e){}
   return def;
 }
 var CURRENT_USER = loadCurrentUser();
 function saveCurrentUser(){
-  try{ localStorage.setItem(USER_STORE_KEY, JSON.stringify({ username: CURRENT_USER.username, displayName: CURRENT_USER.displayName, usernameChangedAt: CURRENT_USER.usernameChangedAt })); }catch(e){}
+  try{ localStorage.setItem(SESSION_KEY, JSON.stringify({ username: CURRENT_USER.username, displayName: CURRENT_USER.displayName, usernameChangedAt: CURRENT_USER.usernameChangedAt, emailVerified: CURRENT_USER.emailVerified, phoneVerified: CURRENT_USER.phoneVerified, loggedIn: CURRENT_USER.loggedIn!==false })); }catch(e){}
+  // keep the registry row in sync (so login/uniqueness reflect edits to the logged-in account)
+  var rec=findUser(CURRENT_USER.username);
+  if(rec){ rec.displayName=CURRENT_USER.displayName; rec.emailVerified=CURRENT_USER.emailVerified; rec.phoneVerified=CURRENT_USER.phoneVerified; if(rec.created) saveAddedUsers(); }
 }
-// Single-letter avatar (keeps the existing "Y" style), derived from the display name.
-function cuAvatar(){ var s=(CURRENT_USER.displayName||CURRENT_USER.username||'Y').trim(); return (s.charAt(0)||'Y').toUpperCase(); }
+// Avatar = the app's existing 2-letter initials (e.g. "JR" for Jordan Reed).
+function cuAvatar(){ var rec=findUser(CURRENT_USER.username); if(rec&&rec.avatar) return rec.avatar; return initialsFor(CURRENT_USER.displayName||CURRENT_USER.username); }
 function goMyProfile(){ T('profile'); if(typeof showMyProfile==='function') showMyProfile(); }
-// Every username already present in the app's data — gathered PROGRAMMATICALLY (not hand-listed)
-// by scanning onclick handlers and the usernames shown in comments/posts/messages.
-function takenUsernames(){
-  var set = new Set();
-  // goPublicProfile/openUserStory/openConvo take the username as the FIRST arg;
-  // openStory takes (initials, username, …) so its username is the SECOND arg.
-  var reArg = /(?:goPublicProfile|openUserStory|openConvo)\(\s*['"]([^'"]+)['"]/g;
-  var reStory = /openStory\(\s*['"][^'"]*['"]\s*,\s*['"]([^'"]+)['"]/g;
-  document.querySelectorAll('[onclick]').forEach(function(e){
-    var oc = e.getAttribute('onclick')||'', m;
-    while((m = reArg.exec(oc))){ var c=m[1]; if(/^[a-z0-9_.]{2,40}$/i.test(c)) set.add(c.toLowerCase()); }
-    reArg.lastIndex = 0;
-    while((m = reStory.exec(oc))){ var c2=m[1]; if(/^[a-z0-9_.]{2,40}$/i.test(c2)) set.add(c2.toLowerCase()); }
-    reStory.lastIndex = 0;
-  });
-  document.querySelectorAll('.cmt-un,.pun,.msg-un,.convo-name').forEach(function(e){
-    var t=(e.textContent||'').trim().split(/\s/)[0];
-    if(/^[a-z0-9_.]{2,40}$/i.test(t)) set.add(t.toLowerCase());
-  });
-  try{ if(typeof convoStore==='object' && convoStore) Object.keys(convoStore).forEach(function(k){ if(/^[a-z0-9_.]{2,40}$/i.test(k)) set.add(k.toLowerCase()); }); }catch(e){}
-  set.delete('you');
-  set.delete((CURRENT_USER.username||'').toLowerCase());  // your own current name is not "taken"
-  return set;
-}
-// Validate a candidate username. Returns {ok, msg}. Checked in the order the owner listed.
-function validateUsernameValue(v){
+function isVerified(){ return !!(CURRENT_USER.emailVerified && CURRENT_USER.phoneVerified); }
+// Kept for compatibility: the set of usernames NOT available to the current user.
+function takenUsernames(){ var s=new Set(allUsernamesLower()); s.delete((CURRENT_USER.username||'').toLowerCase()); return s; }
+
+// Validate a candidate username — the SAME rules for Settings and Sign-up.
+// opts.signup=true checks against ALL users (your own name counts as taken).
+function validateUsernameValue(v, opts){
+  opts = opts || {};
   v = (v||'').trim();
   if(v.length < 2)  return { ok:false, msg:'Username must be at least 2 characters' };
   if(v.length > 40) return { ok:false, msg:'Username must be 40 characters or fewer' };
   if(/\s/.test(v))  return { ok:false, msg:'No spaces allowed' };
   if(!/^[A-Za-z0-9_.]+$/.test(v)) return { ok:false, msg:'Only letters, numbers, underscore and period' };
   var low = v.toLowerCase();
-  if(low === (CURRENT_USER.username||'').toLowerCase()) return { ok:true, msg:'This is your current username' };
+  if(!opts.signup && low === (CURRENT_USER.username||'').toLowerCase()) return { ok:true, msg:'This is your current username' };
   if(RESERVED_USERNAMES.indexOf(low) >= 0) return { ok:false, msg:'That username is reserved' };
-  if(takenUsernames().has(low)) return { ok:false, msg:'That username is taken' };
+  var taken = allUsernamesLower();
+  if(!opts.signup) taken = taken.filter(function(n){ return n !== (CURRENT_USER.username||'').toLowerCase(); });
+  if(taken.indexOf(low) >= 0) return { ok:false, msg:'That username is taken' };
   return { ok:true, msg:'✓ Available' };
+}
+// Email / phone validators (format + uniqueness against USERS).
+function validateEmailValue(v){
+  v=(v||'').trim();
+  if(!v) return { ok:false, msg:'Enter your email' };
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return { ok:false, msg:'Enter a valid email address' };
+  if(emailExists(v)) return { ok:false, msg:'An account already uses that email' };
+  return { ok:true, msg:'✓ Looks good' };
+}
+function validatePhoneValue(v){
+  v=(v||'').trim();
+  if(!v) return { ok:false, msg:'Enter your phone number' };
+  var d=normalizePhone(v);
+  if(d.length!==10) return { ok:false, msg:'Enter a 10-digit US phone number' };
+  if(phoneExists(d)) return { ok:false, msg:'An account already uses that number' };
+  return { ok:true, msg:'✓ '+fmtPhone(d) };
+}
+function validatePasswordValue(v){
+  v=(v==null?'':v);
+  if(v.length < 8) return { ok:false, msg:'At least 8 characters' };
+  return { ok:true, msg:'✓ Strong enough' };
 }
 function canChangeUsername(){
   if(!CURRENT_USER.usernameChangedAt) return true;          // first change from the default is always allowed
@@ -5367,8 +5582,11 @@ function saveSettings(){
     if(v.toLowerCase() !== (CURRENT_USER.username||'').toLowerCase() || v !== CURRENT_USER.username){
       if(v !== CURRENT_USER.username){
         if(!canChangeUsername()){ syncSettingsIdentity(); return; } // 30-day lock
+        var oldRec=findUser(CURRENT_USER.username);
+        if(oldRec){ oldRec.username = v; }   // the old username is released; registry row takes the new one
         CURRENT_USER.username = v;
         CURRENT_USER.usernameChangedAt = Date.now();
+        if(oldRec && oldRec.created) saveAddedUsers();
       }
     }
   }
@@ -5379,6 +5597,207 @@ function saveSettings(){
   if(typeof showToast==='function') showToast('✓ Profile saved');
   C('ov-settings');
 }
+/* ═══ AUTH FLOW (Batch 24) — welcome / sign-up / log in / forgot / verify ════ */
+// Logged-out vs logged-in: when logged out, only the Welcome/auth layer is shown
+// (no tab bar). applyAuthState() flips the whole app shell.
+function applyAuthState(){
+  var loggedIn = CURRENT_USER.loggedIn !== false;
+  var layer=document.getElementById('auth-layer');
+  var nav=document.getElementById('bottom-nav');
+  if(layer) layer.style.display = loggedIn ? 'none' : 'block';
+  if(nav) nav.style.visibility = loggedIn ? '' : 'hidden';
+  var fab=document.getElementById('fab'); if(fab && !loggedIn) fab.style.display='none';
+  if(loggedIn){ applyCurrentUser(); updateVerifyBanner(); }
+}
+function authShow(which){
+  ['auth-welcome','auth-signup','auth-login','auth-forgot','auth-terms','auth-privacy'].forEach(function(id){
+    var e=document.getElementById(id); if(e) e.style.display = (id===('auth-'+which)) ? 'flex' : 'none';
+  });
+  var layer=document.getElementById('auth-layer'); if(layer){ layer.style.display='block'; layer.scrollTop=0; }
+}
+function doLogout(){
+  CURRENT_USER.loggedIn=false;
+  try{ localStorage.setItem(SESSION_KEY, JSON.stringify({ username: CURRENT_USER.username, loggedIn:false })); }catch(e){}
+  C('ov-settings');
+  applyAuthState(); authShow('welcome');
+}
+function doResetDemo(){
+  if(!confirm('Reset the demo account? This clears any account you created and local data, and restores the Jordan Reed demo account.')) return;
+  try{ localStorage.removeItem(USER_STORE_KEY); localStorage.removeItem(SESSION_KEY); localStorage.removeItem(ADDED_KEY); localStorage.removeItem('orgena_verify_banner'); }catch(e){}
+  // Drop any created accounts from the in-memory registry and restore the demo row's defaults.
+  USERS = USERS.filter(function(u){ return !u.created; });
+  var demo=findUser(DEMO_USERNAME);
+  if(demo){ demo.displayName='Jordan Reed'; demo.emailVerified=true; demo.phoneVerified=true; }
+  CURRENT_USER = { username:DEMO_USERNAME, displayName:'Jordan Reed', usernameChangedAt:null, emailVerified:true, phoneVerified:true, loggedIn:false };
+  window._viewingProfile=null;
+  C('ov-settings');
+  if(typeof showMyProfile==='function') showMyProfile();
+  applyAuthState(); authShow('welcome');
+}
+// Create an account from the sign-up form, then log in (unverified).
+function createAccount(fields){
+  var rec = {
+    username: fields.username, displayName: fields.username, email: fields.email,
+    phone: normalizePhone(fields.phone), avatar: initialsFor(fields.username),
+    passHash: hashPw(fields.password), emailVerified:false, phoneVerified:false, created:true
+  };
+  USERS.push(rec);
+  saveAddedUsers();
+  CURRENT_USER = { username:rec.username, displayName:rec.displayName, usernameChangedAt:null, emailVerified:false, phoneVerified:false, loggedIn:true };
+  window._viewingProfile=null;
+  saveCurrentUser();
+  try{ sessionStorage.removeItem('orgena_banner_dismissed'); }catch(e){}
+  if(typeof showMyProfile==='function') showMyProfile();
+  applyAuthState();
+  T('home');
+  updateVerifyBanner();
+}
+// Log in an existing user by identifier + password.
+function loginUser(identifier, password){
+  var rec=findUserByLogin(identifier);
+  if(!rec || rec.passHash!==hashPw(password)) return false;
+  CURRENT_USER = { username:rec.username, displayName:rec.displayName, usernameChangedAt:null, emailVerified:!!rec.emailVerified, phoneVerified:!!rec.phoneVerified, loggedIn:true };
+  // carry over a saved display-name edit for this account, if any
+  try{ var prof=JSON.parse(localStorage.getItem(USER_STORE_KEY)||'null'); if(prof && prof.username && prof.username.toLowerCase()===rec.username.toLowerCase()){ if(prof.displayName) CURRENT_USER.displayName=prof.displayName; if(typeof prof.usernameChangedAt==='number') CURRENT_USER.usernameChangedAt=prof.usernameChangedAt; } }catch(e){}
+  window._viewingProfile=null;
+  saveCurrentUser();
+  if(typeof showMyProfile==='function') showMyProfile();
+  applyAuthState();
+  T('home');
+  return true;
+}
+// ── Verification gate ──
+// Returns true if the current user may perform a locked action; otherwise opens
+// the "Verify to continue" sheet and returns false. One function, applied to every
+// locked handler.
+function requireVerified(){
+  if(isVerified()) return true;
+  openVerifySheet();
+  return false;
+}
+function openVerifySheet(){
+  var need=[];
+  if(!CURRENT_USER.emailVerified) need.push('email');
+  if(!CURRENT_USER.phoneVerified) need.push('phone');
+  var msg=document.getElementById('verify-need-msg');
+  if(msg) msg.textContent = need.length===2 ? 'Verify your email and phone to unlock this.' : ('Verify your '+need[0]+' to unlock this.');
+  var eb=document.getElementById('verify-email-row'); if(eb) eb.style.display = CURRENT_USER.emailVerified ? 'none':'flex';
+  var pb=document.getElementById('verify-phone-row'); if(pb) pb.style.display = CURRENT_USER.phoneVerified ? 'none':'flex';
+  O('ov-verify');
+}
+// Verification banner on Home (dismissible per session).
+function updateVerifyBanner(){
+  var b=document.getElementById('verify-banner'); if(!b) return;
+  var dismissed=false; try{ dismissed=sessionStorage.getItem('orgena_banner_dismissed')==='1'; }catch(e){}
+  b.style.display = (!isVerified() && CURRENT_USER.loggedIn!==false && !dismissed) ? 'flex' : 'none';
+}
+function dismissVerifyBanner(){ try{ sessionStorage.setItem('orgena_banner_dismissed','1'); }catch(e){} var b=document.getElementById('verify-banner'); if(b) b.style.display='none'; }
+function markVerified(which){
+  if(which==='email') CURRENT_USER.emailVerified=true; else CURRENT_USER.phoneVerified=true;
+  saveCurrentUser();
+  updateVerifyBanner();
+}
+/* ── Auth UI wiring (Batch 24) ── */
+var DEMO_CODE='123456';
+function togglePw(id,el){ var i=document.getElementById(id); if(!i)return; if(i.type==='password'){ i.type='text'; if(el)el.textContent='Hide'; } else { i.type='password'; if(el)el.textContent='Show'; } }
+function setAuthMsg(id,r,val){ var m=document.getElementById(id); if(!m)return; if(!val){ m.textContent=''; m.className='auth-msg'; return; } m.textContent=r.msg; m.className='auth-msg '+(r.ok?'ok':'err'); }
+// 6-digit code boxes: auto-advance, backspace-to-previous, paste the whole code.
+function makeCodeBoxes(containerId){
+  var c=document.getElementById(containerId); if(!c) return; c.innerHTML='';
+  function boxes(){ return c.querySelectorAll('.code-box'); }
+  for(var i=0;i<6;i++){
+    var inp=document.createElement('input');
+    inp.className='code-box'; inp.type='tel'; inp.inputMode='numeric'; inp.maxLength=6; inp.setAttribute('data-idx',i);
+    inp.addEventListener('input',function(e){
+      var t=e.target, v=(t.value||'').replace(/\D/g,''), idx=+t.getAttribute('data-idx'), bs=boxes();
+      if(v.length>1){ for(var k=0;k<v.length && idx+k<6;k++){ bs[idx+k].value=v.charAt(k); } bs[Math.min(idx+v.length,5)].focus(); return; }
+      t.value=v; if(v && idx<5) bs[idx+1].focus();
+    });
+    inp.addEventListener('keydown',function(e){ var t=e.target, idx=+t.getAttribute('data-idx'); if(e.key==='Backspace' && !t.value && idx>0) boxes()[idx-1].focus(); });
+    inp.addEventListener('paste',function(e){ var d=((e.clipboardData||window.clipboardData).getData('text')||'').replace(/\D/g,'').slice(0,6); if(d){ e.preventDefault(); var bs=boxes(); for(var k=0;k<6;k++) bs[k].value=d.charAt(k)||''; bs[Math.min(d.length,6)-1].focus(); } });
+    c.appendChild(inp);
+  }
+}
+function readCode(containerId){ var c=document.getElementById(containerId); if(!c) return ''; return [].map.call(c.querySelectorAll('.code-box'),function(b){return b.value||'';}).join(''); }
+// Sign up
+function resetSignupForm(){
+  ['su-username','su-email','su-phone','su-password'].forEach(function(id){ var e=document.getElementById(id); if(e)e.value=''; });
+  ['su-username-msg','su-email-msg','su-phone-msg','su-password-msg'].forEach(function(id){ var e=document.getElementById(id); if(e){ e.textContent=''; e.className='auth-msg'; } });
+  var a=document.getElementById('su-agree'); if(a)a.classList.remove('on');
+  var b=document.getElementById('su-submit'); if(b)b.disabled=true;
+  var pw=document.getElementById('su-password'); if(pw)pw.type='password'; var eye=document.querySelector('#su-password ~ .auth-eye');
+}
+function toggleAgree(){ var a=document.getElementById('su-agree'); if(a)a.classList.toggle('on'); onSignupInput(); }
+function onSignupInput(){
+  var u=document.getElementById('su-username'), e=document.getElementById('su-email'), p=document.getElementById('su-phone'), pw=document.getElementById('su-password');
+  if(!u||!e||!p||!pw) return;
+  var ru=validateUsernameValue(u.value,{signup:true}), re=validateEmailValue(e.value), rp=validatePhoneValue(p.value), rpw=validatePasswordValue(pw.value);
+  setAuthMsg('su-username-msg',ru,u.value.trim());
+  setAuthMsg('su-email-msg',re,e.value.trim());
+  setAuthMsg('su-phone-msg',rp,p.value.trim());
+  setAuthMsg('su-password-msg',rpw,pw.value);
+  var agreed=document.getElementById('su-agree').classList.contains('on');
+  var b=document.getElementById('su-submit'); if(b) b.disabled = !(ru.ok&&re.ok&&rp.ok&&rpw.ok&&agreed);
+}
+function submitSignup(){
+  var u=document.getElementById('su-username').value.trim(), e=document.getElementById('su-email').value.trim(), p=document.getElementById('su-phone').value.trim(), pw=document.getElementById('su-password').value;
+  if(!validateUsernameValue(u,{signup:true}).ok||!validateEmailValue(e).ok||!validatePhoneValue(p).ok||!validatePasswordValue(pw).ok||!document.getElementById('su-agree').classList.contains('on')){ onSignupInput(); return; }
+  createAccount({ username:u, email:e, phone:p, password:pw });
+}
+// Log in
+function resetLogin(){ ['li-id','li-password'].forEach(function(id){ var e=document.getElementById(id); if(e)e.value=''; }); var m=document.getElementById('li-msg'); if(m){ m.textContent=''; m.className='auth-msg'; } }
+function submitLogin(){
+  var id=document.getElementById('li-id').value, pw=document.getElementById('li-password').value, m=document.getElementById('li-msg');
+  if(loginUser(id, pw)){ resetLogin(); }
+  else if(m){ m.textContent='Incorrect login details'; m.className='auth-msg err'; }    // generic — never reveal which part
+}
+// Forgot password
+var _fpUser=null;
+function resetForgot(){ _fpUser=null; setDisp('fp-step-email','block'); setDisp('fp-step-code','none'); setDisp('fp-step-pw','none'); var e=document.getElementById('fp-email'); if(e)e.value=''; var m=document.getElementById('fp-email-msg'); if(m){ m.textContent=''; m.className='auth-msg'; } }
+function fpSendCode(){
+  var e=document.getElementById('fp-email').value.trim(), m=document.getElementById('fp-email-msg');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){ if(m){ m.textContent='Enter a valid email address'; m.className='auth-msg err'; } return; }
+  _fpUser=findUserByEmail(e);  // may be null — don't reveal existence
+  setDisp('fp-step-email','none'); setDisp('fp-step-code','block'); makeCodeBoxes('fp-code-row');
+  var cm=document.getElementById('fp-code-msg'); if(cm){ cm.textContent=''; cm.className='auth-msg'; }
+}
+function fpVerifyCode(){
+  var code=readCode('fp-code-row'), m=document.getElementById('fp-code-msg');
+  if(code!==DEMO_CODE){ if(m){ m.textContent='Incorrect code — try 123456'; m.className='auth-msg err'; } return; }
+  if(!_fpUser){ if(m){ m.textContent='No account found for that email'; m.className='auth-msg err'; } return; }
+  setDisp('fp-step-code','none'); setDisp('fp-step-pw','block'); var pw=document.getElementById('fp-pw'); if(pw)pw.value=''; var pm=document.getElementById('fp-pw-msg'); if(pm){ pm.textContent=''; pm.className='auth-msg'; } var b=document.getElementById('fp-pw-btn'); if(b)b.disabled=true;
+}
+function fpPwInput(){ var pw=document.getElementById('fp-pw'); var r=validatePasswordValue(pw.value); setAuthMsg('fp-pw-msg',r,pw.value); var b=document.getElementById('fp-pw-btn'); if(b)b.disabled=!r.ok; }
+function fpSetPassword(){
+  var pw=document.getElementById('fp-pw').value; if(!validatePasswordValue(pw).ok||!_fpUser) return;
+  _fpUser.passHash=hashPw(pw); if(_fpUser.created) saveAddedUsers();
+  if(typeof showToast==='function') showToast('✓ Password updated');
+  loginUser(_fpUser.username, pw);
+}
+// Verification code sheet (email / phone)
+var _vcWhich='email', _vcCooldownTimer=null;
+function startVerify(which){
+  _vcWhich=which; setText('vc-title','Verify '+which); setText('vc-change-what',which);
+  var rec=findUser(CURRENT_USER.username), sub=document.getElementById('vc-sub');
+  if(sub) sub.textContent='Enter the 6-digit code we sent to your '+(which==='email'?('email'+(rec&&rec.email?' ('+rec.email+')':'')):('phone'+(rec&&rec.phone?' ('+fmtPhone(rec.phone)+')':'')))+'.';
+  makeCodeBoxes('vc-code-row'); var m=document.getElementById('vc-msg'); if(m){ m.textContent=''; m.className='auth-msg'; }
+  vcStartCooldown(); O('ov-verify-code');
+}
+function vcVerify(){
+  var code=readCode('vc-code-row'), m=document.getElementById('vc-msg');
+  if(code!==DEMO_CODE){ if(m){ m.textContent='Incorrect code — try 123456'; m.className='auth-msg err'; } return; }
+  markVerified(_vcWhich);
+  if(m){ m.textContent='✓ Verified'; m.className='auth-msg ok'; }
+  if(typeof showToast==='function') showToast('✓ '+(_vcWhich==='email'?'Email':'Phone')+' verified');
+  setTimeout(function(){ C('ov-verify-code'); if(isVerified()){ updateVerifyBanner(); if(typeof showToast==='function') showToast('✓ Everything unlocked'); } },650);
+}
+function vcStartCooldown(){
+  var el=document.getElementById('vc-resend'); if(!el) return; var left=30;
+  clearInterval(_vcCooldownTimer); el.style.pointerEvents='none'; el.style.opacity='.5'; el.textContent='Resend code (30s)';
+  _vcCooldownTimer=setInterval(function(){ left--; if(left<=0){ clearInterval(_vcCooldownTimer); el.textContent='Resend code'; el.style.pointerEvents=''; el.style.opacity=''; } else el.textContent='Resend code ('+left+'s)'; },1000);
+}
+function vcResend(){ var el=document.getElementById('vc-resend'); if(el && el.style.pointerEvents==='none') return; vcStartCooldown(); if(typeof showToast==='function') showToast('Code resent (demo: 123456)'); }
+function vcChange(){ C('ov-verify-code'); if(typeof showToast==='function') showToast('You can update your '+_vcWhich+' in Settings'); }
 function goPublicProfile(name){
   // Remember whose profile we're viewing so the avatar opens THEIR story and
   // the Message button drafts to THEM.
@@ -5396,13 +5815,14 @@ function goPublicProfile(name){
         : '';
       banner.innerHTML='<div style="display:flex;align-items:center;gap:10px;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gd);margin-bottom:5px;padding:10px 16px 0">'+backLink+'<span>Viewing @'+name+'</span></div>';
     }
+    var rec=(typeof findUser==='function')?findUser(name):null;
     var nm=document.querySelector('#s-profile .pr-name');
     var hd=document.querySelector('#s-profile .pr-handle');
-    if(nm) nm.textContent=name.replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
+    if(nm) nm.textContent=(rec&&rec.displayName)?rec.displayName:name.replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
     if(hd) hd.textContent='@'+name;
-    // Show the viewed user's own avatar, not the logged-in user's "Y".
+    // Show the viewed user's own avatar (from the USERS registry), not the logged-in user's.
     var av=document.querySelector('#s-profile .pr-av');
-    if(av){ av.textContent=userInitials(name); var c=userStoryColors(name); av.style.background='linear-gradient(135deg,'+c[0]+','+c[1]+')'; }
+    if(av){ av.textContent=(rec&&rec.avatar)?rec.avatar:userInitials(name); var c=userStoryColors(name); av.style.background='linear-gradient(135deg,'+c[0]+','+c[1]+')'; }
     // Posts grid shows the member's REAL feed posts (or an empty state), never placeholders.
     if(typeof buildProfileGrid==='function') buildProfileGrid(name);
   },120);
@@ -5427,7 +5847,7 @@ function showMyProfile(){
   if(grid && window._ownGridHTML!=null){ grid.innerHTML=window._ownGridHTML; grid.dataset.empty=''; }
 }
 // Message button on another user's profile: jump straight into a draft to THEM.
-function messageCurrentProfile(){
+function messageCurrentProfile(){if(typeof requireVerified==='function'&&!requireVerified())return;
   var who = window._viewingProfile;
   if(!who){ O('ov-msgs'); return; }
   if(typeof openConvo==='function') openConvo(who,'');
@@ -5446,7 +5866,7 @@ function viewProfileStory(){
 
 let replyTarget = null;
 
-function replyToComment(btn, username){
+function replyToComment(btn, username){if(typeof requireVerified==='function'&&!requireVerified())return;
   setReply(username);
 }
 
@@ -5482,7 +5902,7 @@ function toggleDownvote(btn){
   const num = parseInt(parts[1]||'0');
   btn.textContent = '↓ '+(btn.classList.contains('on')?num+1:Math.max(0,num-1));
 }
-function postComment(btn){
+function postComment(btn){if(typeof requireVerified==='function'&&!requireVerified())return;
   const row = btn.closest('.cmt-inp-row');
   const inp = row.querySelector('.cmt-inp');
   const txt = inp.value.trim();

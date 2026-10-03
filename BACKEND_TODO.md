@@ -46,3 +46,38 @@ default fallback). Every surface that shows "you" reads from it. The following a
 
 - **Display name.** No uniqueness or rate limit (1–50 chars, trimmed) — this matches
   production norms, but the server should still trim, length-cap, and sanitize it.
+
+## Accounts, sign-up, verification & login (Batch 24)
+
+The prototype ships a mock registry (`USERS`), a client-side sign-up / log-in / password-reset
+flow, a simulated email+phone verification (on-screen "Demo code: 123456"), and a verification
+gate (`requireVerified`) on posting, commenting, messaging, checkout, RSVP/booking, following, and
+like/repost/save. The app opens logged in as the **Jordan Reed** demo account
+(`jordan_reads`, demo password **`orgena-demo`**, verified). All of this is front-end only and must
+move to a backend:
+
+- **Server-side accounts & hashed passwords.** `USERS` is an in-memory/`localStorage` mock and
+  passwords are stored as a trivial non-cryptographic hash (`hashPw`) for the prototype only. Real
+  accounts live in a database; passwords are hashed server-side with a slow salted KDF
+  (bcrypt/scrypt/argon2) and never leave the server in plaintext.
+- **Sending verification codes by email/SMS.** Codes here are faked (always `123456`, shown on
+  screen). Production generates a random code server-side and sends it via an email service (e.g.
+  SES/SendGrid) and an SMS service (e.g. Twilio); the code is never shown to the client.
+- **Code expiry + attempt limits.** Codes must expire (e.g. 10 min) and lock out after a few wrong
+  attempts; "Resend" must be rate-limited server-side (the 30-second cooldown here is UI-only).
+- **Rate limiting on login & sign-up.** Protect against credential stuffing and sign-up abuse
+  (per-IP / per-account throttling, CAPTCHA or proof-of-work as needed).
+- **Session tokens.** Replace the `localStorage` "logged-in" flag with real sessions (httpOnly,
+  secure cookies or signed tokens), with expiry, refresh and server-side revocation on logout.
+- **Password reset by email.** The forgot-password flow must send a real one-time link/code to a
+  verified email, expire it, and never reveal whether an email is registered (the UI already avoids
+  revealing this).
+- **Server-enforced verification gate.** `requireVerified` is a client guard only; the server must
+  reject the same locked actions (post/comment/message/purchase/RSVP/follow/like…) for unverified
+  accounts, since a client check is trivially bypassed.
+- **Server-side USERS store.** Replace the mock registry with the real users table for uniqueness
+  (username/email/phone), login lookup, and profile rendering; uniqueness must be enforced atomically
+  on write.
+- **Linking social profiles after registration.** Sign-up/login are intentionally email+password
+  only (no Google/Facebook/Apple). Linking social accounts to an existing Orgena account is a
+  later, post-registration feature and also needs backend OAuth handling.
