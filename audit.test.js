@@ -142,11 +142,12 @@ async function runAudit({ engineName, browserType, execPath, url, full, shotPref
   const ctx = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 2 });
   ctx.setDefaultTimeout(9000);
   const page = await ctx.newPage();
-  const consoleErrors = [], pageErrors = [], img404 = [];
+  const consoleErrors = [], pageErrors = [], img404 = [], nativeDialogs = [];
   page.on('console', m => { if (m.type() === 'error') consoleErrors.push(m.text()); });
   page.on('pageerror', e => pageErrors.push('PAGEERROR: ' + e.message));
   page.on('requestfailed', r => { const u = r.url(); if (/\.(jpe?g|png|webp|gif|svg)$/i.test(u) && !/fonts\./.test(u)) img404.push(decodeURIComponent(u.split('/').pop())); });
-  page.on('dialog', d => d.dismiss().catch(() => {}));
+  // Batch 25: there must be ZERO native dialogs during the whole sweep. Record any that appear.
+  page.on('dialog', d => { nativeDialogs.push(d.type() + ': ' + d.message()); d.dismiss().catch(() => {}); });
   await page.addInitScript(() => { navigator.vibrate = () => true; window.open = () => null; });
   await page.addInitScript(PAGE_HELPERS);
 
@@ -845,9 +846,8 @@ async function runAudit({ engineName, browserType, execPath, url, full, shotPref
     await go(page, 'home');
 
     // ═══ AUTH · SIGN-UP · VERIFICATION (Batch 24) ═══════════════════════════════
-    await page.evaluate(() => { try { localStorage.clear(); sessionStorage.clear(); } catch (e) {} window.confirm = function () { return true; }; });
+    await page.evaluate(() => { try { localStorage.clear(); sessionStorage.clear(); } catch (e) {} });
     await page.reload({ waitUntil: 'domcontentloaded' }); await page.waitForTimeout(1000);
-    await page.evaluate(() => { window.confirm = function () { return true; }; });
     // (1) fresh load, empty storage → demo account Jordan Reed, fully unlocked, no placeholders anywhere
     const phScan = await page.evaluate(async () => {
       function scan() { return /\byour_handle\b|\bYour Name\b|@your_handle/.test(document.body.innerText); }
@@ -959,18 +959,62 @@ async function runAudit({ engineName, browserType, execPath, url, full, shotPref
     (fp.inApp && fp.who === 'river_jones' && fpRelogin.inApp) ? P('auth', 'forgot-password flow sets a new password and logs in') : B('auth', `forgot-password flow off: ${JSON.stringify(fp)} relogin=${JSON.stringify(fpRelogin)}`);
     // (10) reload after sign-up keeps the created account
     await page.reload({ waitUntil: 'domcontentloaded' }); await page.waitForTimeout(1000);
-    await page.evaluate(() => { window.confirm = function () { return true; }; });
     const persistedAcct = await page.evaluate(() => ({ inRegistry: !!findUser('river_jones'), who: CURRENT_USER.username }));
     persistedAcct.inRegistry ? P('auth', 'created account persists across reload') : B('auth', `created account lost after reload: ${JSON.stringify(persistedAcct)}`);
-    // reset demo restores Jordan Reed + Welcome
+    // reset demo: the in-app confirm sheet (Batch 25) — Cancel keeps the account, Confirm resets.
     await page.evaluate(() => { if (CURRENT_USER.loggedIn === false) { authShow('login'); loginUser('river_jones', 'newpass999'); } T('profile'); O('ov-settings'); }); await page.waitForTimeout(250);
-    await page.evaluate(() => doResetDemo()); await page.waitForTimeout(350);
+    await page.evaluate(() => doResetDemo()); await page.waitForTimeout(300);
+    const confirmSheet = await page.evaluate(() => { const o = document.getElementById('ov-confirm'); const r = o.getBoundingClientRect(); return { shown: o.classList.contains('show'), title: document.getElementById('confirm-title').textContent, inFrame: r.right <= 392 && r.left >= -1, z: +getComputedStyle(o).zIndex || 0, navZ: +getComputedStyle(document.getElementById('bottom-nav')).zIndex || 0 }; });
+    (confirmSheet.shown && /Reset demo account/.test(confirmSheet.title) && confirmSheet.inFrame && confirmSheet.z > confirmSheet.navZ) ? P('dialogs', 'Reset demo opens the in-app confirm sheet (in-frame, above the tab bar)') : B('dialogs', `reset confirm sheet wrong: ${JSON.stringify(confirmSheet)}`);
+    // Cancel keeps the account
+    await page.evaluate(() => { [...document.querySelectorAll('#ov-confirm button')].find(b => b.textContent.trim() === 'Cancel').click(); }); await page.waitForTimeout(250);
+    const afterCancel = await page.evaluate(() => ({ closed: !document.getElementById('ov-confirm').classList.contains('show'), stillRiver: !!findUser('river_jones') }));
+    (afterCancel.closed && afterCancel.stillRiver) ? P('dialogs', 'confirm sheet Cancel keeps the created account') : B('dialogs', `confirm Cancel wrong: ${JSON.stringify(afterCancel)}`);
+    // Confirm resets
+    await page.evaluate(() => { T('profile'); O('ov-settings'); doResetDemo(); }); await page.waitForTimeout(300);
+    await page.evaluate(() => document.getElementById('confirm-ok').click()); await page.waitForTimeout(400);
     const resetDemoState = await page.evaluate(() => ({ welcome: getComputedStyle(document.getElementById('auth-welcome')).display !== 'none', who: CURRENT_USER.username, riverGone: !findUser('river_jones') }));
-    (resetDemoState.welcome && resetDemoState.who === 'jordan_reads' && resetDemoState.riverGone) ? P('auth', 'Reset demo account → Jordan Reed restored, created account cleared, Welcome shown') : B('auth', `reset demo off: ${JSON.stringify(resetDemoState)}`);
+    (resetDemoState.welcome && resetDemoState.who === 'jordan_reads' && resetDemoState.riverGone) ? P('dialogs', 'confirm sheet Reset → Jordan Reed restored, created account cleared, Welcome shown') : B('dialogs', `reset demo off: ${JSON.stringify(resetDemoState)}`);
     // restore a clean logged-in demo for the screenshots/parity that follow
     await page.evaluate(() => { try { localStorage.clear(); } catch (e) {} if (typeof USERS !== 'undefined') USERS = USERS.filter(function (u) { return !u.created; }); CURRENT_USER = { username: 'jordan_reads', displayName: 'Jordan Reed', usernameChangedAt: null, emailVerified: true, phoneVerified: true, loggedIn: true }; window._viewingProfile = null; if (typeof showMyProfile === 'function') showMyProfile(); if (typeof applyAuthState === 'function') applyAuthState(); });
     await page.reload({ waitUntil: 'domcontentloaded' }); await page.waitForTimeout(1000);
     await go(page, 'home');
+
+    // ═══ DISPLAY NAMES (Batch 25) ══════════════════════════════════════════════
+    const nameTable = await page.evaluate(() => {
+      const want = { rhodesia_official: 'Rhodesia Jackson', peggy_lavizzo_nola: 'Peggy Lavizzo', clint_johnston_nola: 'Clint Johnston', marlena_k: 'marlena_k', n_boudreaux: 'n_boudreaux', sweet_boudreaux: 'sweet_boudreaux', jazz_nola_88: 'jazz_nola_88', soulful_mia: 'soulful_mia', jordan_reads: 'Jordan Reed' };
+      const got = {}; USERS.forEach(u => got[u.username] = u.displayName);
+      const mism = Object.keys(want).filter(k => got[k] !== want[k]).map(k => `${k}: "${got[k]}" != "${want[k]}"`);
+      return { mism, got };
+    });
+    (nameTable.mism.length === 0) ? P('names', 'USERS display names correct (Rhodesia Jackson; Peggy Lavizzo / Clint Johnston characters; handles otherwise)') : B('names', 'display-name mismatch: ' + nameTable.mism.join(' | '));
+    // rendered profile headers read the registry names; no mechanically generated name appears
+    const renderedNames = await page.evaluate(async () => {
+      const out = {};
+      const checks = ['rhodesia_official', 'peggy_lavizzo_nola', 'clint_johnston_nola', 'marlena_k', 'jazz_nola_88', 'n_boudreaux'];
+      for (const u of checks) { goPublicProfile(u); await new Promise(r => setTimeout(r, 180)); out[u] = (document.querySelector('#s-profile .pr-name') || {}).textContent; }
+      try { showMyProfile(); } catch (e) {}
+      // scan: no mechanical display name visible after visiting every profile
+      const bad = ['Rhodesia Official', 'Lavizzo Nola', 'Johnston Nola', 'N Boudreaux', 'Jazz Nola 88', 'Marlena K', 'Sweet Boudreaux', 'Soulful Mia'];
+      const seen = bad.filter(x => document.body.innerText.includes(x));
+      return { out, seen };
+    });
+    (renderedNames.out.rhodesia_official === 'Rhodesia Jackson' && renderedNames.out.peggy_lavizzo_nola === 'Peggy Lavizzo' && renderedNames.out.clint_johnston_nola === 'Clint Johnston') ? P('names', 'profile headers show Rhodesia Jackson / Peggy Lavizzo / Clint Johnston') : B('names', `rendered profile names wrong: ${JSON.stringify(renderedNames.out)}`);
+    (renderedNames.seen.length === 0) ? P('names', 'no mechanically generated display name ("Official"/trailing "Nola"/"88"/single-letter first) renders anywhere') : B('names', 'mechanical display name still rendered: ' + renderedNames.seen.join(', '));
+    const dnLbl = await page.evaluate(() => { showMyProfile(); O('ov-settings'); const l = [...document.querySelectorAll('#ov-settings .set-lbl')].map(e => e.textContent.trim()); C('ov-settings'); return { d: l.includes('Display Name'), f: l.includes('Full Name') }; });
+    (dnLbl.d && !dnLbl.f) ? P('names', 'Settings label reads "Display Name"') : B('names', `Settings label wrong: ${JSON.stringify(dnLbl)}`);
+    await page.evaluate(() => { if (window.__closeAll) window.__closeAll(); }); await go(page, 'home');
+
+    // ═══ IN-APP VIDEO VIEWER (Batch 25) — Home "Author Exclusive" video ════════
+    const vp = await page.evaluate(() => {
+      const t = document.querySelector('#s-home .ptap[onclick*="openVideoViewer"]'); if (!t) return { noTrigger: true };
+      t.click(); const o = document.getElementById('ov-vplayer'); const r = o.getBoundingClientRect();
+      return { shown: o.classList.contains('show'), capT: (document.getElementById('vplayer-cap-t') || {}).textContent, inFrame: r.left >= -1 && r.right <= 392 && r.top >= -1 && r.bottom <= 846, z: +getComputedStyle(o).zIndex || 0, navZ: +getComputedStyle(document.getElementById('bottom-nav')).zIndex || 0 };
+    });
+    (vp.shown && /Author Exclusive/.test(vp.capT || '') && vp.inFrame && vp.z > vp.navZ) ? P('dialogs', 'Home video opens the full-screen in-app viewer (in-frame, above tab bar)') : B('dialogs', `home video viewer wrong: ${JSON.stringify(vp)}`);
+    const vpClosed = await page.evaluate(() => { const x = document.querySelector('#ov-vplayer .film-x'); if (x) x.click(); return !document.getElementById('ov-vplayer').classList.contains('show'); });
+    vpClosed ? P('dialogs', 'in-app video viewer closes cleanly') : B('dialogs', 'video viewer did not close');
+    await page.evaluate(() => { if (window.__closeAll) window.__closeAll(); }); await go(page, 'home');
 
     // screenshots for the report (explore post + stories handled by caller flows)
     await shot('home'); await go(page, 'creations'); await shot('creations');
@@ -982,6 +1026,15 @@ async function runAudit({ engineName, browserType, execPath, url, full, shotPref
   const realConsole = consoleErrors.filter(t => !isEnvNoise(t));
   img404.length ? B('integrity', 'IMAGE 404s: ' + [...new Set(img404)].join(', ')) : P('integrity', 'zero image 404s');
   realConsole.length ? I('integrity', `${realConsole.length} non-env console error(s): ` + realConsole.slice(0, 3).join(' | ')) : P('integrity', 'no non-environmental console errors');
+  // Batch 25: ZERO native browser dialogs — both in the source and at runtime across the whole sweep.
+  if (full) {
+    try {
+      const src = fs.readFileSync(require('path').join(__dirname, 'index.html'), 'utf8');
+      const calls = (src.match(/\b(alert|confirm|prompt)\s*\(/g) || []);
+      calls.length ? B('dialogs', `${calls.length} native alert/confirm/prompt call(s) still in index.html: ${[...new Set(calls)].join(', ')}`) : P('dialogs', 'zero alert/confirm/prompt calls in index.html');
+    } catch (e) { NV('dialogs', 'could not read index.html for dialog grep: ' + e.message); }
+    nativeDialogs.length ? B('dialogs', `${nativeDialogs.length} native dialog(s) appeared during the sweep: ${nativeDialogs.slice(0, 4).join(' | ')}`) : P('dialogs', 'no native browser dialog appeared during the full sweep');
+  }
   R.envNoise = consoleErrors.filter(isEnvNoise).length;
   R.pageErrorsTotal = pageErrors.length;
   R.img404 = [...new Set(img404)];

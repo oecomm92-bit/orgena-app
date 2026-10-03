@@ -611,6 +611,9 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
 .demo-code{text-align:center;font-size:11px;color:var(--gdl);background:rgba(200,150,62,.1);border:1px dashed rgba(200,150,62,.4);border-radius:6px;padding:8px;margin:2px 0 12px;letter-spacing:.03em}
 .verify-row{display:flex;align-items:center;gap:12px;padding:13px;background:rgba(200,150,62,.06);border:1px solid rgba(200,150,62,.16);border-radius:8px;margin-bottom:10px;cursor:pointer}
 .verify-row-ic{width:34px;height:34px;border-radius:50%;background:rgba(200,150,62,.14);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+/* Batch 25: the in-app confirm sheet sits above other sheets (e.g. Settings) and the tab bar.
+   Set here in CSS, not inline, because O() clears an overlay's inline styles when it opens it. */
+#ov-confirm{z-index:700}
 /* QR */
 #ov-qr{align-items:center;justify-content:center}
 .qr-box{width:270px;background:var(--br);border-radius:12px;padding:22px;text-align:center;border:1px solid rgba(200,150,62,.2);z-index:2}
@@ -773,7 +776,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
       <div class="pui" onclick="goPublicProfile('rhodesia_official')"><div class="pun" onclick="goPublicProfile('rhodesia_official')" style="color:var(--gdl);cursor:pointer">rhodesia_official ✦</div><div class="ptag">Author · All Creations</div></div>
       <span class="pdots" onclick="openShare(this)">⋯</span>
     </div>
-    <div class="pstill"><canvas id="cv3"></canvas><div class="pgrain"></div><div class="pscan"></div><div class="ptap" onclick="alert('Video plays full screen')"><div class="pring"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div><span class="vlbl">Author Exclusive</span><span class="vdur">2:14</span></div>
+    <div class="pstill"><canvas id="cv3"></canvas><div class="pgrain"></div><div class="pscan"></div><div class="ptap" onclick="openVideoViewer('Author Exclusive','Rhodesia Jackson \u00b7 2:14','','')"><div class="pring"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div><span class="vlbl">Author Exclusive</span><span class="vdur">2:14</span></div>
     <div class="pcap"><span class="pcap-u" onclick="goPublicProfile(this.textContent.trim())">Rhodesia</span>New Orleans has always been a character in every story I've written. Here's a look behind the pages. 📖</div>
     <div class="pa">
       <button class="pab" onclick="tLike(this)"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 9.8k</button>
@@ -1567,6 +1570,32 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <button class="film-support" onclick="filmSupport()">Support</button>
   </div>
 </div>
+<!-- Generic full-screen in-app video viewer (Batch 25) — for feed/preview videos -->
+<div class="ov" id="ov-vplayer">
+  <div class="film-stage">
+    <video id="vplayer-video" playsinline webkit-playsinline muted preload="none"></video>
+    <div class="film-poster" id="vplayer-poster"></div>
+    <div class="film-scrim"></div>
+    <div class="film-play" id="vplayer-play" onclick="vplayerPlay()"><div class="pring"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
+  </div>
+  <div class="film-cap"><div class="film-cap-t" id="vplayer-cap-t">Title</div><div class="film-cap-s" id="vplayer-cap-s">Sub</div></div>
+  <button class="film-x" onclick="closeVideoViewer()" aria-label="Close">✕</button>
+</div>
+<!-- In-app confirm sheet (Batch 25) — replaces the native browser dialog; sits above other sheets + the tab bar -->
+<div class="ov" id="ov-confirm" style="align-items:flex-end;z-index:700">
+  <div class="ov-bg" onclick="C('ov-confirm')"></div>
+  <div class="hs" id="confirm-hs" style="height:auto">
+    <div class="sh"></div>
+    <div class="sh-t" id="confirm-title">Are you sure?</div>
+    <div style="padding:2px 20px 24px">
+      <div id="confirm-msg" style="font-size:13px;color:rgba(247,241,232,.6);line-height:1.55;margin-bottom:18px"></div>
+      <div style="display:flex;gap:10px">
+        <button onclick="C('ov-confirm')" style="flex:1;padding:12px;background:transparent;border:1px solid rgba(200,150,62,.3);color:rgba(247,241,232,.6);font-size:12px;letter-spacing:.06em;text-transform:uppercase;border-radius:5px;cursor:pointer;font-family:'DM Sans',sans-serif">Cancel</button>
+        <button id="confirm-ok" style="flex:1;padding:12px;border:none;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;border-radius:5px;cursor:pointer;font-family:'DM Sans',sans-serif;background:var(--gd);color:var(--br)">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- Donate to the film (from the trailer player's Support button) -->
 <div class="ov ov-center" id="ov-donate">
   <div class="ov-bg" onclick="C('ov-donate')"></div>
@@ -1644,7 +1673,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     </div>
     <div class="cr-step" id="cr-s2">
       <div class="sh-t" id="cr-s2t">Frame Your Shot</div>
-      <div class="cr-cam" onclick="alert('Camera opens in native app')"><div class="cr-cam-ico" id="cr-cam-ico">📸</div><div class="cr-cam-lbl" id="cr-cam-lbl">Tap to capture</div></div>
+      <div class="cr-cam" onclick="showToast('\ud83d\udcf8 Camera capture is available in the Orgena app')"><div class="cr-cam-ico" id="cr-cam-ico">📸</div><div class="cr-cam-lbl" id="cr-cam-lbl">Tap to capture</div></div>
       <div class="cr-filters">
         <div class="cr-f on" style="background:linear-gradient(135deg,#3B1205,#7A3010)"></div>
         <div class="cr-f" style="background:linear-gradient(135deg,#0D0804,#2C1A0E)"></div>
@@ -1807,7 +1836,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
     <div class="qr-sub">Scan to follow · Share at events</div>
     <div class="qr-svg-wrap"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="30" height="30" fill="none" stroke="#2C1A0E" stroke-width="3"/><rect x="15" y="15" width="20" height="20" fill="#2C1A0E"/><rect x="60" y="10" width="30" height="30" fill="none" stroke="#2C1A0E" stroke-width="3"/><rect x="65" y="15" width="20" height="20" fill="#2C1A0E"/><rect x="10" y="60" width="30" height="30" fill="none" stroke="#2C1A0E" stroke-width="3"/><rect x="15" y="65" width="20" height="20" fill="#2C1A0E"/><rect x="45" y="10" width="5" height="5" fill="#2C1A0E"/><rect x="50" y="15" width="5" height="5" fill="#2C1A0E"/><rect x="45" y="45" width="5" height="5" fill="#2C1A0E"/><rect x="55" y="45" width="5" height="5" fill="#2C1A0E"/><rect x="60" y="55" width="5" height="5" fill="#2C1A0E"/><rect x="65" y="60" width="5" height="5" fill="#2C1A0E"/><rect x="70" y="65" width="5" height="5" fill="#2C1A0E"/><rect x="75" y="70" width="5" height="5" fill="#2C1A0E"/><rect x="50" y="50" width="5" height="5" fill="#C8963E"/><rect x="55" y="55" width="5" height="5" fill="#C8963E"/></svg></div>
     <div class="qr-handle">@your_handle · Orgena</div>
-    <button class="qr-share" onclick="alert('QR saved to camera roll!')">Save &amp; Share QR</button>
+    <button class="qr-share" onclick="showToast('\u2713 QR saved to your camera roll')">Save &amp; Share QR</button>
   </div>
 </div>
 <!-- Merch Detail Popup -->
@@ -4476,7 +4505,7 @@ function submitEventForm(){
 function crGo(step,mode){if(mode)crMode=mode;document.querySelectorAll('.cr-step').forEach(s=>s.classList.remove('on'));document.getElementById('cr-s'+step).classList.add('on');document.querySelectorAll('#cr-dots .cr-dot').forEach((d,i)=>d.classList.toggle('on',i<step));
   if(step===2){const icos={video:'🎬',photo:'📸',upload:'📁',voice:'🎙'};const lbls={video:'Tap to record',photo:'Tap to capture',upload:'Pick from library',voice:'Tap to start recording'};const ttls={video:'Record Your Video',photo:'Frame Your Shot',upload:'Choose Media',voice:'Record Voice Note'};setText('cr-cam-ico',icos[crMode]||'📸');setText('cr-cam-lbl',lbls[crMode]||'Tap to capture');setText('cr-s2t',ttls[crMode]||'Frame Your Shot');}
 }
-function submitPost(){document.getElementById('cr-sheet').classList.remove('up');setTimeout(()=>{C('ov-create');alert('✓ Your post is live on Orgena!');},300);}
+function submitPost(){document.getElementById('cr-sheet').classList.remove('up');setTimeout(()=>{C('ov-create');showToast('✓ Your post is live on Orgena!');},300);}
 
 function prTab(btn,id){
   document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('on'));btn.classList.add('on');
@@ -4937,7 +4966,7 @@ function jumpChapterLegacy(el,time){
   document.querySelectorAll('.ch-item').forEach(c=>c.classList.remove('on'));
   el.classList.add('on');
   C('ov-ch');
-  setTimeout(()=>alert('Jumping to '+time),300);
+  setTimeout(()=>showToast('\u23ed Jumping to '+time),300);
 }
 // Merch endless scroll
 function initMerchScroll(){ /* All-tab cycling handled by setupCreationsScroll */ }
@@ -5251,7 +5280,7 @@ function shareOther(platform){ C('ov-share-others'); shareTo(platform); }
 function addBookmark(){
   const track=document.getElementById('np-track').textContent;
   const time=document.getElementById('np-times')?document.querySelector('.np-times span').textContent:'--:--';
-  alert('Bookmarked "'+track+'" at '+time);
+  showToast('\ud83d\udd16 Bookmarked "'+track+'" at '+time);
 }
 function openExpTrailer(name,desc){
   currentExpName=name;
@@ -5426,14 +5455,17 @@ function initialsFor(name){ return (typeof userInitials==='function') ? userInit
 // phones use the 555-01xx range reserved for fiction (New Orleans 504 area code).
 var USERS = [
   { username:'jordan_reads',        displayName:'Jordan Reed',        email:'jordan.reed@example.com',    phone:'5045550100', avatar:'JR', passHash:hashPw(DEMO_PASSWORD), emailVerified:true, phoneVerified:true, demo:true },
-  { username:'rhodesia_official',   displayName:'Rhodesia Official',  email:'rhodesia@example.com',       phone:'5045550101', avatar:'OE', emailVerified:true, phoneVerified:true },
-  { username:'peggy_lavizzo_nola',  displayName:'Peggy Lavizzo Nola', email:'peggy.lavizzo@example.com',  phone:'5045550102', avatar:'PE', emailVerified:true, phoneVerified:true },
-  { username:'marlena_k',           displayName:'Marlena K',          email:'marlena.k@example.com',      phone:'5045550103', avatar:'MA', emailVerified:true, phoneVerified:true },
-  { username:'n_boudreaux',         displayName:'N Boudreaux',        email:'n.boudreaux@example.com',    phone:'5045550104', avatar:'NB', emailVerified:true, phoneVerified:true },
-  { username:'clint_johnston_nola', displayName:'Clint Johnston Nola',email:'clint.johnston@example.com', phone:'5045550105', avatar:'CL', emailVerified:true, phoneVerified:true },
-  { username:'sweet_boudreaux',     displayName:'Sweet Boudreaux',    email:'sweet.boudreaux@example.com',phone:'5045550106', avatar:'SW', emailVerified:true, phoneVerified:true },
-  { username:'jazz_nola_88',        displayName:'Jazz Nola 88',       email:'jazz.nola@example.com',      phone:'5045550107', avatar:'JA', emailVerified:true, phoneVerified:true },
-  { username:'soulful_mia',         displayName:'Soulful Mia',        email:'soulful.mia@example.com',    phone:'5045550108', avatar:'SO', emailVerified:true, phoneVerified:true }
+  // Batch 25: real names where known (Rhodesia Jackson = the author; Peggy Lavizzo / Clint Johnston
+  // = the Pecan Candy character accounts). Everyone else kept the HANDLE the feed/comments actually
+  // showed pre-Batch-24, since their title-case "name" was only ever a mechanical derivation.
+  { username:'rhodesia_official',   displayName:'Rhodesia Jackson',   email:'rhodesia@example.com',       phone:'5045550101', avatar:'OE', emailVerified:true, phoneVerified:true },
+  { username:'peggy_lavizzo_nola',  displayName:'Peggy Lavizzo',      email:'peggy.lavizzo@example.com',  phone:'5045550102', avatar:'PE', emailVerified:true, phoneVerified:true },
+  { username:'marlena_k',           displayName:'marlena_k',          email:'marlena.k@example.com',      phone:'5045550103', avatar:'MA', emailVerified:true, phoneVerified:true },
+  { username:'n_boudreaux',         displayName:'n_boudreaux',        email:'n.boudreaux@example.com',    phone:'5045550104', avatar:'NB', emailVerified:true, phoneVerified:true },
+  { username:'clint_johnston_nola', displayName:'Clint Johnston',     email:'clint.johnston@example.com', phone:'5045550105', avatar:'CL', emailVerified:true, phoneVerified:true },
+  { username:'sweet_boudreaux',     displayName:'sweet_boudreaux',    email:'sweet.boudreaux@example.com',phone:'5045550106', avatar:'SW', emailVerified:true, phoneVerified:true },
+  { username:'jazz_nola_88',        displayName:'jazz_nola_88',       email:'jazz.nola@example.com',      phone:'5045550107', avatar:'JA', emailVerified:true, phoneVerified:true },
+  { username:'soulful_mia',         displayName:'soulful_mia',        email:'soulful.mia@example.com',    phone:'5045550108', avatar:'SO', emailVerified:true, phoneVerified:true }
 ];
 function loadAddedUsers(){ try{ var raw=localStorage.getItem(ADDED_KEY); if(raw){ var a=JSON.parse(raw); if(Array.isArray(a)) a.forEach(function(u){ if(u&&u.username && !findUser(u.username)) USERS.push(u); }); } }catch(e){} }
 function saveAddedUsers(){ try{ localStorage.setItem(ADDED_KEY, JSON.stringify(USERS.filter(function(u){return u.created;}))); }catch(e){} }
@@ -5621,8 +5653,42 @@ function doLogout(){
   C('ov-settings');
   applyAuthState(); authShow('welcome');
 }
+// ── In-app confirm sheet (Batch 25) — replaces the native browser dialog ──
+var _confirmCb=null;
+function appConfirm(opts){
+  opts=opts||{};
+  setText('confirm-title', opts.title||'Are you sure?');
+  setText('confirm-msg', opts.message||'');
+  var ok=document.getElementById('confirm-ok'); if(!ok){ if(typeof opts.onConfirm==='function') opts.onConfirm(); return; }
+  ok.textContent=opts.confirmLabel||'Confirm';
+  var danger=!!opts.danger;
+  ok.style.background=danger?'#E0584F':'var(--gd)';
+  ok.style.color=danger?'#fff':'var(--br)';
+  _confirmCb=(typeof opts.onConfirm==='function')?opts.onConfirm:null;
+  ok.onclick=function(){ C('ov-confirm'); var cb=_confirmCb; _confirmCb=null; if(cb) setTimeout(cb,140); };
+  O('ov-confirm');
+}
+// ── Generic full-screen in-app video viewer (Batch 25) — reuses the film-player styling ──
+var _vpSrc='';
+function openVideoViewer(title, sub, posterSrc, videoSrc){
+  _vpSrc=videoSrc||'';
+  var v=document.getElementById('vplayer-video'), poster=document.getElementById('vplayer-poster'), play=document.getElementById('vplayer-play');
+  if(poster){ poster.style.display='block'; poster.style.background = posterSrc ? ("#000 url('"+posterSrc+"') center/cover no-repeat") : 'linear-gradient(160deg,#1A0805,#2C1A0E)'; }
+  if(v){ try{v.pause();}catch(e){} if(videoSrc){ v.setAttribute('src',videoSrc); v.style.display='block'; } else { v.removeAttribute('src'); try{v.load();}catch(e){} v.style.display='none'; } }
+  if(play) play.style.display='flex';
+  setText('vplayer-cap-t', title||''); setText('vplayer-cap-s', sub||'');
+  O('ov-vplayer');
+}
+function vplayerPlay(){
+  var v=document.getElementById('vplayer-video'), poster=document.getElementById('vplayer-poster'), play=document.getElementById('vplayer-play');
+  if(_vpSrc && v){ v.style.display='block'; if(poster)poster.style.display='none'; if(play)play.style.display='none'; try{v.play();}catch(e){} }
+  else { if(play && play.animate){ play.animate([{transform:'scale(1)'},{transform:'scale(1.08)'},{transform:'scale(1)'}],{duration:280}); } if(typeof showToast==='function') showToast('▶ Preview — full video coming soon'); if(navigator.vibrate){try{navigator.vibrate(12);}catch(e){}} }
+}
+function closeVideoViewer(){ var v=document.getElementById('vplayer-video'); if(v){try{v.pause();}catch(e){}} C('ov-vplayer'); }
 function doResetDemo(){
-  if(!confirm('Reset the demo account? This clears any account you created and local data, and restores the Jordan Reed demo account.')) return;
+  appConfirm({ title:'Reset demo account?', message:'This clears any account you created and local data, and restores the Jordan Reed demo account.', confirmLabel:'Reset', danger:true, onConfirm:resetDemoConfirmed });
+}
+function resetDemoConfirmed(){
   try{ localStorage.removeItem(USER_STORE_KEY); localStorage.removeItem(SESSION_KEY); localStorage.removeItem(ADDED_KEY); localStorage.removeItem('orgena_verify_banner'); }catch(e){}
   // Drop any created accounts from the in-memory registry and restore the demo row's defaults.
   USERS = USERS.filter(function(u){ return !u.created; });
