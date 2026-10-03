@@ -1125,6 +1125,7 @@ async function runAudit({ engineName, browserType, execPath, url, full, shotPref
   R.envNoise = remote ? 0 : consoleErrors.filter(isEnvNoise).length;
   R.fontFailures = fontFailures.slice(0, 20);
   R.pageErrorsTotal = pageErrors.length;
+  R.pageErrorSamples = [...new Set(pageErrors)].slice(0, 10);
   R.img404 = [...new Set(img404)];
   // parity signals for cross-engine/url diffing
   R.parity = {
@@ -1155,7 +1156,7 @@ function writeResults(r, extra) {
     findings: r.findings || [],
     buckets: Object.fromEntries(BUCKETS.map(b => [b, listFor(r, b)])),
     coverage: r.coverage || {}, parity: r.parity || {},
-    notes: { envNoise: r.envNoise || 0, pageErrors: r.pageErrorsTotal || 0, img404: r.img404 || [], fontFailures: r.fontFailures || [] },
+    notes: { envNoise: r.envNoise || 0, pageErrors: r.pageErrorsTotal || 0, pageErrorSamples: r.pageErrorSamples || [], img404: r.img404 || [], fontFailures: r.fontFailures || [] },
     screenshots: path.relative(AUDIT_OUT, SHOT_DIR) || '.',
     ...extra,
   };
@@ -1221,6 +1222,7 @@ function addFinding(r, bucket, tag, msg) {
     if (kind === 'live') console.log(`  – Font load failures on the live URL: ${(r.fontFailures || []).length} (reported as INCONSISTENT when > 0).`);
     else console.log(`  – Environmental console noise (Google Fonts blocked on file://): ${r.envNoise || 0} msg(s) — expected.`);
     console.log(`  – Total pageerrors: ${r.pageErrorsTotal || 0}.`);
+    (r.pageErrorSamples || []).slice(0, 5).forEach(e => console.log('      · ' + e));
     const f = writeResults(r, { mode: 'single' });
     console.log(`  – Results JSON: ${f}`);
     console.log(`  – Screenshots: ${SHOT_DIR}`);
@@ -1286,6 +1288,7 @@ function addFinding(r, bucket, tag, msg) {
   console.log('\nNOTES:');
   console.log(`  – Environmental console noise (Google Fonts blocked on file://): ${primary.envNoise} msg(s) — expected.`);
   console.log(`  – Total pageerrors during primary run: ${primary.pageErrorsTotal}.`);
+  (primary.pageErrorSamples || []).slice(0, 5).forEach(e => console.log('      · ' + e));
   if (webkitResult && !webkitResult.loaded) console.log('  – webkit: ' + (webkitResult.launchError ? 'launch error: ' + webkitResult.launchError : webkitResult.loadError || 'did not render'));
   if (liveResult && !liveResult.loaded) console.log('  – live: ' + (liveResult.loadError || 'did not render (Pages may be disabled or blocked by sandbox egress)'));
   const probe = (r) => r ? { engine: r.engineName, url: r.url, launched: r.launched, loaded: r.loaded, totals: totalsOf(r) } : null;

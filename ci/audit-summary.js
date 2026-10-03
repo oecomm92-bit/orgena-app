@@ -10,7 +10,7 @@
  *       outcome differs between chromium vs webkit (same target) or local vs live (same engine).
  *       Also writes <dir>/audit-diff.md and <dir>/audit-diff.json.
  *
- * Output goes to $GITHUB_STEP_SUMMARY when set, otherwise to stdout.
+ * Output goes to stdout (the job log) and, when set, to $GITHUB_STEP_SUMMARY.
  */
 'use strict';
 const fs = require('fs');
@@ -20,9 +20,10 @@ const BUCKETS = ['BROKEN', 'INCONSISTENT', 'SUSPECT', 'NOT_VERIFIED', 'ACCEPTED'
 const HEAD = ['BROKEN', 'INCONSISTENT', 'SUSPECT', 'NOT VERIFIED', 'ACCEPTED', 'passed'];
 const RUN_ORDER = ['local-chromium', 'local-webkit', 'live-chromium', 'live-webkit'];
 
+// Written to the job summary page AND the log (the log is readable through the API/CLI).
 function emit(md) {
   if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, md + '\n');
-  else process.stdout.write(md + '\n');
+  process.stdout.write(md + '\n');
 }
 const esc = (s) => String(s).replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
 const clip = (s, n) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
