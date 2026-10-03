@@ -1026,6 +1026,42 @@ async function runAudit({ engineName, browserType, execPath, url, full, shotPref
   const realConsole = consoleErrors.filter(t => !isEnvNoise(t));
   img404.length ? B('integrity', 'IMAGE 404s: ' + [...new Set(img404)].join(', ')) : P('integrity', 'zero image 404s');
   realConsole.length ? I('integrity', `${realConsole.length} non-env console error(s): ` + realConsole.slice(0, 3).join(' | ')) : P('integrity', 'no non-environmental console errors');
+  // Batch 26: image filename hygiene (runs once, on the full chromium pass).
+  if (full) {
+    try {
+      const P2 = require('path'), imgDir = P2.join(__dirname, 'images');
+      const trueExt = (fp) => {
+        const b = fs.readFileSync(fp);
+        if (b.length >= 8 && b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4E && b[3] === 0x47) return 'png';
+        if (b.length >= 3 && b[0] === 0xFF && b[1] === 0xD8 && b[2] === 0xFF) return 'jpg';
+        if (b.length >= 12 && b.slice(0, 4).toString('latin1') === 'RIFF' && b.slice(8, 12).toString('latin1') === 'WEBP') return 'webp';
+        return null; // not a known image container
+      };
+      const files = fs.readdirSync(imgDir).filter(f => fs.statSync(P2.join(imgDir, f)).isFile());
+      // (a) naming rule: lowercase, [a-z0-9_] in the base, single lowercase ext, no collapse/trim needed.
+      const nameRule = /^[a-z0-9]+(?:_[a-z0-9]+)*\.[a-z0-9]+$/;
+      const badNames = files.filter(f => !nameRule.test(f));
+      badNames.length ? B('images', 'files violating the naming rule (lowercase a-z0-9_ only, clean single ext): ' + badNames.join(', ')) : P('images', `all ${files.length} files in images/ match the naming rule`);
+      // (b) extension matches magic bytes (only for real image containers; .txt placeholder skipped).
+      const extMismatch = [];
+      for (const f of files) {
+        const te = trueExt(P2.join(imgDir, f));
+        if (te === null) continue; // non-image (e.g. placeholder.txt) — not subject to the format check
+        const ext = f.split('.').pop().toLowerCase();
+        if (ext !== te) extMismatch.push(`${f} is really ${te.toUpperCase()}`);
+      }
+      extMismatch.length ? B('images', 'extension does not match magic bytes: ' + extMismatch.join(', ')) : P('images', 'every image extension matches its magic bytes');
+      // (c) every reference in index.html resolves with EXACT case (case-sensitive-server simulation).
+      const present = new Set(files); // exact-case set; do NOT lowercase
+      const srcHtml = fs.readFileSync(P2.join(__dirname, 'index.html'), 'utf8');
+      const refs = [...new Set([...srcHtml.matchAll(/images\/([A-Za-z0-9_.\/-]+\.(?:jpg|jpeg|png|webp))/g)].map(m => m[1]))];
+      const unresolved = refs.filter(r => !present.has(r)); // exact-case membership
+      unresolved.length ? B('images', 'image reference(s) do not resolve with exact case: ' + unresolved.join(', ')) : P('images', `all ${refs.length} image references resolve with exact case`);
+      // bonus: percent-encoded references should no longer exist (they were only needed for spaces/pipes).
+      const encoded = (srcHtml.match(/images\/[^'")\s]*%[0-9A-Fa-f]{2}/g) || []);
+      encoded.length ? B('images', 'percent-encoded image reference(s) remain: ' + [...new Set(encoded)].join(', ')) : P('images', 'no percent-encoded image references remain');
+    } catch (e) { NV('images', 'could not run image filename hygiene checks: ' + e.message); }
+  }
   // Batch 25: ZERO native browser dialogs — both in the source and at runtime across the whole sweep.
   if (full) {
     try {

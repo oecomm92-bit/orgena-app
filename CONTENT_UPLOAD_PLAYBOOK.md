@@ -6,8 +6,9 @@ ALL its surfaces (grid, popup, disc, square, map, …). Edit that structure and 
 everywhere. This is a blind-followable checklist — do the steps in order and run the verifier.
 
 > Golden rules (apply to every type):
-> 1. **File names: lowercase, `snake_case`, no spaces, no pipes `|`, no brackets, no trailing
->    space, ONE consistent extension that matches the real encoding.**
+> 1. **File names follow the naming rule in §0: lowercase `snake_case`, safe characters only,
+>    and the extension MUST match the real (magic-byte) format. Names are case-sensitive on
+>    GitHub Pages.**
 > 2. **Update the single source-of-truth map, not individual DOM tags.**
 > 3. **Match the aspect ratio the frame expects (see each section) and bake in padding so the
 >    product/title is never flush to an edge.**
@@ -18,19 +19,37 @@ everywhere. This is a blind-followable checklist — do the steps in order and r
 
 ## 0. Preflight — naming & encoding (do this to EVERY file first)
 
-The repo currently contains real traps; do not add more:
+**THE NAMING RULE (every file in `images/` must satisfy this exactly):**
 
-| Trap we hit | Example in repo today | Why it bites | Avoidance step |
+- **Lowercase only.** Letters, numbers, and underscores (`_`) are the only characters allowed in the
+  name. Hyphens → underscores.
+- **No** spaces, pipes `|`, brackets `[] {}`, parentheses `()`, ampersands `&`, apostrophes `'`,
+  or accented/non-ASCII characters.
+- **Collapse** repeated underscores (`__` → `_`) and **trim** any leading/trailing underscore.
+- **Extension lowercase and matching the TRUE (magic-byte) format:** `.jpg` for JPEG, `.png` for PNG,
+  `.webp` for WebP. The extension must match the real format — a `.png` that is actually a JPEG gets a
+  `.jpg` name (a rename, **not** a re-encode).
+- Keep names **descriptive**: `Travel Mug | Cocoa.png` that is really JPEG → `travel_mug_cocoa.jpg`.
+- **Names are case-sensitive on GitHub Pages.** `Cover.jpg` and `cover.jpg` are different files there
+  even though they look the same on a case-insensitive local disk. Every reference must match the
+  on-disk name in exact case.
+- If two files would normalize to the **same** name, **stop and report** — never overwrite.
+
+Since Batch 26 every file already follows this rule; keep it that way.
+
+The repo previously contained these traps — do not reintroduce them:
+
+| Trap | Example (pre-Batch-26) | Why it bites | Avoidance step |
 |---|---|---|---|
-| **Spaces + pipes in filename** | `OE Merch \| Blanket \| Cocoa .jpg` | The `src` must be URL-encoded (`%20`, `%7C`) or the path 404s; easy to typo | Rename to `oe_blanket_cocoa.jpg` (snake_case). No spaces, no `\|`. |
-| **Trailing space before extension** | `...Cocoa .jpg` / `...Cocoa .jpeg` | Invisible; a hand-typed path silently 404s | Never end the name with a space. Verify with `ls -b images/`. |
-| **`.png` that is really a JPEG** | `OE Merch \| Travel Mug \| Cocoa.png` is actually JPEG 4196×4032 | Extension lies; tooling/caching/format assumptions break even though browsers sniff and render | Run `file images/<name>` — make the extension match the real type. Re-encode or rename. |
-| **Oversized source** | that same mug file is 4196×4032 | Slow load on mobile, wasted bandwidth | Downscale to the max needed size (see per-type dims). |
+| **Spaces + pipes in filename** | `OE Merch \| Blanket \| Cocoa .jpg` → `oe_merch_blanket_cocoa.jpg` | The `src` must be URL-encoded (`%20`, `%7C`) or the path 404s; easy to typo | Apply the naming rule — no spaces, no `\|`. |
+| **Trailing space before extension** | `...Cocoa .jpg` | Invisible; a hand-typed path silently 404s | Never end the name with a space. Verify with `ls -b images/`. |
+| **`.png` that is really a JPEG** | `OE Merch \| Travel Mug \| Cocoa.png` (JPEG 4196×4032) → `oe_merch_travel_mug_cocoa.jpg` | Extension lies; tooling/caching/format assumptions break even though browsers sniff and render | Detect with `file images/<name>` (magic bytes) — the extension MUST match the real type. Rename, don't re-encode. |
+| **Oversized source** | that same mug file is 4196×4032, 1.6 MB | Slow load on mobile, wasted bandwidth | Downscale to the max needed size (see per-type dims). |
 | **Gradient/placeholder never replaced** | `bookArt[...].grad` shows when `img` is missing | You add an entry but forget `img:` → the CSS gradient placeholder ships to prod looking "designed" | Always set the real `img:` and confirm the placeholder is gone in the popup + grid. |
 
-**Encoding rule of thumb:** photos → `.jpeg`; flat graphics/logos with transparency → `.png`. Pick one
-extension per asset and keep it. If you must keep a legacy spaced filename, the `src` string MUST be
-percent-encoded (`%20` space, `%7C` pipe) exactly as the existing entries are — but prefer renaming.
+**Encoding rule of thumb:** photos → `.jpg`; flat graphics/logos with transparency → `.png`. Pick the
+extension to match the real encoding (not the other way around) and keep it. Prefer renaming over
+percent-encoding — after Batch 26 no filename needs any `%20`/`%7C` encoding.
 
 **After placing files:** `ls -b images/` (shows hidden trailing spaces) and
 `for f in images/*; do file "$f"; done` (confirms real type matches extension).
@@ -53,14 +72,14 @@ purchase popup, Soul Player round disc, and square audiobook art all read from t
   `discPos` / `sqPos` (this is the **portrait-vs-square cropping lesson**).
 
 **Steps**
-1. Export cover as `snake_case.jpeg` (e.g. `pecan_candy_cover.jpeg`), plus a face-cropped square
-   variant `<name>_crop.jpeg` for the disc/square if the cover has a title band or author line.
+1. Export cover as `snake_case.jpg` (e.g. `pecan_candy_cover.jpg`), plus a face-cropped square
+   variant `<name>_crop.jpg` for the disc/square if the cover has a title band or author line.
 2. Add an entry to `bookArt`:
    ```js
-   'Full Book Title': { grad:'linear-gradient(...)', num:'V', img:'images/<name>.jpeg', discBg:'#RRGGBB' }
+   'Full Book Title': { grad:'linear-gradient(...)', num:'V', img:'images/<name>.jpg', discBg:'#RRGGBB' }
    ```
-3. Add matching `coverCfg['Full Book Title'] = { gridBg:'#RRGGBB', discImg:'images/<name>_crop.jpeg',
-   discPos:'50% 40%', sqImg:'images/<name>_crop.jpeg', sqPos:'50% 40%', sqTitle:'<div …>' }`.
+3. Add matching `coverCfg['Full Book Title'] = { gridBg:'#RRGGBB', discImg:'images/<name>_crop.jpg',
+   discPos:'50% 40%', sqImg:'images/<name>_crop.jpg', sqPos:'50% 40%', sqTitle:'<div …>' }`.
    (`sqTitle` = a styled overlay if the square uses a text-free crop; copy an existing book's block.)
 4. If the book is referenced by a short name anywhere, add it to `bookAlias`.
 5. Verify: grid shows full cover on matched background (no white bar, title intact); purchase popup
@@ -89,11 +108,11 @@ in the DOM.
 - Bake ~8–12% empty padding around the product inside the image so `cover` never clips it.
 
 **Steps**
-1. Export a **1:1 square** photo, product centered with padding: `snake_case.jpeg`
-   (e.g. `oe_hat_cocoa.jpeg`).
-2. `merchArt['OE Hat'] = { img:'images/oe_hat_cocoa.jpeg', pos:'center', dpos:'center' }`
+1. Export a **1:1 square** photo, product centered with padding: `snake_case.jpg`
+   (e.g. `oe_hat_cocoa.jpg`).
+2. `merchArt['OE Hat'] = { img:'images/oe_hat_cocoa.jpg', pos:'center', dpos:'center' }`
    (add `fit`/`dfit`/`bg` only if the source is NOT square).
-   - **Two-image gallery?** Add `imgs:['images/a.jpeg','images/b.jpeg']` (2+) — the left/right arrows
+   - **Two-image gallery?** Add `imgs:['images/a.jpg','images/b.jpg']` (2+) — the left/right arrows
      appear automatically; the grid tile + first detail image use `imgs[0]`. (See `OE Mug`.)
 3. `merchOptions['OE Hat'] = { label:'Sizes', values:['S/M','L/XL'], prices:[28,28] }` (or `null`).
    Prices here are the SINGLE source for cart math — the size stepper + total read `prices[i]`.
@@ -141,7 +160,7 @@ updated or a surface goes stale/blank:
 
 ## 4. FILM
 
-**Single source:** `filmMedia = { 'Film Name': { poster:'images/<name>.jpeg', src:'<video url or ''>' } }`
+**Single source:** `filmMedia = { 'Film Name': { poster:'images/<name>.jpg', src:'<video url or ''>' } }`
 (~line 3122). `poster` is the still; `src:''` means "no real video yet" → the app shows the canvas
 wave placeholder (that's expected in the prototype). The Creations film banner, Coming-Soon post, and
 full-screen player all read from here + `currentFilm`.
@@ -152,8 +171,8 @@ full-screen player all read from here + `currentFilm`.
   applies a bottom gradient for the title).
 
 **Steps**
-1. Export `snake_case.jpeg` (e.g. `the_tradition_cover.jpeg`).
-2. `filmMedia['The Tradition'] = { poster:'images/the_tradition_cover.jpeg', src:'' }` (set `src` to a
+1. Export `snake_case.jpg` (e.g. `the_tradition_cover.jpg`).
+2. `filmMedia['The Tradition'] = { poster:'images/the_tradition_cover.jpg', src:'' }` (set `src` to a
    real MP4/HLS URL when available — until then the wave placeholder shows).
 3. The banner "Share" button and film player wiring already read the name; no DOM edit needed beyond
    the banner copy if the film is new.

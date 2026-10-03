@@ -967,7 +967,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
   <!-- The Tradition Film Box -->
   <div data-cr="all" style="margin:0 13px 9px">
     <div style="background:linear-gradient(135deg,#1A0805,#3B1205);border-radius:8px;overflow:hidden;border:1px solid rgba(200,150,62,.2)">
-      <div onclick="openFilm('The Tradition','Film · In Production')" style="height:172px;position:relative;cursor:pointer;background:#1A0805 url('images/The%20Tradition%20Cover.jpeg') center/cover no-repeat">
+      <div onclick="openFilm('The Tradition','Film · In Production')" style="height:172px;position:relative;cursor:pointer;background:#1A0805 url('images/the_tradition_cover.jpg') center/cover no-repeat">
         <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(13,8,4,.92) 0%,rgba(13,8,4,.35) 40%,rgba(13,8,4,0) 68%)"></div>
         <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><div style="width:46px;height:46px;border-radius:50%;background:rgba(200,150,62,.85);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 10px rgba(200,150,62,.12)"><svg viewBox="0 0 24 24" width="16" height="16" style="fill:var(--br);margin-left:2px"><path d="M8 5v14l11-7z"/></svg></div></div>
         <div style="position:absolute;left:13px;bottom:10px;right:13px">
@@ -1007,7 +1007,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;bac
   </div>
   <div class="sp-lbl" data-sp="all films">Film Trailers</div>
   <div class="sp-grid" data-sp="all films">
-    <div class="sp-alb" onclick="openFilm('The Tradition','Film Trailer')"><div class="sp-art has-cover" style="background:#8A0300 url('images/The%20Tradition%20Cover.jpeg') center/90% no-repeat"><div class="sp-pi"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><div class="sp-at"><div class="sp-atn">The Tradition</div><div class="sp-ats">Film Trailer</div></div></div></div>
+    <div class="sp-alb" onclick="openFilm('The Tradition','Film Trailer')"><div class="sp-art has-cover" style="background:#8A0300 url('images/the_tradition_cover.jpg') center/90% no-repeat"><div class="sp-pi"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><div class="sp-at"><div class="sp-atn">The Tradition</div><div class="sp-ats">Film Trailer</div></div></div></div>
     <div class="sp-alb" onclick="openFilm('Evolution of Communications','Teaser')"><div class="sp-art" style="background:linear-gradient(160deg,#0D0804,#2C1A0E)"><div class="sp-pi"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><div class="sp-at"><div class="sp-atn">Evolution of Comms</div><div class="sp-ats">Teaser</div></div></div></div>
   </div>
   <div class="sp-lbl" data-sp="all podcasts author">Podcasts</div>
@@ -3369,7 +3369,7 @@ function openTrailerFromPlayer(title,sub){
 // ── FULL-SCREEN FILM TRAILER PLAYER ──
 // Drop a real trailer in later by setting `src` below (one line per film). Empty src = poster placeholder.
 const filmMedia = {
-  'The Tradition':               {poster:"images/The%20Tradition%20Cover.jpeg", src:''},
+  'The Tradition':               {poster:"images/the_tradition_cover.jpg", src:''},
   'Evolution of Communications': {poster:'', src:''}
 };
 let currentFilm='';
@@ -4152,10 +4152,10 @@ function updatePlUI(){
 // img = real cover file in images/ (referenced by path, never embedded). discBg = a color matching
 // each cover, used to fill the round disc around the fitted (uncropped) cover. Empty img => placeholder.
 const bookArt = {
-  'Pecan Candy & Huck-A-Bucks':   {grad:'linear-gradient(155deg,#5C3D28,#2C1A0E,#7A4E35)', num:'I',   img:'images/pecan_candy_cover__upscale_.jpeg',      discBg:'#E7DECB'},
-  'Sweeter Than Candy':           {grad:'linear-gradient(155deg,#3B2010,#7A4E35,#2C1A0E)', num:'II',  img:'images/sweeter_than_candy_cover__upscale_.jpeg', discBg:'#0F0C0B'},
-  'Three Times Sweeter':          {grad:'linear-gradient(155deg,#2C1A0E,#4A2C18,#3B2010)', num:'III', img:'images/3_times_sweeter_cover__upscale_.jpeg',    discBg:'#2E2017'},
-  'Smothered Okra & Long-Grain Rice':{grad:'linear-gradient(155deg,#2A3E18,#5E7A3E)',      num:'IV',  img:'images/smothered_okra_cover.jpeg', discBg:'#7A3B10'}
+  'Pecan Candy & Huck-A-Bucks':   {grad:'linear-gradient(155deg,#5C3D28,#2C1A0E,#7A4E35)', num:'I',   img:'images/pecan_candy_cover_upscale.jpg',      discBg:'#E7DECB'},
+  'Sweeter Than Candy':           {grad:'linear-gradient(155deg,#3B2010,#7A4E35,#2C1A0E)', num:'II',  img:'images/sweeter_than_candy_cover_upscale.jpg', discBg:'#0F0C0B'},
+  'Three Times Sweeter':          {grad:'linear-gradient(155deg,#2C1A0E,#4A2C18,#3B2010)', num:'III', img:'images/3_times_sweeter_cover_upscale.jpg',    discBg:'#2E2017'},
+  'Smothered Okra & Long-Grain Rice':{grad:'linear-gradient(155deg,#2A3E18,#5E7A3E)',      num:'IV',  img:'images/smothered_okra_cover.jpg', discBg:'#7A3B10'}
 };
 const bookAlias = {'Smothered Okra':'Smothered Okra & Long-Grain Rice','Pecan Candy':'Pecan Candy & Huck-A-Bucks'};
 function bookKey(name){name=(name||'').replace(/&amp;/g,'&').trim();return bookAlias[name]||name;}
@@ -4171,14 +4171,14 @@ function getBookArt(name){return bookArt[bookKey(name)]||null;}
 const coverCfg = {
   'Pecan Candy & Huck-A-Bucks': { gridBg:'#EDE7DA',
     // disc uses the face crop (no red title / white line / author) — clean face in the circle.
-    discImg:'images/pecan_candy_cover_crop.jpeg', discPos:'50% 56%',
-    sqImg:'images/pecan_candy_cover_crop.jpeg', sqPos:'50% 40%',
+    discImg:'images/pecan_candy_cover_crop.jpg', discPos:'50% 56%',
+    sqImg:'images/pecan_candy_cover_crop.jpg', sqPos:'50% 40%',
     // WIDE heavy grotesque (Arial Black / Franklin Gothic Heavy) — extended, not condensed — in the
     // cover red, all-caps, printed flat on the image (no floating shadow).
     sqTitle:'<div style="position:absolute;top:6px;left:8px;right:7px;font-family:\'Arial Black\',\'Franklin Gothic Heavy\',Arial,sans-serif;font-weight:900;font-size:15px;line-height:1;letter-spacing:.02em;color:#C0202A;transform:scaleX(1.06);transform-origin:left top">PECAN CANDY<br><span style="font-size:11px">&amp; HUCK-A-BUCKS</span></div>' },
   'Sweeter Than Candy': { gridBg:'#100C0B', discPos:'50% 30%',
-    discImg:'images/sweeter_than_candy_cover_notext.jpeg',
-    sqImg:'images/sweeter_than_candy_cover_notext_cropped.jpeg', sqPos:'50% 40%',
+    discImg:'images/sweeter_than_candy_cover_notext.jpg',
+    sqImg:'images/sweeter_than_candy_cover_notext_cropped.jpg', sqPos:'50% 40%',
     // Grid: shorten the slot to crop the author line (crisp full-res downscale); the 96% size gives the
     // "Than" title a small right margin (and the man's ear a matching left margin) so nothing is flush/clipped.
     gridSlot:'0.9', gridSize:'96%', gridPos:'50% 10%',
@@ -4187,8 +4187,8 @@ const coverCfg = {
     sqTitle:'<div style="position:absolute;bottom:9px;left:11px;text-align:left;font-family:\'Snell Roundhand\',\'Apple Chancery\',\'Brush Script MT\',cursive;font-weight:400;font-style:normal;font-size:24px;line-height:1.02;color:#FFFFFF">Sweeter<br>Than<br>Candy</div>' },
   'Three Times Sweeter': { gridBg:'#2A1D14',
     // disc uses the family crop (no baked text) — only faces, no LOVE/HOME/FAMILY visible.
-    discImg:'images/3_times_sweeter_cover_cropped.jpeg', discPos:'50% 38%',
-    sqImg:'images/3_times_sweeter_cover_cropped.jpeg', sqPos:'50% 30%',
+    discImg:'images/3_times_sweeter_cover_cropped.jpg', discPos:'50% 38%',
+    sqImg:'images/3_times_sweeter_cover_cropped.jpg', sqPos:'50% 30%',
     // Grid only: nudge DOWN so the top of the "Three" title shows, without cutting FAMILY at the bottom.
     gridPos:'50% 12%',
     // Match the real cover: "Three Times Sweeter" script at the very TOP, and a much smaller/thinner
@@ -4198,8 +4198,8 @@ const coverCfg = {
   'Smothered Okra & Long-Grain Rice': { gridBg:'#7A3B10',
     // disc + square use the no-text crop (faces only). Square adds an approximation of the cover's
     // bold rounded golden title; disc has no overlay.
-    discImg:'images/smothered_okra_cropped.jpeg', discPos:'50% 34%',
-    sqImg:'images/smothered_okra_cropped.jpeg', sqPos:'50% 34%',
+    discImg:'images/smothered_okra_cropped.jpg', discPos:'50% 34%',
+    sqImg:'images/smothered_okra_cropped.jpg', sqPos:'50% 34%',
     gridSlot:'0.73', // shorten the slot so the full title shows with a little margin and the synopsis is cropped
     sqTitle:'<div style="position:absolute;bottom:7px;left:5px;right:5px;text-align:center;font-family:\'Fredoka\',\'Baloo 2\',\'Varela Round\',\'Trebuchet MS\',sans-serif;font-weight:700;font-size:16px;line-height:1.02;color:#F2B21C;-webkit-text-stroke:0.6px #3A1E08;text-shadow:0 2px 3px rgba(0,0,0,.5)">Smothered Okra<br>&amp; Long-Grain Rice</div>' }
 };
@@ -4261,19 +4261,19 @@ const merchArt = {
   // larger detail popup (e.g. contain to show a whole product centered on a matched dark field).
   // Detail popup uses a SQUARE frame, so square product photos (Pen/Sweets, 1024x1024) FILL it with
   // cover — whole product, centered, even margins, no side bars. Grid tiles keep their landscape `pos`.
-  'OE Journal': {img:'images/OE%20Merch%20%7C%20Journal%20%7C%20Cocoa.jpeg', pos:'center', dpos:'center'},
-  'OE Pen':     {img:'images/OE%20Merch%20%7C%20Pens%20%7C%20Cocoa.jpeg',     pos:'center 60%', dpos:'center'},
-  'OE Sweets':  {img:'images/OE%20Merch%20%7C%20Sweets%20%7C%20Cocoa.jpeg',  pos:'center 76%', dpos:'center'},
+  'OE Journal': {img:'images/oe_merch_journal_cocoa.jpg', pos:'center', dpos:'center'},
+  'OE Pen':     {img:'images/oe_merch_pens_cocoa.jpg',     pos:'center 60%', dpos:'center'},
+  'OE Sweets':  {img:'images/oe_merch_sweets_cocoa.jpg',  pos:'center 76%', dpos:'center'},
   // Blanket photo is square (1024x1024) -> cover fills both the grid tile and the square detail
   // frame with the product centered and even margins, no side bars.
   // Grid tile fills (cover) so the blanket is large; detail stays contain (square->square = no crop).
   // Source will be re-cropped later; for now cover only trims the plain top/bottom margins.
-  'OE Blanket': {img:'images/OE%20Merch%20%7C%20Blanket%20%7C%20Cocoa%20.jpg', fit:'cover', dfit:'contain', pos:'center', dpos:'center', bg:'#140A04'},
-  'OE Tote':    {img:'images/OE%20Merch%20%7C%20Tote%20%7C%20Cocoa%20.jpeg', pos:'center', dpos:'center'},
-  // OE Mug has a TWO-image gallery: primary cover (.png, actually 4196x4032) + a variations shot.
+  'OE Blanket': {img:'images/oe_merch_blanket_cocoa.jpg', fit:'cover', dfit:'contain', pos:'center', dpos:'center', bg:'#140A04'},
+  'OE Tote':    {img:'images/oe_merch_tote_cocoa.jpg', pos:'center', dpos:'center'},
+  // OE Mug has a TWO-image gallery: primary cover (JPEG, actually 4196x4032; was a .png-named file) + a variations shot.
   // `imgs` (2+) enables the in-popup right/left arrow gallery; grid tile + first detail image use imgs[0].
-  'OE Mug':     {img:'images/OE%20Merch%20%7C%20Travel%20Mug%20%7C%20Cocoa.png',
-                 imgs:['images/OE%20Merch%20%7C%20Travel%20Mug%20%7C%20Cocoa.png','images/OE%20Merch%20%7C%20Travel%20Mug%20%7C%20Cocoa_%20variations.jpeg'],
+  'OE Mug':     {img:'images/oe_merch_travel_mug_cocoa.jpg',
+                 imgs:['images/oe_merch_travel_mug_cocoa.jpg','images/oe_merch_travel_mug_cocoa_variations.jpg'],
                  pos:'center', dpos:'center', bg:'#140A04'}
 };
 function getMerchArt(name){ return merchArt[(name||'').replace(/&amp;/g,'&').trim()]||null; }
