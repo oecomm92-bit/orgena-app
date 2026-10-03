@@ -1,0 +1,147 @@
+name: Audit
+
+# Runs audit.test.js in Chromium + WebKit, against the checked-out index.html ("local") and the
+# deployed GitHub Pages site ("live"). Fails a job only when the audit reports BROKEN findings.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  # After GitHub Pages finishes deploying, audit the version that is actually live.
+  workflow_run:
+    workflows: [pages-build-deployment]
+    types: [completed]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: audit-${{ github.event_name }}-${{ github.event.workflow_run.head_sha || github.sha }}
+  cancel-in-progress: false
+
+env:
+  LIVE_SITE: https://oecomm92-bit.github.io/orgena-app/
+  # Commit under test: the deployed commit for post-deploy runs, otherwise the pushed/selected one.
+  TARGET_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+jobs:
+  local:
+    name: local (${{ matrix.engine }})
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [chromium, webkit]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.TARGET_SHA }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium webkit
+      - name: Run audit (${{ matrix.engine }} + local index.html)
+        env:
+          AUDIT_ENGINE: ${{ matrix.engine }}
+          AUDIT_URL: index.html
+          AUDIT_OUT: audit-output
+        run: npm run audit
+      - name: Job summary
+        if: always()
+        run: node ci/audit-summary.js job audit-output/audit-results.json "local · ${{ matrix.engine }}"
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: audit-local-${{ matrix.engine }}
+          path: audit-output/
+          if-no-files-found: warn
+          retention-days: 30
+
+  live:
+    name: live (${{ matrix.engine }})
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [chromium, webkit]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.TARGET_SHA }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium webkit
+      - name: Wait until the live site serves this commit
+        run: |
+          want=$(sha256sum index.html | cut -d' ' -f1)
+          code=000
+          for i in $(seq 1 40); do
+            rm -f "$RUNNER_TEMP/live.html"
+            # curl prints 000 itself when the host is unreachable; never let a failure end the loop.
+            code=$(curl -s -L -o "$RUNNER_TEMP/live.html" -w '%{http_code}' -H 'Cache-Control: no-cache' "$LIVE_SITE" || true)
+            got=$( (sha256sum "$RUNNER_TEMP/live.html" 2>/dev/null || true) | cut -d' ' -f1)
+            if [ "$code" = "200" ] && [ "$got" = "$want" ]; then
+              echo "Live site is serving commit $TARGET_SHA (attempt $i)."; exit 0
+            fi
+            echo "Attempt $i/40: HTTP $code, live index.html ${got:0:12} != expected ${want:0:12}; retrying in 15s"
+            sleep 15
+          done
+          echo "::warning::Live site still not serving index.html from $TARGET_SHA after ~10 min (last HTTP $code). Auditing whatever is live."
+          echo "> ⚠️ Live site did not match commit \`$TARGET_SHA\` (last HTTP $code); audited whatever was being served." >> "$GITHUB_STEP_SUMMARY"
+      - name: Run audit (${{ matrix.engine }} + live site)
+        env:
+          AUDIT_ENGINE: ${{ matrix.engine }}
+          AUDIT_URL: ${{ env.LIVE_SITE }}
+          AUDIT_OUT: audit-output
+        run: npm run audit
+      - name: Job summary
+        if: always()
+        run: node ci/audit-summary.js job audit-output/audit-results.json "live · ${{ matrix.engine }}"
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: audit-live-${{ matrix.engine }}
+          path: audit-output/
+          if-no-files-found: warn
+          retention-days: 30
+
+  compare:
+    name: cross-engine / cross-URL diff
+    needs: [local, live]
+    if: ${{ !cancelled() && (needs.local.result != 'skipped' || needs.live.result != 'skipped') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.TARGET_SHA }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: audit-*
+          path: results
+      - name: Compare chromium vs webkit and local vs live
+        run: node ci/audit-summary.js diff results
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: audit-diff
+          path: |
+            results/audit-diff.md
+            results/audit-diff.json
+          if-no-files-found: warn
+          retention-days: 30

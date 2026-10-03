@@ -1,0 +1,12 @@
+{
+  "name": "orgena-app",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Orgena single-file prototype (index.html) and its functional audit.",
+  "scripts": {
+    "audit": "node audit.test.js"
+  },
+  "devDependencies": {
+    "playwright": "1.56.1"
+  }
+}

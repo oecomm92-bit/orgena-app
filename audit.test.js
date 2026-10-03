@@ -22,6 +22,14 @@
  *
  * Exit: 1 only if any BROKEN (any engine/url). SUSPECT + INCONSISTENT print as warnings.
  * Env:  PW_CHROME=/path/to/chrome   ORGENA_URL=file://…   LIVE_URL=https://…   SHOT_DIR=…
+ *
+ * Batch 27 — single-target mode (used by .github/workflows/audit.yml):
+ *   AUDIT_ENGINE=chromium|webkit   AUDIT_URL=<file path | file:// URL | https URL>
+ *   AUDIT_OUT=<dir> (default ./audit-output) -> audit-results.json + screenshots/
+ * When BOTH AUDIT_ENGINE and AUDIT_URL are unset the audit keeps its original behavior
+ * (full chromium + local-file run, plus webkit/live parity probes when available).
+ * When either is set it runs ONE full audit on that engine + target. On an http(s) target
+ * the Google-Fonts failure is NOT environmental: any font load failure is INCONSISTENT.
  */
 'use strict';
 const path = require('path');
@@ -54,7 +62,20 @@ function livePagesUrl() {
   return null;
 }
 const VIEWPORT = { width: 390, height: 844 };
-const SHOT_DIR = process.env.SHOT_DIR || '/tmp/claude-0/-home-user-orgena-app/d1da284b-8dd7-5828-af65-8316c2a3c2f4/scratchpad';
+const AUDIT_ENGINE = (process.env.AUDIT_ENGINE || '').trim().toLowerCase();
+const AUDIT_URL = (process.env.AUDIT_URL || '').trim();
+const SINGLE_TARGET = !!(AUDIT_ENGINE || AUDIT_URL);
+const AUDIT_OUT = path.resolve(process.env.AUDIT_OUT || path.join(__dirname, 'audit-output'));
+const SHOT_DIR = process.env.SHOT_DIR || path.join(AUDIT_OUT, 'screenshots');
+try { fs.mkdirSync(SHOT_DIR, { recursive: true }); } catch (_) {}
+// AUDIT_URL may be a plain path ("index.html"), a file:// URL or an http(s) URL.
+function resolveTarget(u) {
+  if (!u) return LOCAL_URL;
+  if (/^(https?|file):/i.test(u)) return u;
+  return 'file://' + path.resolve(u);
+}
+const isRemote = (u) => /^https?:/i.test(u || '');
+const isFontUrl = (u) => /fonts\.googleapis\.com|fonts\.gstatic\.com/i.test(u || '');
 const isEnvNoise = (t) => /ERR_CONNECTION_RESET|fonts\.googleapis|fonts\.gstatic|Failed to load resource: net::ERR|downloadable font/i.test(t);
 const ALLOWED_FONTS = /Playfair Display|Cormorant Garamond|DM Sans|Bebas Neue|serif|sans-serif|monospace|system-ui|-apple-system|Arial|Helvetica|Snell|Apple Chancery|Brush Script|Franklin|Georgia|Times/i;
 
@@ -130,10 +151,26 @@ async function realTap(page, locator) {
 //  secondary (engine,url) combos run a lighter parity subset for diffing.
 // =====================================================================================
 async function runAudit({ engineName, browserType, execPath, url, full, shotPrefix }) {
-  const R = { engineName, url, BROKEN: [], INCONSISTENT: [], SUSPECT: [], NOT_VERIFIED: [], ACCEPTED: [], pass: [], notes: [], coverage: {}, parity: {}, launched: false, loaded: false };
-  const B = (t, m) => R.BROKEN.push(`[${t}] ${m}`), I = (t, m) => R.INCONSISTENT.push(`[${t}] ${m}`),
-    S = (t, m) => R.SUSPECT.push(`[${t}] ${m}`), NV = (t, m) => R.NOT_VERIFIED.push(`[${t}] ${m}`), P = (t, m) => R.pass.push(`[${t}] ${m}`),
-    AC = (t, m) => R.ACCEPTED.push(`[${t}] ${m}`);  // owner-accepted as-is (listed, not counted as INCONSISTENT)
+  const R = { engineName, url, BROKEN: [], INCONSISTENT: [], SUSPECT: [], NOT_VERIFIED: [], ACCEPTED: [], pass: [], findings: [], notes: [], coverage: {}, parity: {}, launched: false, loaded: false };
+  // Every outcome is also recorded as {id, tag, bucket, msg}. The id is the CALL SITE (source line
+  // of the B/I/S/NV/P/AC call + occurrence count on that line), so the same check keeps the same id
+  // across engines/URLs even when its outcome (and message) differ — used by the cross-engine diff.
+  const seen = {};
+  const mk = (bucket, arr) => {
+    const f = (t, m) => {
+      const o = {}; Error.captureStackTrace(o, f);
+      const fr = (o.stack || '').split('\n')[1] || '';
+      const lm = fr.match(/:(\d+):\d+\)?\s*$/);
+      const base = `${t}@L${lm ? lm[1] : '?'}`;
+      seen[base] = (seen[base] === undefined ? 0 : seen[base] + 1);
+      R.findings.push({ id: `${base}#${seen[base]}`, tag: t, bucket, msg: m });
+      arr.push(`[${t}] ${m}`);
+    };
+    return f;
+  };
+  const B = mk('BROKEN', R.BROKEN), I = mk('INCONSISTENT', R.INCONSISTENT), S = mk('SUSPECT', R.SUSPECT),
+    NV = mk('NOT_VERIFIED', R.NOT_VERIFIED), P = mk('passed', R.pass),
+    AC = mk('ACCEPTED', R.ACCEPTED);  // owner-accepted as-is (listed, not counted as INCONSISTENT)
 
   let browser;
   try { browser = await browserType.launch(execPath ? { executablePath: execPath } : {}); }
@@ -142,8 +179,14 @@ async function runAudit({ engineName, browserType, execPath, url, full, shotPref
   const ctx = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 2 });
   ctx.setDefaultTimeout(9000);
   const page = await ctx.newPage();
-  const consoleErrors = [], pageErrors = [], img404 = [], nativeDialogs = [];
-  page.on('console', m => { if (m.type() === 'error') consoleErrors.push(m.text()); });
+  const consoleErrors = [], consoleMeta = [], pageErrors = [], img404 = [], nativeDialogs = [], fontFailures = [];
+  const remote = isRemote(url);
+  page.on('console', m => { if (m.type() === 'error') { const loc = ((m.location && m.location()) || {}).url || ''; consoleErrors.push(m.text()); consoleMeta.push({ text: m.text(), loc }); } });
+  // file:// misses fire 'requestfailed'; over http(s) a missing file is a completed 4xx response.
+  page.on('response', r => { const u = r.url(), st = r.status(); if (st < 400) return;
+    if (isFontUrl(u)) fontFailures.push(`HTTP ${st} ${u}`);
+    else if (/\.(jpe?g|png|webp|gif|svg)(\?|$)/i.test(u)) img404.push(decodeURIComponent(u.split('?')[0].split('/').pop()) + ` (HTTP ${st})`); });
+  page.on('requestfailed', r => { if (isFontUrl(r.url())) fontFailures.push(`${(r.failure() || {}).errorText || 'failed'} ${r.url()}`); });
   page.on('pageerror', e => pageErrors.push('PAGEERROR: ' + e.message));
   page.on('requestfailed', r => { const u = r.url(); if (/\.(jpe?g|png|webp|gif|svg)$/i.test(u) && !/fonts\./.test(u)) img404.push(decodeURIComponent(u.split('/').pop())); });
   // Batch 25: there must be ZERO native dialogs during the whole sweep. Record any that appear.
@@ -1023,7 +1066,15 @@ async function runAudit({ engineName, browserType, execPath, url, full, shotPref
   }
 
   // integrity
-  const realConsole = consoleErrors.filter(t => !isEnvNoise(t));
+  // On file:// the Google-Fonts failure is environmental (sandbox egress). On an http(s) target it
+  // is NOT expected: any font load failure is INCONSISTENT, and only font-related console lines are
+  // folded into that finding (everything else stays in the console check).
+  const isFontConsole = (c) => isFontUrl(c.loc) || isFontUrl(c.text) || /downloadable font/i.test(c.text);
+  const realConsole = remote ? consoleMeta.filter(c => !isFontConsole(c)).map(c => c.text) : consoleErrors.filter(t => !isEnvNoise(t));
+  if (remote) {
+    const fontIssues = [...new Set([...fontFailures, ...consoleMeta.filter(isFontConsole).map(c => c.text + (c.loc ? ' @ ' + c.loc : ''))])];
+    fontIssues.length ? I('fonts-live', `${fontIssues.length} font load failure(s) on the live URL: ` + fontIssues.slice(0, 4).join(' | ')) : P('fonts-live', 'web fonts loaded with no failures on the live URL');
+  }
   img404.length ? B('integrity', 'IMAGE 404s: ' + [...new Set(img404)].join(', ')) : P('integrity', 'zero image 404s');
   realConsole.length ? I('integrity', `${realConsole.length} non-env console error(s): ` + realConsole.slice(0, 3).join(' | ')) : P('integrity', 'no non-environmental console errors');
   // Batch 26: image filename hygiene (runs once, on the full chromium pass).
@@ -1071,7 +1122,8 @@ async function runAudit({ engineName, browserType, execPath, url, full, shotPref
     } catch (e) { NV('dialogs', 'could not read index.html for dialog grep: ' + e.message); }
     nativeDialogs.length ? B('dialogs', `${nativeDialogs.length} native dialog(s) appeared during the sweep: ${nativeDialogs.slice(0, 4).join(' | ')}`) : P('dialogs', 'no native browser dialog appeared during the full sweep');
   }
-  R.envNoise = consoleErrors.filter(isEnvNoise).length;
+  R.envNoise = remote ? 0 : consoleErrors.filter(isEnvNoise).length;
+  R.fontFailures = fontFailures.slice(0, 20);
   R.pageErrorsTotal = pageErrors.length;
   R.img404 = [...new Set(img404)];
   // parity signals for cross-engine/url diffing
@@ -1085,10 +1137,100 @@ async function runAudit({ engineName, browserType, execPath, url, full, shotPref
   return R;
 }
 
+// ---- machine-readable output -------------------------------------------------------
+const BUCKETS = ['BROKEN', 'INCONSISTENT', 'SUSPECT', 'NOT_VERIFIED', 'ACCEPTED', 'passed'];
+const listFor = (r, b) => (b === 'passed' ? r.pass : r[b]) || [];
+const totalsOf = (r) => Object.fromEntries(BUCKETS.map(b => [b, listFor(r, b).length]));
+// The checked-out commit (CI checks out the deployed SHA on post-deploy runs, where GITHUB_SHA
+// would instead be the latest main), falling back to GITHUB_SHA.
+function gitCommit() {
+  try { return require('child_process').execSync('git -C ' + JSON.stringify(__dirname) + ' rev-parse HEAD', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim(); } catch (_) { return process.env.GITHUB_SHA || null; }
+}
+function writeResults(r, extra) {
+  const out = {
+    schema: 1, generatedAt: new Date().toISOString(), commit: gitCommit(),
+    engine: r.engineName, target: isRemote(r.url) ? 'live' : 'local', url: r.url,
+    launched: r.launched, loaded: r.loaded, launchError: r.launchError || null, loadError: r.loadError || null,
+    totals: totalsOf(r),
+    findings: r.findings || [],
+    buckets: Object.fromEntries(BUCKETS.map(b => [b, listFor(r, b)])),
+    coverage: r.coverage || {}, parity: r.parity || {},
+    notes: { envNoise: r.envNoise || 0, pageErrors: r.pageErrorsTotal || 0, img404: r.img404 || [], fontFailures: r.fontFailures || [] },
+    screenshots: path.relative(AUDIT_OUT, SHOT_DIR) || '.',
+    ...extra,
+  };
+  fs.mkdirSync(AUDIT_OUT, { recursive: true });
+  const f = path.join(AUDIT_OUT, 'audit-results.json');
+  fs.writeFileSync(f, JSON.stringify(out, null, 2));
+  return f;
+}
+// Outcomes recorded outside runAudit (launch/load failures in single-target mode).
+function addFinding(r, bucket, tag, msg) {
+  listFor(r, bucket).push(`[${tag}] ${msg}`);
+  (r.findings = r.findings || []).push({ id: `${tag}@runner#0`, tag, bucket, msg });
+}
+
 // =====================================================================================
 (async () => {
   const pw = loadPlaywright();
   const inv = handlerInventory();
+  const line = '═'.repeat(74);
+  const section = (title, arr) => { console.log(`\n${title} (${arr.length}):`); if (!arr.length) console.log('  — none —'); arr.forEach(x => console.log('  • ' + x)); };
+  const printBuckets = (r, heading) => {
+    console.log('\n' + '─'.repeat(74) + '\n' + heading);
+    section('① BROKEN', r.BROKEN);
+    section('② INCONSISTENT', r.INCONSISTENT);
+    section('③ SUSPECT (no observable effect on tap — triage, not auto-broken)', r.SUSPECT);
+    section('④ NOT VERIFIED', r.NOT_VERIFIED);
+    section('⑤ ACCEPTED (owner decision — as-is, not a defect)', r.ACCEPTED);
+    console.log('\nPASSED (' + r.pass.length + ')'); r.pass.forEach(x => console.log('  ✓ ' + x));
+  };
+  const printInventory = () => {
+    console.log('SOURCE INVENTORY:');
+    console.log(`  inline handlers: ${inv.totalInline} (onclick ${inv.onclick}, onchange ${inv.onchange}, oninput ${inv.oninput}, onscroll ${inv.onscroll}, onkeydown ${inv.onkeydown})`);
+    console.log(`  distinct handler functions: ${inv.distinctFns.length}  undefined: ${inv.undefinedFns.length}  div balance: ${inv.divOpen}/${inv.divClose}  image refs: ${inv.imgRefs.length}`);
+  };
+  const printCoverage = (C, label) => {
+    console.log(`COVERAGE (${label}, FULL run):`);
+    console.log(`  on-screen tab handlers exercised: ${C.tabSwept}/${C.tabTotal}`);
+    console.log(`  overlays opened & swept: ${(C.overlaysOpened || []).length} (${C.overlaySwept} handlers)`);
+    console.log(`  overlays NOT reachable w/o extra context: ${(C.overlaysNotOpened || []).length ? C.overlaysNotOpened.join(', ') : 'none'}`);
+    console.log(`  live DOM handlers exercised (tabs+overlays): ${(C.tabSwept || 0) + (C.overlaySwept || 0)}  [source lists ${inv.onclick} onclick attrs; live DOM differs because templates generate rows and some states are context-gated]`);
+    console.log(`  SUSPECT no-effect scan: ${C.suspectScanned || 0} real taps checked, ${C.suspectFound || 0} with zero observable change`);
+  };
+  const summaryLine = (r, label) => `SUMMARY (${label}): ${r.BROKEN.length} BROKEN · ${r.INCONSISTENT.length} INCONSISTENT · ${r.SUSPECT.length} SUSPECT · ${r.NOT_VERIFIED.length} NOT-VERIFIED · ${r.ACCEPTED.length} ACCEPTED · ${r.pass.length} passed`;
+
+  // ---------------- single-target mode (AUDIT_ENGINE / AUDIT_URL) ----------------
+  if (SINGLE_TARGET) {
+    const engineName = AUDIT_ENGINE || 'chromium';
+    if (!['chromium', 'webkit'].includes(engineName)) { console.error(`AUDIT_ENGINE must be chromium or webkit (got "${engineName}")`); process.exit(2); }
+    const url = resolveTarget(AUDIT_URL);
+    const kind = isRemote(url) ? 'live' : 'local';
+    const r = await runAudit({ engineName, browserType: pw[engineName], execPath: engineName === 'chromium' ? chromePath() : undefined, url, full: true, shotPrefix: `${engineName}-${kind}` });
+    // A target that cannot launch or load is a real failure of this run, not a skipped check.
+    if (!r.launched) addFinding(r, 'BROKEN', 'environment', `${engineName} could not launch: ${r.launchError}`);
+    else if (!r.loaded) addFinding(r, 'BROKEN', 'environment', `app did not load at ${url}: ${r.loadError || 'page loaded but the Orgena app did not render'}`);
+    console.log('\n' + line);
+    console.log('ORGENA FUNCTIONAL AUDIT v2  —  ' + new Date().toISOString());
+    console.log(line);
+    printInventory();
+    console.log(`TARGET: ${engineName} + ${kind} (${url})` + (engineName === 'webkit' ? '  [WebKit = iOS-Safari proxy, NOT a real device]' : ''));
+    if (r.loaded) printCoverage(r.coverage, `${engineName} + ${kind}`);
+    printBuckets(r, `RESULTS (${engineName} + ${kind}):`);
+    console.log('\nNOTES:');
+    if (kind === 'live') console.log(`  – Font load failures on the live URL: ${(r.fontFailures || []).length} (reported as INCONSISTENT when > 0).`);
+    else console.log(`  – Environmental console noise (Google Fonts blocked on file://): ${r.envNoise || 0} msg(s) — expected.`);
+    console.log(`  – Total pageerrors: ${r.pageErrorsTotal || 0}.`);
+    const f = writeResults(r, { mode: 'single' });
+    console.log(`  – Results JSON: ${f}`);
+    console.log(`  – Screenshots: ${SHOT_DIR}`);
+    console.log('\n' + line);
+    console.log(summaryLine(r, `${engineName} + ${kind}`));
+    console.log(line + '\n');
+    process.exit(r.BROKEN.length ? 1 : 0);
+  }
+
+  // ---------------- default mode (original behavior) ----------------
   const live = livePagesUrl();
 
   // Build the engine/url matrix. Chromium+local is the FULL run; others are parity probes.
@@ -1125,33 +1267,17 @@ async function runAudit({ engineName, browserType, execPath, url, full, shotPref
   }
 
   // ---- PRINT ----
-  const line = '═'.repeat(74);
   console.log('\n' + line);
   console.log('ORGENA FUNCTIONAL AUDIT v2  —  ' + new Date().toISOString());
   console.log(line);
-  console.log('SOURCE INVENTORY:');
-  console.log(`  inline handlers: ${inv.totalInline} (onclick ${inv.onclick}, onchange ${inv.onchange}, oninput ${inv.oninput}, onscroll ${inv.onscroll}, onkeydown ${inv.onkeydown})`);
-  console.log(`  distinct handler functions: ${inv.distinctFns.length}  undefined: ${inv.undefinedFns.length}  div balance: ${inv.divOpen}/${inv.divClose}  image refs: ${inv.imgRefs.length}`);
-  const C = primary.coverage;
-  console.log('COVERAGE (chromium + local, FULL run):');
-  console.log(`  on-screen tab handlers exercised: ${C.tabSwept}/${C.tabTotal}`);
-  console.log(`  overlays opened & swept: ${(C.overlaysOpened || []).length} (${C.overlaySwept} handlers)`);
-  console.log(`  overlays NOT reachable w/o extra context: ${(C.overlaysNotOpened || []).length ? C.overlaysNotOpened.join(', ') : 'none'}`);
-  console.log(`  live DOM handlers exercised (tabs+overlays): ${C.tabSwept + (C.overlaySwept || 0)}  [source lists ${inv.onclick} onclick attrs; live DOM differs because templates generate rows and some states are context-gated]`);
-  console.log(`  SUSPECT no-effect scan: ${C.suspectScanned || 0} real taps checked, ${C.suspectFound || 0} with zero observable change`);
+  printInventory();
+  printCoverage(primary.coverage, 'chromium + local');
   console.log('ENVIRONMENTS:');
   console.log(`  chromium + local file: RAN (full)`);
   console.log(`  webkit (iOS Safari proxy, NOT a real device): ` + (webkitResult ? (webkitResult.loaded ? 'RAN (parity)' : 'FAILED TO LOAD') : 'NOT AVAILABLE — webkit binary not installed and download is blocked in this sandbox'));
   console.log(`  live GitHub Pages (${live || 'URL could not be derived'}): ` + (liveResult ? (liveResult.loaded ? 'RAN (parity) @ ' + liveResult.url : 'UNREACHABLE/404 — ' + (liveResult.loadError || 'no app rendered')) : 'NOT PROBED'));
 
-  const section = (title, arr) => { console.log(`\n${title} (${arr.length}):`); if (!arr.length) console.log('  — none —'); arr.forEach(x => console.log('  • ' + x)); };
-  console.log('\n' + '─'.repeat(74) + '\nPRIMARY RESULTS (chromium + local):');
-  section('① BROKEN', primary.BROKEN);
-  section('② INCONSISTENT', primary.INCONSISTENT);
-  section('③ SUSPECT (no observable effect on tap — triage, not auto-broken)', primary.SUSPECT);
-  section('④ NOT VERIFIED', primary.NOT_VERIFIED);
-  section('⑤ ACCEPTED (owner decision — as-is, not a defect)', primary.ACCEPTED);
-  console.log('\nPASSED (' + primary.pass.length + ')'); primary.pass.forEach(x => console.log('  ✓ ' + x));
+  printBuckets(primary, 'PRIMARY RESULTS (chromium + local):');
 
   console.log('\n' + '─'.repeat(74));
   console.log('CROSS-ENGINE DIFFERENCES (chromium vs webkit): ' + (webkitResult && webkitResult.loaded ? (engineDiffs.length ? '\n  • ' + engineDiffs.join('\n  • ') : 'none') : 'NOT VERIFIED (webkit unavailable here)'));
@@ -1162,10 +1288,14 @@ async function runAudit({ engineName, browserType, execPath, url, full, shotPref
   console.log(`  – Total pageerrors during primary run: ${primary.pageErrorsTotal}.`);
   if (webkitResult && !webkitResult.loaded) console.log('  – webkit: ' + (webkitResult.launchError ? 'launch error: ' + webkitResult.launchError : webkitResult.loadError || 'did not render'));
   if (liveResult && !liveResult.loaded) console.log('  – live: ' + (liveResult.loadError || 'did not render (Pages may be disabled or blocked by sandbox egress)'));
+  const probe = (r) => r ? { engine: r.engineName, url: r.url, launched: r.launched, loaded: r.loaded, totals: totalsOf(r) } : null;
+  const f = writeResults(primary, { mode: 'default', parityProbes: [probe(webkitResult), probe(liveResult)].filter(Boolean), engineDiffs, urlDiffs });
+  console.log(`  – Results JSON: ${f}`);
+  console.log(`  – Screenshots: ${SHOT_DIR}`);
 
   const allBroken = results.reduce((a, r) => a + r.BROKEN.length, 0);
   console.log('\n' + line);
-  console.log(`SUMMARY (primary): ${primary.BROKEN.length} BROKEN · ${primary.INCONSISTENT.length} INCONSISTENT · ${primary.SUSPECT.length} SUSPECT · ${primary.NOT_VERIFIED.length} NOT-VERIFIED · ${primary.ACCEPTED.length} ACCEPTED · ${primary.pass.length} passed`);
+  console.log(summaryLine(primary, 'primary'));
   console.log(line + '\n');
   process.exit(allBroken ? 1 : 0);
 })().catch(e => { console.error('AUDIT HARNESS ERROR:', e.message, e.stack); process.exit(2); });
